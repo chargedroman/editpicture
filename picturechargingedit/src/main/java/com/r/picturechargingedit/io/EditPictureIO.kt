@@ -36,4 +36,10 @@ class EditPictureIO(private val context: Context) {
         return@withContext target.get()
     }
 
+    suspend fun savePicture(picture: Uri, bitmap: Bitmap) = withContext(Dispatchers.IO)  {
+        context.contentResolver.openOutputStream(picture)!!.use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+        }
+    }
+
 }

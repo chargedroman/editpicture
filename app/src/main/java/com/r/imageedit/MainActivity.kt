@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.r.picturechargingedit.EditPictureView
+import com.r.picturechargingedit.model.EditPictureResultArgs
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -38,6 +39,12 @@ class MainActivity : AppCompatActivity() {
 
     fun onUndoLastActionClicked(view: View) {
         editView.undoLastAction()
+    }
+
+    fun onSaveResultClicked(view: View) {
+        val uri = getImageCacheUri()
+        val args = EditPictureResultArgs(uri, { println("yay!") }, { println("oops!") })
+        editView.onSaveResultClicked(args)
     }
 
 

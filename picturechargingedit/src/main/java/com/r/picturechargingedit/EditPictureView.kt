@@ -12,6 +12,7 @@ import androidx.core.view.doOnNextLayout
 import androidx.lifecycle.Observer
 import com.r.picturechargingedit.drawers.DrawerPathModel
 import com.r.picturechargingedit.drawers.DrawerBitmap
+import com.r.picturechargingedit.model.EditPictureResultArgs
 import com.r.picturechargingedit.model.PathModel
 
 
@@ -45,6 +46,12 @@ class EditPictureView : View {
         drawerBitmap.onNextBitmap(it)
     }
 
+    val onNextFullSizeBitmap = Observer<Bitmap> {
+        val canvas = Canvas(it)
+        drawerPathModels.drawBlurPath(canvas)
+        viewModel.onUserEditingWasCopiedTo(it)
+    }
+
     val onNextPathModels = Observer<List<PathModel>> {
         drawerPathModels.onNextPathModels(it)
     }
@@ -54,12 +61,14 @@ class EditPictureView : View {
         super.onAttachedToWindow()
         viewModel.resizedBitmap.observeForever(onNextBitmap)
         viewModel.pathModels.observeForever(onNextPathModels)
+        viewModel.fullSizeBitmap.observeForever(onNextFullSizeBitmap)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         viewModel.resizedBitmap.removeObserver(onNextBitmap)
         viewModel.pathModels.removeObserver(onNextPathModels)
+        viewModel.fullSizeBitmap.removeObserver(onNextFullSizeBitmap)
     }
 
 
@@ -68,7 +77,11 @@ class EditPictureView : View {
     }
 
     fun undoLastAction() {
-        viewModel.removeLastBlurPath()
+        viewModel.undoLastAction()
+    }
+
+    fun onSaveResultClicked(finishEditing: EditPictureResultArgs) {
+        viewModel.onSaveResultClicked(finishEditing)
     }
 
 
