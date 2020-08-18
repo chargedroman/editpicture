@@ -1,12 +1,17 @@
 package com.r.picturechargingedit
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.net.Uri
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.doOnNextLayout
+import com.r.picturechargingedit.drawers.DrawerBlurPath
+import com.r.picturechargingedit.drawers.DrawerBitmap
+
 
 /**
  *
@@ -14,13 +19,15 @@ import androidx.core.view.doOnNextLayout
  * Created: 18.08.20
  */
 
+@SuppressLint("ClickableViewAccessibility")
 class EditPictureView : View, EditView {
 
     private val presenter: EditPicturePresenter = EditPicturePresenter
         .Factory(context.applicationContext)
         .create(this)
 
-    private var pictureBitmap: Bitmap? = null
+    private val drawerBitmap = DrawerBitmap(this)
+    private val drawerBlur = DrawerBlurPath(this)
 
 
     constructor(context: Context) : this(context, null)
@@ -38,11 +45,18 @@ class EditPictureView : View, EditView {
     }
 
 
+    fun onPictureSelected(picture: Uri) = doOnNextLayout {
+        presenter.onPictureSelected(picture, width, height)
+    }
+
+
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         canvas.apply {
-            drawPictureBitmap(this, pictureBitmap)
+            drawerBitmap.drawPictureBitmap(this)
+            drawerBlur.drawBlurPath(this)
         }
     }
 
@@ -52,31 +66,32 @@ class EditPictureView : View, EditView {
     }
 
     override fun showBitmap(bitmap: Bitmap) {
-        pictureBitmap = bitmap
-        invalidate()
+        drawerBitmap.onNextBitmap(bitmap)
     }
 
-    fun onPictureSelected(picture: Uri) = doOnNextLayout {
-        presenter.onPictureSelected(picture, width, height)
-    }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        println("CHAR: event = ${event.toString()}")
+
+        if(event == null) {
+            return super.onTouchEvent(event)
+        }
+
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                drawerBlur.startRecordingDraw(event.x, event.y)
+                invalidate()
+            }
+            MotionEvent.ACTION_MOVE -> {
+                drawerBlur.continueRecordingDraw(event.x, event.y)
+                invalidate()
+            }
+            MotionEvent.ACTION_UP -> {
+                drawerBlur.completeRecordingDraw()
+                invalidate()
+            }
+        }
+
         return true
-    }
-
-
-    private fun drawPictureBitmap(canvas: Canvas, bitmap: Bitmap?) {
-        if(bitmap == null) return
-        val matrix = Matrix()
-        fillSide(matrix, bitmap)
-        canvas.drawBitmap(bitmap, matrix, null)
-    }
-
-    private fun fillSide(matrix: Matrix, bitmap: Bitmap) {
-        val src = RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat())
-        val dest = RectF(0f, 0f, width.toFloat(), height.toFloat())
-        matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
     }
 
 
