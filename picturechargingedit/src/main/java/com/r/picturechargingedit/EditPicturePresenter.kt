@@ -2,6 +2,7 @@ package com.r.picturechargingedit
 
 import android.content.Context
 import android.net.Uri
+import com.r.picturechargingedit.io.EditPictureIO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -21,8 +22,8 @@ class EditPicturePresenter(
     private val mainScope = CoroutineScope(Job() + Dispatchers.Main)
 
 
-    override fun onPictureSelected(picture: Uri) = mainScope.launch {
-        val bitmap = editIO.loadBitmap(picture)
+    override fun onPictureSelected(picture: Uri, width: Int, height: Int) = mainScope.launch {
+        val bitmap = editIO.loadBitmap(picture, width, height)
         view.showBitmap(bitmap)
     }
 

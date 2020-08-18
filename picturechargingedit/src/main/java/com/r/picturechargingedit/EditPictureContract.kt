@@ -18,6 +18,6 @@ interface EditView {
 
 interface EditPresenter {
 
-    fun onPictureSelected(picture: Uri): Job
+    fun onPictureSelected(picture: Uri, width: Int, height: Int): Job
 
 }

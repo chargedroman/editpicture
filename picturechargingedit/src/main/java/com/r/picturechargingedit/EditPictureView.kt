@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.*
 import android.net.Uri
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
+import androidx.core.view.doOnNextLayout
 
 /**
  *
@@ -54,8 +56,13 @@ class EditPictureView : View, EditView {
         invalidate()
     }
 
-    fun onPictureSelected(picture: Uri) {
-        presenter.onPictureSelected(picture)
+    fun onPictureSelected(picture: Uri) = doOnNextLayout {
+        presenter.onPictureSelected(picture, width, height)
+    }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        println("CHAR: event = ${event.toString()}")
+        return true
     }
 
 
