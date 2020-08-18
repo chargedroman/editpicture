@@ -2,7 +2,6 @@ package com.r.picturechargingedit.io
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -17,10 +16,14 @@ import kotlinx.coroutines.withContext
 
 class EditPictureIO(private val context: Context) {
 
-    suspend fun loadBitmap(picture: Uri): Bitmap = withContext(Dispatchers.IO) {
-        context.contentResolver.openInputStream(picture)!!.buffered().use {
-            return@use BitmapFactory.decodeStream(it)
-        }
+    suspend fun loadFullSizeBitmap(picture: Uri): Bitmap = withContext(Dispatchers.IO) {
+        val target = Glide.with(context)
+            .asBitmap()
+            .load(picture)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .submit()
+        return@withContext target.get()
     }
 
     suspend fun loadBitmap(picture: Uri, width: Int, height: Int): Bitmap = withContext(Dispatchers.IO) {
@@ -29,7 +32,7 @@ class EditPictureIO(private val context: Context) {
             .load(picture)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .skipMemoryCache(true)
-            .submit(height, width)
+            .submit(width, height)
         return@withContext target.get()
     }
 

@@ -9,8 +9,10 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.doOnNextLayout
-import com.r.picturechargingedit.drawers.DrawerBlurPath
+import androidx.lifecycle.Observer
+import com.r.picturechargingedit.drawers.DrawerPathModel
 import com.r.picturechargingedit.drawers.DrawerBitmap
+import com.r.picturechargingedit.model.PathModel
 
 
 /**
@@ -20,14 +22,14 @@ import com.r.picturechargingedit.drawers.DrawerBitmap
  */
 
 @SuppressLint("ClickableViewAccessibility")
-class EditPictureView : View, EditView {
+class EditPictureView : View {
 
-    private val presenter: EditPicturePresenter = EditPicturePresenter
+    private val viewModel: EditPictureViewModel = EditPictureViewModel
         .Factory(context.applicationContext)
-        .create(this)
+        .create()
 
     private val drawerBitmap = DrawerBitmap(this)
-    private val drawerBlur = DrawerBlurPath(this)
+    private val drawerPathModels = DrawerPathModel(this)
 
 
     constructor(context: Context) : this(context, null)
@@ -36,21 +38,37 @@ class EditPictureView : View, EditView {
         context,
         attrs,
         defStyleAttr
-    ) {
-        init()
+    )
+
+
+    val onNextBitmap = Observer<Bitmap> {
+        drawerBitmap.onNextBitmap(it)
     }
 
-    private fun init() {
+    val onNextPathModels = Observer<List<PathModel>> {
+        drawerPathModels.onNextPathModels(it)
+    }
 
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        viewModel.resizedBitmap.observeForever(onNextBitmap)
+        viewModel.pathModels.observeForever(onNextPathModels)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        viewModel.resizedBitmap.removeObserver(onNextBitmap)
+        viewModel.pathModels.removeObserver(onNextPathModels)
     }
 
 
     fun onPictureSelected(picture: Uri) = doOnNextLayout {
-        presenter.onPictureSelected(picture, width, height)
+        viewModel.onPictureSelected(picture, width, height)
     }
 
     fun undoLastAction() {
-        drawerBlur.removeLastBlurPath()
+        viewModel.removeLastBlurPath()
     }
 
 
@@ -59,17 +77,8 @@ class EditPictureView : View, EditView {
 
         canvas.apply {
             drawerBitmap.drawPictureBitmap(this)
-            drawerBlur.drawBlurPath(this)
+            drawerPathModels.drawBlurPath(this)
         }
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-
-        setMeasuredDimension(width, height)
-    }
-
-    override fun showBitmap(bitmap: Bitmap) {
-        drawerBitmap.onNextBitmap(bitmap)
     }
 
 
@@ -81,10 +90,10 @@ class EditPictureView : View, EditView {
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                drawerBlur.startRecordingDraw(event.x, event.y)
+                viewModel.startRecordingDraw(event.x, event.y)
             }
             MotionEvent.ACTION_MOVE -> {
-                drawerBlur.continueRecordingDraw(event.x, event.y)
+                viewModel.continueRecordingDraw(event.x, event.y)
             }
         }
 
