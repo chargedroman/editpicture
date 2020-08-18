@@ -1,8 +1,7 @@
 package com.r.picturechargingedit
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.*
 import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
@@ -61,9 +60,17 @@ class EditPictureView : View, EditView {
 
 
     private fun drawPictureBitmap(canvas: Canvas, bitmap: Bitmap?) {
-        if(bitmap != null) {
-            canvas.drawBitmap(bitmap, 0f, 0f, null)
-        }
+        if(bitmap == null) return
+        val matrix = Matrix()
+        fillSide(matrix, bitmap)
+        canvas.drawBitmap(bitmap, matrix, null)
     }
+
+    private fun fillSide(matrix: Matrix, bitmap: Bitmap) {
+        val src = RectF(0f, 0f, bitmap.width.toFloat(), bitmap.height.toFloat())
+        val dest = RectF(0f, 0f, width.toFloat(), height.toFloat())
+        matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
+    }
+
 
 }

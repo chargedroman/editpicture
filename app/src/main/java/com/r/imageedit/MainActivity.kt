@@ -27,6 +27,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         editView = findViewById(R.id.view_edit)
         btnTakePhoto = findViewById(R.id.btn_take_photo)
+
+        editView.onPictureSelected(getImageCacheUri())
     }
 
 
