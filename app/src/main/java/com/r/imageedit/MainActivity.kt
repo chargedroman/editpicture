@@ -36,6 +36,10 @@ class MainActivity : AppCompatActivity() {
         takePictureAndOpenItInEditView()
     }
 
+    fun onUndoLastActionClicked(view: View) {
+        editView.undoLastAction()
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

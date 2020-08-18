@@ -23,8 +23,19 @@
         android:text="TAKE PHOTO"
         android:layout_margin="16dp"
         android:onClick="onTakePhotoClicked"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_undo"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/btn_undo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="UNDO"
+        android:layout_margin="16dp"
+        android:onClick="onUndoLastActionClicked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_take_photo"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

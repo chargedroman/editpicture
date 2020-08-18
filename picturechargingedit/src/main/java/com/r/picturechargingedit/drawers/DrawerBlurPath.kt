@@ -3,8 +3,8 @@ package com.r.picturechargingedit.drawers
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Path
 import com.r.picturechargingedit.EditPictureView
+import java.util.*
 import kotlin.math.abs
 
 /**
@@ -19,7 +19,9 @@ class DrawerBlurPath(private val view: EditPictureView) {
         private const val TOUCH_TOLERANCE = 4
     }
 
-    private val path = Path()
+    private var currentPath = BlurPath()
+    private val allPaths = LinkedList<BlurPath>()
+
     private val pathPaint = Paint()
     private var x: Float = 0f
     private var y: Float = 0f
@@ -35,15 +37,25 @@ class DrawerBlurPath(private val view: EditPictureView) {
 
 
     fun drawBlurPath(canvas: Canvas) {
-        canvas.drawPath(path, pathPaint)
+        for(path in allPaths) {
+            canvas.drawPath(path, pathPaint)
+        }
     }
 
+    fun removeLastBlurPath() {
+        if(allPaths.size > 0) {
+            allPaths.removeLast()
+            view.invalidate()
+        }
+    }
 
     fun startRecordingDraw(x: Float, y: Float) {
-        path.reset()
-        path.moveTo(x, y)
+        currentPath = BlurPath()
+        currentPath.moveTo(x, y)
+        allPaths.add(currentPath)
         this.x = x
         this.y = y
+        view.invalidate()
     }
 
     fun continueRecordingDraw(x: Float, y: Float) {
@@ -51,15 +63,12 @@ class DrawerBlurPath(private val view: EditPictureView) {
         val dy: Float = abs(y - this.y)
 
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-            path.quadTo(this.x, this.y, (x + this.x)/2, (y + this.y)/2)
+            currentPath.quadTo(this.x, this.y, (x + this.x)/2, (y + this.y)/2)
             this.x = x
             this.y = y
+            view.invalidate()
         }
     }
 
-    fun completeRecordingDraw() {
-        path.lineTo(x, y)
-        view.invalidate()
-    }
 
 }

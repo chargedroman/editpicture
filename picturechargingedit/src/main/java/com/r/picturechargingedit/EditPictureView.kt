@@ -49,6 +49,9 @@ class EditPictureView : View, EditView {
         presenter.onPictureSelected(picture, width, height)
     }
 
+    fun undoLastAction() {
+        drawerBlur.removeLastBlurPath()
+    }
 
 
     override fun onDraw(canvas: Canvas) {
@@ -79,15 +82,9 @@ class EditPictureView : View, EditView {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 drawerBlur.startRecordingDraw(event.x, event.y)
-                invalidate()
             }
             MotionEvent.ACTION_MOVE -> {
                 drawerBlur.continueRecordingDraw(event.x, event.y)
-                invalidate()
-            }
-            MotionEvent.ACTION_UP -> {
-                drawerBlur.completeRecordingDraw()
-                invalidate()
             }
         }
 
