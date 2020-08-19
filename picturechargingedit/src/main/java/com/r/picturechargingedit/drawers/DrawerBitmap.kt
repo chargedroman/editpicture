@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.RectF
-import com.r.picturechargingedit.EditPictureView
+import com.r.picturechargingedit.v2.EditPictureView
 
 /**
  *
@@ -14,14 +14,14 @@ import com.r.picturechargingedit.EditPictureView
 
 class DrawerBitmap(private val view: EditPictureView) {
 
-    private var pictureBitmap: Bitmap? = null
+    var pictureBitmap: Bitmap? = null
 
     private val matrix = Matrix()
     private val src = RectF(0f, 0f, 0f, 0f)
     private val dest = RectF(0f, 0f, 0f, 0f)
 
 
-    fun onNextBitmap(bitmap: Bitmap) {
+    fun showBitmap(bitmap: Bitmap) {
         this.pictureBitmap = bitmap
         view.invalidate()
     }
@@ -29,15 +29,13 @@ class DrawerBitmap(private val view: EditPictureView) {
     fun drawPictureBitmap(canvas: Canvas) {
         val bitmap = pictureBitmap ?: return
 
-        src.apply {
-            right = bitmap.width.toFloat()
-            bottom = bitmap.height.toFloat()
-        }
+        val pictureWidth = bitmap.width.toFloat()
+        val pictureHeight = bitmap.height.toFloat()
+        src.apply { right = pictureWidth; bottom = pictureHeight }
 
-        dest.apply {
-            right = view.width.toFloat()
-            bottom = view.height.toFloat()
-        }
+        val viewWidth = view.width.toFloat()
+        val viewHeight = view.height.toFloat()
+        dest.apply { right = viewWidth; bottom = viewHeight }
 
         matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
         canvas.drawBitmap(bitmap, matrix, null)

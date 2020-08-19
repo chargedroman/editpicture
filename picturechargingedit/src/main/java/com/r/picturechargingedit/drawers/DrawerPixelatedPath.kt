@@ -1,0 +1,79 @@
+package com.r.picturechargingedit.drawers
+
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
+import com.r.picturechargingedit.model.PathModel
+import com.r.picturechargingedit.v2.EditPictureView
+import kotlin.math.abs
+
+/**
+ *
+ * Author: romanvysotsky
+ * Created: 18.08.20
+ */
+
+class DrawerPixelatedPath(private val view: EditPictureView) {
+
+    companion object {
+        private const val TOUCH_TOLERANCE = 4
+    }
+
+    private var paths = listOf<Path>()
+
+    private val pathPaint = Paint()
+
+
+    init {
+        pathPaint.color = Color.WHITE
+        pathPaint.style = Paint.Style.STROKE
+        pathPaint.strokeJoin = Paint.Join.ROUND
+        pathPaint.strokeCap = Paint.Cap.ROUND
+        pathPaint.strokeWidth = 20f
+    }
+
+
+    fun showPaths(pathModels: List<PathModel>) {
+        paths = pathModels.map { it.createPath() }
+        view.invalidate()
+    }
+
+    fun drawBlurPath(canvas: Canvas) {
+        for(path in paths) {
+            canvas.drawPath(path, pathPaint)
+        }
+    }
+
+
+    private fun PathModel.createPath(): Path {
+        if(points.isEmpty()) return Path()
+
+        val path = Path()
+
+        var previousPoint = points.first()
+        path.moveTo(previousPoint.first, previousPoint.second)
+
+        for(nextPoint in points) {
+            addCurve(path, previousPoint, nextPoint)
+            previousPoint = nextPoint
+        }
+
+        return path
+    }
+
+    private fun addCurve(path: Path, previous: Pair<Float, Float>, next: Pair<Float, Float>) {
+        val dx: Float = abs(next.first - previous.first)
+        val dy: Float = abs(next.second - previous.second)
+
+        if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
+            path.quadTo(
+                previous.first,
+                previous.second,
+                (next.first + previous.first)/2,
+                (next.second + previous.second)/2
+            )
+        }
+    }
+
+}
