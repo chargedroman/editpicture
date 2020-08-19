@@ -2,12 +2,15 @@ package com.r.picturechargingedit.io
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import org.apache.sanselan.Sanselan
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata
 import org.apache.sanselan.formats.jpeg.exifRewrite.ExifRewriter
+import org.apache.sanselan.formats.tiff.constants.TiffTagConstants.TIFF_TAG_ORIENTATION
+import org.apache.sanselan.formats.tiff.write.TiffOutputDirectory
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
 import java.io.InputStream
 
@@ -26,7 +29,13 @@ class EditPictureIO(private val context: Context) {
 
 
     fun readPictureBitmap(picture: Uri): Bitmap {
-        return BitmapFactory.decodeStream(context.contentResolver.openInputStream(picture))
+        return Glide.with(context)
+            .asBitmap()
+            .load(picture)
+            .skipMemoryCache(true)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .submit()
+            .get()
     }
 
     fun rotate(bitmap: Bitmap, degrees: Float): Bitmap {
@@ -37,11 +46,20 @@ class EditPictureIO(private val context: Context) {
 
     fun savePicture(picture: Uri, bitmap: Bitmap) {
         val exif = readExif(picture)
+        removeOrientation(exif)
+
         val inputStream = saveBitmapAndGetStream(bitmap)
         val outputStream = context.contentResolver.openOutputStream(picture)
         ExifRewriter().updateExifMetadataLossy(inputStream, outputStream, exif)
     }
 
+    private fun removeOrientation(exif: TiffOutputSet?) {
+        val directories = exif?.directories ?: return
+        for(d in directories) {
+            val dir = d as? TiffOutputDirectory
+            dir?.removeField(TIFF_TAG_ORIENTATION)
+        }
+    }
 
     private fun saveBitmapAndGetStream(bitmap: Bitmap): InputStream? {
         val output = context.openFileOutput(TEMP_FILE_NAME, Context.MODE_PRIVATE)
