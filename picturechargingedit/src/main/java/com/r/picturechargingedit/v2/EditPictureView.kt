@@ -82,6 +82,13 @@ class EditPictureView : View, EditPicture {
         drawerBitmap.showBitmap(bitmap)
     }
 
+    override fun applyChanges(changesModel: ChangesModel, bitmap: Bitmap) = handler.run {
+        val canvas = Canvas(bitmap)
+        val paths = changesModel.getPixelatedPaths()
+        drawerPixelatedPath.applyPixelatedChanges(paths, canvas)
+        return@run bitmap
+    }
+
     override fun showChanges(changesModel: ChangesModel) = handler.run {
         drawerPixelatedPath.showPaths(changesModel.getPixelatedPaths())
     }

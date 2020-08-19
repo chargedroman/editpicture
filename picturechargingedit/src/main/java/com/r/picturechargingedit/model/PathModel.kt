@@ -1,8 +1,5 @@
 package com.r.picturechargingedit.model
 
-import android.graphics.Path
-import kotlin.math.abs
-
 /**
  *
  * Author: romanvysotsky
@@ -15,6 +12,10 @@ class PathModel {
 
     fun add(x: Float, y: Float) {
         points.add(Pair(x, y))
+    }
+
+    fun add(point: Pair<Float, Float>) {
+        points.add(point)
     }
 
 }

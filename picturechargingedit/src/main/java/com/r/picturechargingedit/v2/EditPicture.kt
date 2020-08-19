@@ -14,6 +14,7 @@ interface EditPicture: BaseView {
 
     fun getShownBitmap(): Bitmap?
     fun showBitmap(bitmap: Bitmap)
+    fun applyChanges(changesModel: ChangesModel, bitmap: Bitmap): Bitmap
 
     fun showChanges(changesModel: ChangesModel)
 

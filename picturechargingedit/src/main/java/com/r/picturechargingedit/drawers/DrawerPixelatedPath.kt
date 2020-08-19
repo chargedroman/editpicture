@@ -34,6 +34,29 @@ class DrawerPixelatedPath(private val view: EditPictureView) {
     }
 
 
+    fun applyPixelatedChanges(changes: List<PathModel>, canvas: Canvas) {
+        val scaleX = 1f
+        val scaleY = 1f
+        val mappedChanges = changes.map { it.scaleCoordinates(scaleX, scaleY) }
+        val paths = mappedChanges.map { it.createPath() }
+        for(path in paths) {
+            canvas.drawPath(path, pathPaint)
+        }
+    }
+
+    private fun PathModel.scaleCoordinates(scaleX: Float, scaleY: Float): PathModel {
+        val model = PathModel()
+        for(point in this.points) {
+            model.add(point.scalePoint(scaleX, scaleY))
+        }
+        return model
+    }
+
+    private fun Pair<Float, Float>.scalePoint(scaleX: Float, scaleY: Float): Pair<Float, Float> {
+        return Pair(this.first*scaleX, this.second*scaleY)
+    }
+
+
     fun showPaths(pathModels: List<PathModel>) {
         paths = pathModels.map { it.createPath() }
         view.invalidate()

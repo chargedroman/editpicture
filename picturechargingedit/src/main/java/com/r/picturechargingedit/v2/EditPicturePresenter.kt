@@ -6,8 +6,6 @@ import com.r.picturechargingedit.arch.BasePresenter
 import com.r.picturechargingedit.io.EditPictureIO
 import com.r.picturechargingedit.model.ChangesModel
 import io.reactivex.Completable
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
 
 /**
  *
@@ -36,7 +34,10 @@ class EditPicturePresenter(
 
     fun savePicture() = Completable.fromAction {
         val bitmap = getView()?.getShownBitmap() ?: return@fromAction
-        editIO.savePicture(originalPicture, bitmap)
+        val edited = getView()?.applyChanges(changesModel, bitmap) ?: return@fromAction
+        editIO.savePicture(originalPicture, edited)
+        changesModel.clear()
+        getView()?.showChanges(changesModel)
     }
 
     fun rotate(degrees: Float) = Completable.fromAction {

@@ -14,6 +14,10 @@ class ChangesModel {
     private var currentPath = PathModel()
 
 
+    fun clear() {
+        paths.clear()
+    }
+
     fun getPixelatedPaths(): List<PathModel> {
         return paths
     }
