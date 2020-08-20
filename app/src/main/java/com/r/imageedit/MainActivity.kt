@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun savePicture() {
         presenter.savePicture().sub(
-            { println("CHAR: saved"); showPicture() },
+            { println("CHAR: saved") },
             { println("CHAR: ${it.toString()}")}
         )
     }
