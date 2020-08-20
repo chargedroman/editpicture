@@ -24,8 +24,7 @@ class EditPictureIO(private val context: Context) {
 
     companion object {
         const val TEMP_FILE_NAME = "tmpBufferedImage"
-        const val PREFERRED_WIDTH = 3200
-        const val PREFERRED_HEIGHT = 2400
+        const val MAX_SIZE = 3200
     }
 
 
@@ -35,7 +34,8 @@ class EditPictureIO(private val context: Context) {
             .load(picture)
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .submit(PREFERRED_WIDTH, PREFERRED_HEIGHT)
+            .transform(TransformBitmapMaxSize(MAX_SIZE))
+            .submit(MAX_SIZE, MAX_SIZE)
             .get()
     }
 
