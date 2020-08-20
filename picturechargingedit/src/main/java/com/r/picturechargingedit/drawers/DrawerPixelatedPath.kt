@@ -1,6 +1,10 @@
 package com.r.picturechargingedit.drawers
 
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
+import com.r.picturechargingedit.model.ChangesModel
 import com.r.picturechargingedit.model.PathModel
 import kotlin.math.abs
 
@@ -30,34 +34,16 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     }
 
 
-    fun applyPixelatedChanges(changes: List<PathModel>, canvas: Canvas) {
-        val invertedMatrix = Matrix()
-        drawerArgs.matrix.invert(invertedMatrix)
-
-        val mappedChanges = changes.map { it.scaleCoordinates(invertedMatrix) }
-        val paths = mappedChanges.map { it.createPath() }
+    fun applyChanges(changes: ChangesModel, canvas: Canvas) {
+        val paths = changes.getPixelatedPaths().map { it.createPath() }
         for(path in paths) {
             canvas.drawPath(path, pathPaint)
         }
     }
 
-    private fun PathModel.scaleCoordinates(matrix: Matrix): PathModel {
-        val model = PathModel()
-        for(point in this.points) {
-            model.add(point.scalePoint(matrix))
-        }
-        return model
-    }
 
-    private fun Pair<Float, Float>.scalePoint(matrix: Matrix): Pair<Float, Float> {
-        val array = floatArrayOf(this.first, this.second)
-        matrix.mapPoints(array)
-        return Pair(array[0], array[1])
-    }
-
-
-    fun showPaths(pathModels: List<PathModel>) {
-        paths = pathModels.map { it.createPath() }
+    fun showPaths(changes: ChangesModel) {
+        paths = changes.getPixelatedPaths().map { it.createPath() }
     }
 
     fun drawBlurPath(canvas: Canvas) {
@@ -68,14 +54,14 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
 
     private fun PathModel.createPath(): Path {
-        if(points.isEmpty()) return Path()
+        if(getPoints().isEmpty()) return Path()
 
         val path = Path()
 
-        var previousPoint = points.first()
-        path.moveTo(previousPoint.first, previousPoint.second)
+        var previousPoint = getPoints().first()
+        path.moveTo(previousPoint[0], previousPoint[1])
 
-        for(nextPoint in points) {
+        for(nextPoint in getPoints()) {
             addCurve(path, previousPoint, nextPoint)
             previousPoint = nextPoint
         }
@@ -83,16 +69,16 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
         return path
     }
 
-    private fun addCurve(path: Path, previous: Pair<Float, Float>, next: Pair<Float, Float>) {
-        val dx: Float = abs(next.first - previous.first)
-        val dy: Float = abs(next.second - previous.second)
+    private fun addCurve(path: Path, previous: FloatArray, next: FloatArray) {
+        val dx: Float = abs(next[0] - previous[0])
+        val dy: Float = abs(next[1] - previous[1])
 
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
             path.quadTo(
-                previous.first,
-                previous.second,
-                (next.first + previous.first)/2,
-                (next.second + previous.second)/2
+                previous[0],
+                previous[1],
+                (next[0] + previous[0])/2,
+                (next[1] + previous[1])/2
             )
         }
     }

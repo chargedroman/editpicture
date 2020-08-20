@@ -8,14 +8,14 @@ package com.r.picturechargingedit.model
 
 class PathModel {
 
-    val points = mutableListOf<Pair<Float, Float>>()
+    private val points = mutableListOf<FloatArray>()
 
-    fun add(x: Float, y: Float) {
-        points.add(Pair(x, y))
+    fun getPoints(): List<FloatArray> {
+        return points
     }
 
-    fun add(point: Pair<Float, Float>) {
-        points.add(point)
+    fun add(x: Float, y: Float) {
+        points.add(floatArrayOf(x, y))
     }
 
 }

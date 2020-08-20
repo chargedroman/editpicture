@@ -16,15 +16,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btn_take_photo"/>
 
-    <Button
-        android:id="@+id/btn_rotate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="ROTATE"
-        android:layout_margin="16dp"
-        android:onClick="onRotateClicked"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
 
     <Button
         android:id="@+id/btn_undo"

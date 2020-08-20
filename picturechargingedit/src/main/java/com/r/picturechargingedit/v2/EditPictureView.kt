@@ -76,25 +76,24 @@ class EditPictureView : View, EditPicture {
         return true
     }
 
-    override fun getShownBitmap(): Bitmap? {
-        return drawerArgs.bitmap
-    }
 
     override fun showBitmap(bitmap: Bitmap) = handler.run {
         drawerArgs.bitmap = bitmap
         invalidate()
     }
 
-    override fun applyChanges(changesModel: ChangesModel, bitmap: Bitmap) = handler.run {
-        val canvas = Canvas(bitmap)
-        val paths = changesModel.getPixelatedPaths()
-        drawerPixelatedPath.applyPixelatedChanges(paths, canvas)
-        return@run bitmap
+    override fun showChanges(changesModel: ChangesModel) = handler.run {
+        drawerPixelatedPath.showPaths(changesModel)
+        invalidate()
     }
 
-    override fun showChanges(changesModel: ChangesModel) = handler.run {
-        drawerPixelatedPath.showPaths(changesModel.getPixelatedPaths())
-        invalidate()
+    override fun commitChanges(changesModel: ChangesModel) = handler.run {
+        val bitmap = drawerArgs.bitmap ?: return@run null
+        val canvas = Canvas(bitmap)
+        val matrix = drawerArgs.createInvertedMatrix()
+        changesModel.mapAllCoordinates(matrix)
+        drawerPixelatedPath.applyChanges(changesModel, canvas)
+        return@run bitmap
     }
 
 }

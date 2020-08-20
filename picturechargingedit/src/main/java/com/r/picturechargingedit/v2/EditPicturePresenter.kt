@@ -18,7 +18,7 @@ class EditPicturePresenter(
     private val editIO: EditPictureIO
 ): BasePresenter<EditPicture>() {
 
-    private val changesModel: ChangesModel = ChangesModel()
+    private var changesModel: ChangesModel = ChangesModel()
 
 
     fun undoLastAction(): Boolean {
@@ -33,17 +33,11 @@ class EditPicturePresenter(
     }
 
     fun savePicture() = Completable.fromAction {
-        val bitmap = getView()?.getShownBitmap() ?: return@fromAction
-        val edited = getView()?.applyChanges(changesModel, bitmap) ?: return@fromAction
-        editIO.savePicture(originalPicture, edited)
-        changesModel.clear()
+        val oldChanges = changesModel
+        val edited = getView()?.commitChanges(oldChanges) ?: return@fromAction
+        changesModel = ChangesModel()
         getView()?.showChanges(changesModel)
-    }
-
-    fun rotate(degrees: Float) = Completable.fromAction {
-        val bitmap = getView()?.getShownBitmap() ?: return@fromAction
-        val rotated = editIO.rotate(bitmap, degrees)
-        getView()?.showBitmap(rotated)
+        editIO.savePicture(originalPicture, edited)
     }
 
 

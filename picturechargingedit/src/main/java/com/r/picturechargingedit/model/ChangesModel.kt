@@ -1,5 +1,6 @@
 package com.r.picturechargingedit.model
 
+import android.graphics.Matrix
 import java.util.*
 
 /**
@@ -14,9 +15,14 @@ class ChangesModel {
     private var currentPath = PathModel()
 
 
-    fun clear() {
-        paths.clear()
+    fun mapAllCoordinates(matrix: Matrix) {
+        for(path in paths) {
+            for(point in path.getPoints()) {
+                matrix.mapPoints(point)
+            }
+        }
     }
+
 
     fun getPixelatedPaths(): List<PathModel> {
         return paths

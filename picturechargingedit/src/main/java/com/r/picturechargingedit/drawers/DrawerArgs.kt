@@ -24,4 +24,10 @@ class DrawerArgs(
         return view.height
     }
 
+    fun createInvertedMatrix(): Matrix {
+        val inverted = Matrix()
+        matrix.invert(inverted)
+        return inverted
+    }
+
 }

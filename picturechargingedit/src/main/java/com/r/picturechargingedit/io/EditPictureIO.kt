@@ -2,7 +2,6 @@ package com.r.picturechargingedit.io
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.net.Uri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -38,11 +37,6 @@ class EditPictureIO(private val context: Context) {
             .get()
     }
 
-    fun rotate(bitmap: Bitmap, degrees: Float): Bitmap {
-        val matrix = Matrix()
-        matrix.postRotate(degrees)
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
 
     fun savePicture(picture: Uri, bitmap: Bitmap) {
         val exif = readExif(picture)

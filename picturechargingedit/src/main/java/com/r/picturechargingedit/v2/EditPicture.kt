@@ -12,10 +12,9 @@ import com.r.picturechargingedit.model.ChangesModel
 
 interface EditPicture: BaseView {
 
-    fun getShownBitmap(): Bitmap?
     fun showBitmap(bitmap: Bitmap)
-    fun applyChanges(changesModel: ChangesModel, bitmap: Bitmap): Bitmap
-
     fun showChanges(changesModel: ChangesModel)
+
+    fun commitChanges(changesModel: ChangesModel): Bitmap?
 
 }
