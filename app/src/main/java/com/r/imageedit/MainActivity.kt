@@ -124,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun Completable.sub(success: () -> Unit, error: (Throwable) -> Unit) {
-        val disposable = this.subscribeOn(Schedulers.io()).subscribe(success, error)
+        val disposable = this.subscribeOn(Schedulers.io()).observeOn(Schedulers.computation()).subscribe(success, error)
         disposables.add(disposable)
     }
 

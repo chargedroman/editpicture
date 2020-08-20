@@ -74,28 +74,27 @@ class EditPictureView : View, BaseEditPictureView {
     }
 
 
-    override fun showBitmap(bitmap: Bitmap) = handler.run {
+    override fun showBitmap(bitmap: Bitmap) {
         drawerArgs.bitmap = bitmap
-        invalidate()
+        post(this::invalidate)
     }
 
-    override fun showChanges(changesModel: ChangesModel) = handler.run {
+    override fun showChanges(changesModel: ChangesModel) {
         drawerPixelatedPath.showPaths(changesModel.getRectModels(drawerArgs.radius))
-        invalidate()
+        post(this::invalidate)
     }
 
-    override fun commitChanges(changesModel: ChangesModel) = handler.run {
-        val bitmap = drawerArgs.bitmap ?: return@run null
+    override fun commitChanges(changesModel: ChangesModel): Bitmap? {
+        val bitmap = drawerArgs.bitmap ?: return null
         val canvas = Canvas(bitmap)
         val matrix = drawerArgs.createInvertedMatrix()
-
         val radius = matrix.mapRadius(drawerArgs.radius)
         changesModel.mapAllCoordinates(matrix)
 
         val changes = changesModel.getRectModels(radius)
         drawerPixelatedPath.drawChangesOnCanvas(changes, canvas)
 
-        return@run bitmap
+        return bitmap
     }
 
 

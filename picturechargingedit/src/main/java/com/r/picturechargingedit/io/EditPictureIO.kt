@@ -8,6 +8,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import org.apache.sanselan.Sanselan
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata
 import org.apache.sanselan.formats.jpeg.exifRewrite.ExifRewriter
+import org.apache.sanselan.formats.tiff.constants.TiffDirectoryConstants
 import org.apache.sanselan.formats.tiff.constants.TiffTagConstants.TIFF_TAG_ORIENTATION
 import org.apache.sanselan.formats.tiff.write.TiffOutputDirectory
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
@@ -41,12 +42,20 @@ class EditPictureIO(private val context: Context) {
 
 
     fun savePicture(picture: Uri, bitmap: Bitmap) {
-        val exif = readExif(picture)
+        val exif = readExif(picture) ?: emptyExif()
         removeOrientation(exif)
 
         val inputStream = saveBitmapAndGetStream(bitmap)
         val outputStream = context.contentResolver.openOutputStream(picture)
         ExifRewriter().updateExifMetadataLossy(inputStream, outputStream, exif)
+    }
+
+
+    private fun emptyExif(): TiffOutputSet {
+        val set = TiffOutputSet()
+        val dir = TiffOutputDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
+        set.addDirectory(dir)
+        return set
     }
 
     private fun removeOrientation(exif: TiffOutputSet?) {
