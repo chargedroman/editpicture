@@ -82,6 +82,7 @@ class EditPicturePresenter(
         val edited = getView()?.commitChanges(allChanges) ?: return@completable
         editIO.savePicture(originalPicture, edited)
         getView()?.showBitmap(edited)
+        getView()?.showChanges(changesModel)
         updateCanUndo()
     }
 
