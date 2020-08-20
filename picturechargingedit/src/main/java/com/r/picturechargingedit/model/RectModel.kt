@@ -25,10 +25,29 @@ class RectModel {
 
         if(!previousRect.intersects(rect.left, rect.top, rect.right, rect.bottom)) {
             rect.positionNonIntersectingRectsNearby(previousRect)
-            rects.add(rect)
+            rects.splitRectAndAddAll(rect)
             previousRect = rect
         }
     }
+
+    private fun MutableList<RectF>.splitRectAndAddAll(rectF: RectF) {
+        val centerX = rectF.centerX()
+        val centerY = rectF.centerY()
+        val width = abs(rectF.left - centerX)
+        val height = abs(rectF.top - centerY)
+
+        val topLeft = RectF(centerX-width, centerY-height, centerX, centerY)
+        val topRight = RectF(centerX, centerY-height, centerX+width, centerY)
+
+        val bottomLeft = RectF(centerX-width, centerY, centerX, centerY+height)
+        val bottomRight = RectF(centerX, centerY, centerX+width, centerY+height)
+
+        this.add(topLeft)
+        this.add(topRight)
+        this.add(bottomLeft)
+        this.add(bottomRight)
+    }
+
 
     private fun RectF.positionNonIntersectingRectsNearby(previous: RectF) {
         if(previous.isEmpty) {
