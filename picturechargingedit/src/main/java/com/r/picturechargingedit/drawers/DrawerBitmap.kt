@@ -18,7 +18,6 @@ class DrawerBitmap(private val drawerArgs: DrawerArgs) {
 
     fun onDraw(canvas: Canvas) {
         val bitmap = drawerArgs.bitmap ?: return
-        val matrix = drawerArgs.matrix
 
         val pictureWidth = bitmap.width.toFloat()
         val pictureHeight = bitmap.height.toFloat()
@@ -28,8 +27,8 @@ class DrawerBitmap(private val drawerArgs: DrawerArgs) {
         val viewHeight = drawerArgs.getOriginalViewHeight().toFloat()
         dest.apply { right = viewWidth; bottom = viewHeight }
 
-        matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
-        canvas.drawBitmap(bitmap, matrix, null)
+        drawerArgs.matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
+        canvas.drawBitmap(bitmap, drawerArgs.matrix, null)
     }
 
 }

@@ -1,9 +1,6 @@
 package com.r.picturechargingedit.drawers
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import com.r.picturechargingedit.model.RectModel
 import kotlin.math.sqrt
 
@@ -18,6 +15,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     private var rectModelsToDraw = listOf<RectModel>()
 
     private val pathPaint = Paint()
+    private val pointBuffer = FloatArray(2)
     private var rectPixelBuffer = IntArrayBuffer()
 
 
@@ -29,7 +27,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
 
     fun drawChangesOnCanvas(changes: List<RectModel>, canvas: Canvas) {
-        onDraw(changes, canvas)
+        onDraw(changes, canvas, null)
     }
 
 
@@ -38,25 +36,38 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     }
 
     fun onDraw(canvas: Canvas) {
-        onDraw(rectModelsToDraw, canvas)
+        onDraw(rectModelsToDraw, canvas, drawerArgs.createInvertedMatrix())
     }
 
 
-    private fun onDraw(rectModelsToDraw: List<RectModel>, canvas: Canvas) {
+    private fun onDraw(rectModelsToDraw: List<RectModel>, canvas: Canvas, matrix: Matrix?) {
         for(model in rectModelsToDraw) {
             for(rect in model.getRects()) {
-                pathPaint.color = rect.getColor()
+                pathPaint.color = rect.getColor(matrix)
                 canvas.drawRect(rect, pathPaint)
             }
         }
     }
 
 
-    private fun RectF.getColor(): Int {
+    private fun RectF.getCenter(matrix: Matrix?): FloatArray {
+        pointBuffer[0] = this.centerX()
+        pointBuffer[1] = this.centerY()
+
+        return if(matrix == null) {
+            pointBuffer
+        } else {
+            matrix.mapPoints(pointBuffer)
+            pointBuffer
+        }
+    }
+
+    private fun RectF.getColor(matrix: Matrix?): Int {
         val width = this.width().toInt()
         val height = this.height().toInt()
-        val centerX = this.centerX().toInt()
-        val centerY = this.centerY().toInt()
+        val pointBuffer = this.getCenter(matrix)
+        val centerX = pointBuffer[0].toInt()
+        val centerY = pointBuffer[1].toInt()
 
         val pixelBuffer = try {
             val buffer = rectPixelBuffer.get(width*height)

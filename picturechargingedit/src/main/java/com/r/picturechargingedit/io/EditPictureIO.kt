@@ -33,7 +33,7 @@ class EditPictureIO(private val context: Context) {
             .load(picture)
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .submit()
+            .submit(3000, 4000)
             .get()
     }
 
