@@ -13,6 +13,7 @@ import com.r.picturechargingedit.v2.EditPictureView
 class DrawerArgs(
     private val view: EditPictureView,
     val matrix: Matrix = Matrix(),
+    var radius: Float = 0f,
     var bitmap: Bitmap? = null
 ) {
 

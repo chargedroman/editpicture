@@ -15,9 +15,40 @@ class ChangesModel {
     private var currentPath = PathModel()
 
 
-
+    /**
+     * get raw paths like from point a to b
+     */
     fun getPaths(): List<PathModel> {
         return paths
+    }
+
+    /**
+     * get ready to draw rects from the current path
+     */
+    fun getRectModels(radius: Float): List<RectModel> {
+        return paths.map { it.toRectModel(radius) }
+    }
+
+
+
+    fun startRecordingDraw(x: Float, y: Float) {
+        val newPath = PathModel()
+        currentPath = newPath
+        newPath.add(x, y)
+        paths.add(newPath)
+    }
+
+    fun continueRecordingDraw(x: Float, y: Float) {
+        currentPath.add(x, y)
+    }
+
+    fun undoLastAction(): Boolean {
+        val canRemove = !paths.isEmpty()
+
+        if(canRemove)
+            paths.removeLast()
+
+        return canRemove
     }
 
 
@@ -30,24 +61,13 @@ class ChangesModel {
     }
 
 
-    fun undoLastAction(): Boolean {
-        val canRemove = !paths.isEmpty()
-
-        if(canRemove)
-            paths.removeLast()
-
-        return canRemove
+    private fun PathModel.toRectModel(rectRadius: Float): RectModel {
+        val model = RectModel()
+        for(point in this.getPoints()) {
+            model.add(point[0], point[1], rectRadius)
+        }
+        return model
     }
 
-    fun startRecordingDraw(x: Float, y: Float) {
-        val newPath = PathModel()
-        currentPath = newPath
-        newPath.add(x, y)
-        paths.add(newPath)
-    }
-
-    fun continueRecordingDraw(x: Float, y: Float) {
-        currentPath.add(x, y)
-    }
 
 }

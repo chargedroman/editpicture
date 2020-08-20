@@ -4,8 +4,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
-import com.r.picturechargingedit.model.ChangesModel
-import com.r.picturechargingedit.model.PathModel
 import com.r.picturechargingedit.model.RectModel
 import kotlin.math.sqrt
 
@@ -20,7 +18,6 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     private var rectModelsToDraw = listOf<RectModel>()
 
     private val pathPaint = Paint()
-    private var rectRadius = 0f
     private var rectPixelBuffer = IntArrayBuffer()
 
 
@@ -31,24 +28,21 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     }
 
 
-    fun drawChangesOnCanvas(changes: ChangesModel, canvas: Canvas) {
-        val radius = canvas.calculateBlurRectRadius()
-        val rectModelsToDraw = changes.calculateBlurRects(radius)
-        onDraw(rectModelsToDraw, canvas)
+    fun drawChangesOnCanvas(changes: List<RectModel>, canvas: Canvas) {
+        onDraw(changes, canvas)
     }
 
 
-    fun showPaths(changes: ChangesModel) {
-        rectModelsToDraw = changes.calculateBlurRects(rectRadius)
+    fun showPaths(changes: List<RectModel>) {
+        rectModelsToDraw = changes
     }
 
     fun onDraw(canvas: Canvas) {
         onDraw(rectModelsToDraw, canvas)
     }
 
-    private fun onDraw(rectModelsToDraw: List<RectModel>, canvas: Canvas) {
-        rectRadius = canvas.calculateBlurRectRadius()
 
+    private fun onDraw(rectModelsToDraw: List<RectModel>, canvas: Canvas) {
         for(model in rectModelsToDraw) {
             for(rect in model.getRects()) {
                 pathPaint.color = rect.getColor()
@@ -57,14 +51,6 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
         }
     }
 
-
-    private fun PathModel.toRectModel(rectRadius: Float): RectModel {
-        val model = RectModel()
-        for(point in this.getPoints()) {
-            model.add(point[0], point[1], rectRadius)
-        }
-        return model
-    }
 
     private fun RectF.getColor(): Int {
         val width = this.width().toInt()
@@ -99,14 +85,6 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
             sqrt(g/pixels.size).toInt(),
             sqrt(b/pixels.size).toInt()
         )
-    }
-
-    private fun Canvas.calculateBlurRectRadius(): Float {
-        return (width+height)/200f
-    }
-
-    private fun ChangesModel.calculateBlurRects(rectRadius: Float): List<RectModel> {
-        return getPaths().map { it.toRectModel(rectRadius) }
     }
 
 
