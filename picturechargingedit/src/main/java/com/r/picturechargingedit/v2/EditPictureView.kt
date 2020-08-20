@@ -7,6 +7,7 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.r.picturechargingedit.drawers.DrawerArgs
 import com.r.picturechargingedit.drawers.DrawerBitmap
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
 import com.r.picturechargingedit.model.ChangesModel
@@ -28,8 +29,9 @@ class EditPictureView : View, EditPicture {
         defStyleAttr
     )
 
-    private val drawerBitmap = DrawerBitmap(this)
-    private val drawerPixelatedPath = DrawerPixelatedPath(this)
+    private val drawerArgs = DrawerArgs(this)
+    private val drawerBitmap = DrawerBitmap(drawerArgs)
+    private val drawerPixelatedPath = DrawerPixelatedPath(drawerArgs)
 
     private var presenter: EditPicturePresenter? = null
 
@@ -75,11 +77,12 @@ class EditPictureView : View, EditPicture {
     }
 
     override fun getShownBitmap(): Bitmap? {
-        return drawerBitmap.pictureBitmap
+        return drawerArgs.bitmap
     }
 
     override fun showBitmap(bitmap: Bitmap) = handler.run {
-        drawerBitmap.showBitmap(bitmap)
+        drawerArgs.bitmap = bitmap
+        invalidate()
     }
 
     override fun applyChanges(changesModel: ChangesModel, bitmap: Bitmap) = handler.run {
@@ -91,6 +94,7 @@ class EditPictureView : View, EditPicture {
 
     override fun showChanges(changesModel: ChangesModel) = handler.run {
         drawerPixelatedPath.showPaths(changesModel.getPixelatedPaths())
+        invalidate()
     }
 
 }

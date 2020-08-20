@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import com.r.picturechargingedit.model.PathModel
-import com.r.picturechargingedit.v2.EditPictureView
 import kotlin.math.abs
 
 /**
@@ -14,7 +13,7 @@ import kotlin.math.abs
  * Created: 18.08.20
  */
 
-class DrawerPixelatedPath(private val view: EditPictureView) {
+class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
     companion object {
         private const val TOUCH_TOLERANCE = 4
@@ -59,7 +58,6 @@ class DrawerPixelatedPath(private val view: EditPictureView) {
 
     fun showPaths(pathModels: List<PathModel>) {
         paths = pathModels.map { it.createPath() }
-        view.invalidate()
     }
 
     fun drawBlurPath(canvas: Canvas) {
