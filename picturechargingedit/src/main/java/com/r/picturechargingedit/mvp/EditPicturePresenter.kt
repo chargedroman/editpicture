@@ -71,8 +71,14 @@ class EditPicturePresenter(
      * result to [originalPicture] (while keeping exif data)
      */
     override fun savePicture() = completable {
+
+        if(changesModel.size() == 0) {
+            return@completable
+        }
+
         val allChanges = changesModel
         changesModel = ChangesModel()
+
         val edited = getView()?.commitChanges(allChanges) ?: return@completable
         editIO.savePicture(originalPicture, edited)
         getView()?.showBitmap(edited)
