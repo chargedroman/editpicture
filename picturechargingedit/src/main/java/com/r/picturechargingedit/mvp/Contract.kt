@@ -24,7 +24,7 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
      */
 
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
-    fun undoLastAction()
+    fun undoLastAction(undoAll: Boolean = false)
 
     fun editPicture(): Completable
     fun savePicture(): Completable

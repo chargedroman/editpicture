@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getImageCacheUri(): Uri {
         val internalDir = application.filesDir
-        val file = File(internalDir, "CapturedImage")
+        val file = File(internalDir, "CapturedImage.jpg")
         val authority = BuildConfig.APPLICATION_ID + ".fileprovider"
         return FileProvider.getUriForFile(application, authority, file)
     }

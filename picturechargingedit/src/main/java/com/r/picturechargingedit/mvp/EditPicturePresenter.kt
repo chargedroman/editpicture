@@ -36,14 +36,18 @@ class EditPicturePresenter(
     /**
      * if there was at least one change applied to the picture by the user, deletes the last change
      */
-    override fun undoLastAction() {
-        changesModel.undoLastAction()
+    override fun undoLastAction(undoAll: Boolean) {
+        if(undoAll) {
+            changesModel.clear()
+        } else {
+            changesModel.undoLastAction()
+        }
         getView()?.showChanges(changesModel)
         updateCanUndo()
     }
 
     /**
-     * updates the current operating [Mode]
+     * updates the current operating [EditPictureMode]
      */
     override fun setMode(mode: EditPictureMode, clearChanges: Boolean) {
         mMode.postValue(mode)
@@ -58,6 +62,7 @@ class EditPicturePresenter(
      */
     override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
+        changesModel.clear()
         getView()?.showBitmap(bitmap)
     }
 
@@ -67,10 +72,10 @@ class EditPicturePresenter(
      */
     override fun savePicture() = completable {
         val allChanges = changesModel
+        changesModel = ChangesModel()
         val edited = getView()?.commitChanges(allChanges) ?: return@completable
         editIO.savePicture(originalPicture, edited)
-        changesModel = ChangesModel()
-        getView()?.showChanges(changesModel)
+        getView()?.showBitmap(edited)
         updateCanUndo()
     }
 
