@@ -3,10 +3,11 @@ package com.r.picturechargingedit.drawers
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.RectF
 import com.r.picturechargingedit.model.ChangesModel
 import com.r.picturechargingedit.model.PathModel
-import kotlin.math.abs
+import com.r.picturechargingedit.model.RectModel
+import kotlin.math.sqrt
 
 /**
  *
@@ -20,67 +21,76 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
         private const val TOUCH_TOLERANCE = 4
     }
 
-    private var paths = listOf<Path>()
+    private var rectModelsToDraw = listOf<RectModel>()
 
     private val pathPaint = Paint()
+    private var radius = 0f
 
 
     init {
         pathPaint.color = Color.WHITE
-        pathPaint.style = Paint.Style.STROKE
-        pathPaint.strokeJoin = Paint.Join.ROUND
-        pathPaint.strokeCap = Paint.Cap.ROUND
-        pathPaint.strokeWidth = 20f
+        pathPaint.style = Paint.Style.FILL
+        pathPaint.strokeCap = Paint.Cap.SQUARE
     }
 
 
     fun applyChanges(changes: ChangesModel, canvas: Canvas) {
-        val paths = changes.getPixelatedPaths().map { it.createPath() }
-        for(path in paths) {
-            canvas.drawPath(path, pathPaint)
-        }
+        radius = (canvas.width+canvas.height)/200f
+        showPaths(changes)
+        drawBlurPath(canvas)
     }
 
 
     fun showPaths(changes: ChangesModel) {
-        paths = changes.getPixelatedPaths().map { it.createPath() }
+        rectModelsToDraw = changes.getPixelatedPaths().map { it.toRectModel() }
     }
 
     fun drawBlurPath(canvas: Canvas) {
-        for(path in paths) {
-            canvas.drawPath(path, pathPaint)
+        radius = (canvas.width+canvas.height)/200f
+        for(model in rectModelsToDraw) {
+            for(rect in model.getRects()) {
+                pathPaint.color = rect.getColor()
+                canvas.drawRect(rect, pathPaint)
+            }
         }
     }
 
-
-    private fun PathModel.createPath(): Path {
-        if(getPoints().isEmpty()) return Path()
-
-        val path = Path()
-
-        var previousPoint = getPoints().first()
-        path.moveTo(previousPoint[0], previousPoint[1])
-
-        for(nextPoint in getPoints()) {
-            addCurve(path, previousPoint, nextPoint)
-            previousPoint = nextPoint
+    private fun PathModel.toRectModel(): RectModel {
+        val model = RectModel()
+        for(point in this.getPoints()) {
+            model.add(point[0], point[1], radius)
         }
-
-        return path
+        return model
     }
 
-    private fun addCurve(path: Path, previous: FloatArray, next: FloatArray) {
-        val dx: Float = abs(next[0] - previous[0])
-        val dy: Float = abs(next[1] - previous[1])
+    private fun RectF.getColor(): Int {
+        val width = this.width().toInt()
+        val height = this.height().toInt()
+        val centerX = this.centerX().toInt()
+        val centerY = this.centerY().toInt()
+        val pixels = IntArray(width*height)
+        drawerArgs.bitmap?.getPixels(pixels, 0, width, centerX, centerY, width, height)
 
-        if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-            path.quadTo(
-                previous[0],
-                previous[1],
-                (next[0] + previous[0])/2,
-                (next[1] + previous[1])/2
-            )
-        }
+        return calculateAverageColor(pixels)
     }
+
+    private fun calculateAverageColor(pixels: IntArray): Int {
+        var r = 0.0
+        var g = 0.0
+        var b = 0.0
+
+        for(pixelColor in pixels) {
+            r += Color.red(pixelColor) * Color.red(pixelColor)
+            g += Color.green(pixelColor) * Color.green(pixelColor)
+            b += Color.blue(pixelColor) * Color.blue(pixelColor)
+        }
+
+        return Color.rgb(
+            sqrt(r/pixels.size).toInt(),
+            sqrt(g/pixels.size).toInt(),
+            sqrt(b/pixels.size).toInt()
+        )
+    }
+
 
 }
