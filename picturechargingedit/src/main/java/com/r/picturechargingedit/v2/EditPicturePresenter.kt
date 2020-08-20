@@ -22,10 +22,12 @@ class EditPicturePresenter(
 
     val isLoading: LiveData<Boolean> get() = mIsLoading
     val canUndo: LiveData<Boolean> get() = mCanUndo
+    val mode: LiveData<Mode> get() = mMode
 
 
     private val mIsLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val mMode: MutableLiveData<Mode> = MutableLiveData(Mode.NONE)
 
     private var changesModel: ChangesModel = ChangesModel()
     private val lock = Object()
@@ -38,6 +40,17 @@ class EditPicturePresenter(
         changesModel.undoLastAction()
         getView()?.showChanges(changesModel)
         updateCanUndo()
+    }
+
+    /**
+     * updates the current operating [Mode]
+     */
+    fun setMode(mode: Mode, clearChanges: Boolean = false) {
+        mMode.postValue(mode)
+        if(clearChanges) {
+            changesModel.clear()
+            getView()?.showChanges(changesModel)
+        }
     }
 
     /**
@@ -63,12 +76,14 @@ class EditPicturePresenter(
 
 
     fun startRecordingDraw(x: Float, y: Float) {
+        if(mMode.value == Mode.NONE) return
         changesModel.startRecordingDraw(x, y)
         getView()?.showChanges(changesModel)
         updateCanUndo()
     }
 
     fun continueRecordingDraw(x: Float, y: Float) {
+        if(mMode.value == Mode.NONE) return
         changesModel.continueRecordingDraw(x, y)
         getView()?.showChanges(changesModel)
         updateCanUndo()
@@ -97,6 +112,11 @@ class EditPicturePresenter(
             val ioUtil = EditPictureIO(context)
             return EditPicturePresenter(originalPicture, ioUtil)
         }
+    }
+
+    enum class Mode {
+        NONE,
+        PIXELATE
     }
 
 }

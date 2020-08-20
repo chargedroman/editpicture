@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         presenter = EditPicturePresenter.Factory(this).create(getImageCacheUri())
         editView.setEditPicturePresenter(presenter)
 
+        presenter.setMode(EditPicturePresenter.Mode.PIXELATE)
+
         showPicture()
     }
 
