@@ -13,7 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.r.picturechargingedit.mvp.EditPicturePresenter
+import com.r.picturechargingedit.mvp.BaseEditPicturePresenter
+import com.r.picturechargingedit.mvp.EditPictureMode
 import com.r.picturechargingedit.mvp.EditPictureView
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var editView: EditPictureView
     lateinit var btnTakePhoto: Button
-    lateinit var presenter: EditPicturePresenter
+    lateinit var presenter: BaseEditPicturePresenter
 
     private val disposables = CompositeDisposable()
 
@@ -35,10 +36,10 @@ class MainActivity : AppCompatActivity() {
         editView = findViewById(R.id.view_edit)
         btnTakePhoto = findViewById(R.id.btn_take_photo)
 
-        presenter = EditPicturePresenter.Factory(this).create(getImageCacheUri())
+        presenter = BaseEditPicturePresenter.Factory(this).create(getImageCacheUri())
         editView.setEditPicturePresenter(presenter)
 
-        presenter.setMode(EditPicturePresenter.Mode.PIXELATE)
+        presenter.setMode(EditPictureMode.PIXELATE)
 
         showPicture()
     }

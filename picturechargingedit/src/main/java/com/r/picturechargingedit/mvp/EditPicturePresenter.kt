@@ -1,10 +1,8 @@
 package com.r.picturechargingedit.mvp
 
-import android.content.Context
 import android.net.Uri
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.r.picturechargingedit.arch.BasePresenter
+import com.r.picturechargingedit.arch.Presenter
 import com.r.picturechargingedit.io.EditPictureIO
 import com.r.picturechargingedit.model.ChangesModel
 import io.reactivex.Completable
@@ -18,16 +16,16 @@ import io.reactivex.Completable
 class EditPicturePresenter(
     private val originalPicture: Uri,
     private val editIO: EditPictureIO
-) : BasePresenter<EditPicture>() {
-
-    val isLoading: LiveData<Boolean> get() = mIsLoading
-    val canUndo: LiveData<Boolean> get() = mCanUndo
-    val mode: LiveData<Mode> get() = mMode
+) : Presenter<BaseEditPictureView>(), BaseEditPicturePresenter {
 
 
     private val mIsLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val mMode: MutableLiveData<Mode> = MutableLiveData(Mode.NONE)
+    private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
+
+    override fun isLoading() = mIsLoading
+    override fun getCanUndo() = mCanUndo
+    override fun getMode() = mMode
 
     private var changesModel: ChangesModel = ChangesModel()
     private val lock = Object()
@@ -36,7 +34,7 @@ class EditPicturePresenter(
     /**
      * if there was at least one change applied to the picture by the user, deletes the last change
      */
-    fun undoLastAction() {
+    override fun undoLastAction() {
         changesModel.undoLastAction()
         getView()?.showChanges(changesModel)
         updateCanUndo()
@@ -45,7 +43,7 @@ class EditPicturePresenter(
     /**
      * updates the current operating [Mode]
      */
-    fun setMode(mode: Mode, clearChanges: Boolean = false) {
+    override fun setMode(mode: EditPictureMode, clearChanges: Boolean) {
         mMode.postValue(mode)
         if(clearChanges) {
             changesModel.clear()
@@ -56,7 +54,7 @@ class EditPicturePresenter(
     /**
      * loads the [originalPicture] and presents it
      */
-    fun editPicture() = completable {
+    override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
         getView()?.showBitmap(bitmap)
     }
@@ -65,7 +63,7 @@ class EditPicturePresenter(
      * applies all changes to the currently loaded bitmap and saves the
      * result to [originalPicture] (while keeping exif data)
      */
-    fun savePicture() = completable {
+    override fun savePicture() = completable {
         val allChanges = changesModel
         val edited = getView()?.commitChanges(allChanges) ?: return@completable
         editIO.savePicture(originalPicture, edited)
@@ -75,15 +73,15 @@ class EditPicturePresenter(
     }
 
 
-    fun startRecordingDraw(x: Float, y: Float) {
-        if(mMode.value == Mode.NONE) return
+    override fun startRecordingDraw(x: Float, y: Float) {
+        if(mMode.value == EditPictureMode.NONE) return
         changesModel.startRecordingDraw(x, y)
         getView()?.showChanges(changesModel)
         updateCanUndo()
     }
 
-    fun continueRecordingDraw(x: Float, y: Float) {
-        if(mMode.value == Mode.NONE) return
+    override fun continueRecordingDraw(x: Float, y: Float) {
+        if(mMode.value == EditPictureMode.NONE) return
         changesModel.continueRecordingDraw(x, y)
         getView()?.showChanges(changesModel)
         updateCanUndo()
@@ -95,8 +93,9 @@ class EditPicturePresenter(
     }
 
 
+
     /**
-     * utility to handle loading progress
+     * utility to handling loading progress
      */
     private fun completable(block: () -> Unit): Completable = Completable.fromAction {
         synchronized(lock) {
@@ -105,18 +104,5 @@ class EditPicturePresenter(
         }
     }.doFinally { mIsLoading.postValue(false) }
 
-
-
-    class Factory(private val context: Context) {
-        fun create(originalPicture: Uri): EditPicturePresenter {
-            val ioUtil = EditPictureIO(context)
-            return EditPicturePresenter(originalPicture, ioUtil)
-        }
-    }
-
-    enum class Mode {
-        NONE,
-        PIXELATE
-    }
 
 }

@@ -19,7 +19,7 @@ import com.r.picturechargingedit.model.ChangesModel
  */
 
 @SuppressLint("ClickableViewAccessibility")
-class EditPictureView : View, EditPicture {
+class EditPictureView : View, BaseEditPictureView {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -33,10 +33,10 @@ class EditPictureView : View, EditPicture {
     private val drawerBitmap = DrawerBitmap(drawerArgs)
     private val drawerPixelatedPath = DrawerPixelatedPath(drawerArgs)
 
-    private var presenter: EditPicturePresenter? = null
+    private var presenter: BaseEditPicturePresenter? = null
 
 
-    fun setEditPicturePresenter(presenter: EditPicturePresenter) {
+    fun setEditPicturePresenter(presenter: BaseEditPicturePresenter) {
         this.presenter = presenter
         presenter.attach(this)
     }
