@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.LiveData
+import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
 import com.r.picturechargingedit.arch.BaseView
 import com.r.picturechargingedit.io.EditPictureIO

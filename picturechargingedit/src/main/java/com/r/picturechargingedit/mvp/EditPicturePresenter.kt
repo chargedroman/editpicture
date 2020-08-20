@@ -2,6 +2,7 @@ package com.r.picturechargingedit.mvp
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
 import com.r.picturechargingedit.io.EditPictureIO
 import com.r.picturechargingedit.model.ChangesModel
@@ -21,7 +22,8 @@ class EditPicturePresenter(
 
     private val mIsLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
+    private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(
+        EditPictureMode.NONE)
 
     override fun isLoading() = mIsLoading
     override fun getCanUndo() = mCanUndo

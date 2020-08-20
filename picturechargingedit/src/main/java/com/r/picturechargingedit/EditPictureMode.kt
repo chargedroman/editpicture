@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.mvp
+package com.r.picturechargingedit
 
 /**
  *
