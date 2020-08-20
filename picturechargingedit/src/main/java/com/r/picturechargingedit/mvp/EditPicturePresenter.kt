@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.v2
+package com.r.picturechargingedit.mvp
 
 import android.content.Context
 import android.net.Uri

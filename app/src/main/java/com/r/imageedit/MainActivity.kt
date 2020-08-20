@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.r.picturechargingedit.v2.EditPicturePresenter
-import com.r.picturechargingedit.v2.EditPictureView
+import com.r.picturechargingedit.mvp.EditPicturePresenter
+import com.r.picturechargingedit.mvp.EditPictureView
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers

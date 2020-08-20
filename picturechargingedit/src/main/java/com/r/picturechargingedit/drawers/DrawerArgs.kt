@@ -2,7 +2,7 @@ package com.r.picturechargingedit.drawers
 
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import com.r.picturechargingedit.v2.EditPictureView
+import com.r.picturechargingedit.mvp.EditPictureView
 
 /**
  *

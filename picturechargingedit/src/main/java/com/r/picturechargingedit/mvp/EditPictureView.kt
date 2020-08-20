@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.v2
+package com.r.picturechargingedit.mvp
 
 import android.annotation.SuppressLint
 import android.content.Context

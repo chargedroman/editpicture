@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.v2
+package com.r.picturechargingedit.mvp
 
 import android.graphics.Bitmap
 import com.r.picturechargingedit.arch.BaseView
