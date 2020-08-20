@@ -50,7 +50,6 @@ class EditPictureView : View, EditPicture {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawerArgs.radius = canvas.getRadius()
         drawerBitmap.onDraw(canvas)
         drawerPixelatedPath.onDraw(canvas)
     }
@@ -90,15 +89,14 @@ class EditPictureView : View, EditPicture {
         val canvas = Canvas(bitmap)
         val matrix = drawerArgs.createInvertedMatrix()
 
+        val radius = matrix.mapRadius(drawerArgs.radius)
         changesModel.mapAllCoordinates(matrix)
-        val changes = changesModel.getRectModels(canvas.getRadius())
+
+        val changes = changesModel.getRectModels(radius)
         drawerPixelatedPath.drawChangesOnCanvas(changes, canvas)
 
         return@run bitmap
     }
 
-    private fun Canvas.getRadius(): Float {
-        return (width+height)/160f
-    }
 
 }
