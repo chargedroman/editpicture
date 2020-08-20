@@ -31,19 +31,23 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     }
 
 
-    fun applyChanges(changes: ChangesModel, canvas: Canvas) {
-        rectRadius = (canvas.width+canvas.height)/200f
-        showPaths(changes)
-        drawBlurPath(canvas)
+    fun drawChangesOnCanvas(changes: ChangesModel, canvas: Canvas) {
+        val radius = canvas.calculateBlurRectRadius()
+        val rectModelsToDraw = changes.calculateBlurRects(radius)
+        onDraw(rectModelsToDraw, canvas)
     }
 
 
     fun showPaths(changes: ChangesModel) {
-        rectModelsToDraw = changes.getPixelatedPaths().map { it.toRectModel() }
+        rectModelsToDraw = changes.calculateBlurRects(rectRadius)
     }
 
     fun drawBlurPath(canvas: Canvas) {
-        rectRadius = (canvas.width+canvas.height)/200f
+        onDraw(rectModelsToDraw, canvas)
+    }
+
+    private fun onDraw(rectModelsToDraw: List<RectModel>, canvas: Canvas) {
+        rectRadius = canvas.calculateBlurRectRadius()
         for(model in rectModelsToDraw) {
             for(rect in model.getRects()) {
                 pathPaint.color = rect.getColor()
@@ -52,7 +56,8 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
         }
     }
 
-    private fun PathModel.toRectModel(): RectModel {
+
+    private fun PathModel.toRectModel(rectRadius: Float): RectModel {
         val model = RectModel()
         for(point in this.getPoints()) {
             model.add(point[0], point[1], rectRadius)
@@ -65,9 +70,15 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
         val height = this.height().toInt()
         val centerX = this.centerX().toInt()
         val centerY = this.centerY().toInt()
-        val pixelBuffer = rectPixelBuffer.get(width*height)
 
-        drawerArgs.bitmap?.getPixels(pixelBuffer, 0, width, centerX, centerY, width, height)
+        val pixelBuffer = try {
+            val buffer = rectPixelBuffer.get(width*height)
+            drawerArgs.bitmap?.getPixels(buffer, 0, width, centerX, centerY, width, height)
+            buffer
+        } catch (e: IllegalArgumentException) {
+            return Color.TRANSPARENT
+        }
+
         return calculateAverageColor(pixelBuffer)
     }
 
@@ -87,6 +98,14 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
             sqrt(g/pixels.size).toInt(),
             sqrt(b/pixels.size).toInt()
         )
+    }
+
+    private fun Canvas.calculateBlurRectRadius(): Float {
+        return (width+height)/200f
+    }
+
+    private fun ChangesModel.calculateBlurRects(rectRadius: Float): List<RectModel> {
+        return getPixelatedPaths().map { it.toRectModel(rectRadius) }
     }
 
 

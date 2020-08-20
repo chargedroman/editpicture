@@ -92,7 +92,7 @@ class EditPictureView : View, EditPicture {
         val canvas = Canvas(bitmap)
         val matrix = drawerArgs.createInvertedMatrix()
         changesModel.mapAllCoordinates(matrix)
-        drawerPixelatedPath.applyChanges(changesModel, canvas)
+        drawerPixelatedPath.drawChangesOnCanvas(changesModel, canvas)
         return@run bitmap
     }
 
