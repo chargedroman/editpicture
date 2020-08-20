@@ -1,9 +1,6 @@
 package com.r.picturechargingedit.drawers
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
 import com.r.picturechargingedit.model.PathModel
 import kotlin.math.abs
 
@@ -34,25 +31,28 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
 
     fun applyPixelatedChanges(changes: List<PathModel>, canvas: Canvas) {
-        val scaleX = 1f
-        val scaleY = 1f
-        val mappedChanges = changes.map { it.scaleCoordinates(scaleX, scaleY) }
+        val invertedMatrix = Matrix()
+        drawerArgs.matrix.invert(invertedMatrix)
+
+        val mappedChanges = changes.map { it.scaleCoordinates(invertedMatrix) }
         val paths = mappedChanges.map { it.createPath() }
         for(path in paths) {
             canvas.drawPath(path, pathPaint)
         }
     }
 
-    private fun PathModel.scaleCoordinates(scaleX: Float, scaleY: Float): PathModel {
+    private fun PathModel.scaleCoordinates(matrix: Matrix): PathModel {
         val model = PathModel()
         for(point in this.points) {
-            model.add(point.scalePoint(scaleX, scaleY))
+            model.add(point.scalePoint(matrix))
         }
         return model
     }
 
-    private fun Pair<Float, Float>.scalePoint(scaleX: Float, scaleY: Float): Pair<Float, Float> {
-        return Pair(this.first*scaleX, this.second*scaleY)
+    private fun Pair<Float, Float>.scalePoint(matrix: Matrix): Pair<Float, Float> {
+        val array = floatArrayOf(this.first, this.second)
+        matrix.mapPoints(array)
+        return Pair(array[0], array[1])
     }
 
 
