@@ -15,6 +15,12 @@ class ChangesModel {
     private var currentPath = PathModel()
 
 
+
+    fun getPaths(): List<PathModel> {
+        return paths
+    }
+
+
     fun mapAllCoordinates(matrix: Matrix) {
         for(path in paths) {
             for(point in path.getPoints()) {
@@ -23,10 +29,6 @@ class ChangesModel {
         }
     }
 
-
-    fun getPixelatedPaths(): List<PathModel> {
-        return paths
-    }
 
     fun undoLastAction(): Boolean {
         val canRemove = !paths.isEmpty()

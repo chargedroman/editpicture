@@ -106,7 +106,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     }
 
     private fun ChangesModel.calculateBlurRects(rectRadius: Float): List<RectModel> {
-        return getPixelatedPaths().map { it.toRectModel(rectRadius) }
+        return getPaths().map { it.toRectModel(rectRadius) }
     }
 
 
