@@ -17,14 +17,11 @@ import kotlin.math.sqrt
 
 class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
-    companion object {
-        private const val TOUCH_TOLERANCE = 4
-    }
-
     private var rectModelsToDraw = listOf<RectModel>()
 
     private val pathPaint = Paint()
-    private var radius = 0f
+    private var rectRadius = 0f
+    private var rectPixelBuffer = IntArrayBuffer()
 
 
     init {
@@ -35,7 +32,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
 
     fun applyChanges(changes: ChangesModel, canvas: Canvas) {
-        radius = (canvas.width+canvas.height)/200f
+        rectRadius = (canvas.width+canvas.height)/200f
         showPaths(changes)
         drawBlurPath(canvas)
     }
@@ -46,7 +43,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     }
 
     fun drawBlurPath(canvas: Canvas) {
-        radius = (canvas.width+canvas.height)/200f
+        rectRadius = (canvas.width+canvas.height)/200f
         for(model in rectModelsToDraw) {
             for(rect in model.getRects()) {
                 pathPaint.color = rect.getColor()
@@ -58,7 +55,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     private fun PathModel.toRectModel(): RectModel {
         val model = RectModel()
         for(point in this.getPoints()) {
-            model.add(point[0], point[1], radius)
+            model.add(point[0], point[1], rectRadius)
         }
         return model
     }
@@ -68,10 +65,10 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
         val height = this.height().toInt()
         val centerX = this.centerX().toInt()
         val centerY = this.centerY().toInt()
-        val pixels = IntArray(width*height)
-        drawerArgs.bitmap?.getPixels(pixels, 0, width, centerX, centerY, width, height)
+        val pixelBuffer = rectPixelBuffer.get(width*height)
 
-        return calculateAverageColor(pixels)
+        drawerArgs.bitmap?.getPixels(pixelBuffer, 0, width, centerX, centerY, width, height)
+        return calculateAverageColor(pixelBuffer)
     }
 
     private fun calculateAverageColor(pixels: IntArray): Int {
@@ -92,5 +89,26 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
         )
     }
 
+
+    /**
+     * to minimize object allocations during onDraw
+     */
+    private class IntArrayBuffer {
+
+        private val map = mutableMapOf<Int, IntArray>()
+
+        fun get(size: Int): IntArray {
+            val array = map[size]
+
+            if(array == null) {
+                val a = IntArray(size)
+                map[size] = a
+                return a
+            }
+
+            return array
+        }
+
+    }
 
 }
