@@ -98,7 +98,7 @@ class EditPictureView : View, EditPicture {
     }
 
     private fun Canvas.getRadius(): Float {
-        return (width+height)/200f
+        return (width+height)/160f
     }
 
 }

@@ -30,6 +30,11 @@ class ChangesModel {
     }
 
 
+    fun size(): Int {
+        return paths.size
+    }
+
+
 
     fun startRecordingDraw(x: Float, y: Float) {
         val newPath = PathModel()
@@ -42,13 +47,9 @@ class ChangesModel {
         currentPath.add(x, y)
     }
 
-    fun undoLastAction(): Boolean {
+    fun undoLastAction() {
         val canRemove = !paths.isEmpty()
-
-        if(canRemove)
-            paths.removeLast()
-
-        return canRemove
+        if(canRemove) paths.removeLast()
     }
 
 
