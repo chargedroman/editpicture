@@ -42,12 +42,13 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
         rectModelsToDraw = changes.calculateBlurRects(rectRadius)
     }
 
-    fun drawBlurPath(canvas: Canvas) {
+    fun onDraw(canvas: Canvas) {
         onDraw(rectModelsToDraw, canvas)
     }
 
     private fun onDraw(rectModelsToDraw: List<RectModel>, canvas: Canvas) {
         rectRadius = canvas.calculateBlurRectRadius()
+
         for(model in rectModelsToDraw) {
             for(rect in model.getRects()) {
                 pathPaint.color = rect.getColor()

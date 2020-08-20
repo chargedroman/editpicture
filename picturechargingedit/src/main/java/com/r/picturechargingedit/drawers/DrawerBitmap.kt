@@ -16,7 +16,7 @@ class DrawerBitmap(private val drawerArgs: DrawerArgs) {
     private val dest = RectF(0f, 0f, 0f, 0f)
 
 
-    fun drawPictureBitmap(canvas: Canvas) {
+    fun onDraw(canvas: Canvas) {
         val bitmap = drawerArgs.bitmap ?: return
         val matrix = drawerArgs.matrix
 

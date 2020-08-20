@@ -2,8 +2,6 @@ package com.r.picturechargingedit.model
 
 import android.graphics.RectF
 import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 /**
  *
@@ -95,9 +93,5 @@ class RectModel {
         return this.top > rectF.bottom
     }
 
-
-    private fun distance(x1: Float, y1: Float, x2: Float, y2: Float): Float {
-        return sqrt((x2 - x1).pow(2f) - (y2 - y1).pow(2f))
-    }
 
 }

@@ -50,11 +50,8 @@ class EditPictureView : View, EditPicture {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
-        canvas.apply {
-            drawerBitmap.drawPictureBitmap(this)
-            drawerPixelatedPath.drawBlurPath(this)
-        }
+        drawerBitmap.onDraw(canvas)
+        drawerPixelatedPath.onDraw(canvas)
     }
 
 
