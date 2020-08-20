@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <com.r.picturechargingedit.EditPictureView
+    <com.r.picturechargingedit.mvp.EditPictureView
         android:id="@+id/view_edit"
         android:layout_width="0dp"
         android:layout_height="0dp"

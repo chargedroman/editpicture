@@ -5,22 +5,29 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import com.r.picturechargingedit.EditPictureView
-import com.r.picturechargingedit.model.EditPictureResultArgs
+import com.r.picturechargingedit.EditPictureMode
+import com.r.picturechargingedit.mvp.BaseEditPicturePresenter
+import com.r.picturechargingedit.mvp.EditPictureView
+import io.reactivex.Completable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var editView: EditPictureView
     lateinit var btnTakePhoto: Button
+    lateinit var presenter: BaseEditPicturePresenter
+
+    private val disposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,30 +36,51 @@ class MainActivity : AppCompatActivity() {
         editView = findViewById(R.id.view_edit)
         btnTakePhoto = findViewById(R.id.btn_take_photo)
 
-        editView.onPictureSelected(getImageCacheUri())
+        presenter = BaseEditPicturePresenter.Factory(this).create(getImageCacheUri())
+        editView.setEditPicturePresenter(presenter)
+
+        presenter.setMode(EditPictureMode.PIXELATE)
+
+        showPicture()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.dispose()
+    }
 
     fun onTakePhotoClicked(view: View) {
         takePictureAndOpenItInEditView()
     }
 
     fun onUndoLastActionClicked(view: View) {
-        editView.undoLastAction()
+        presenter.undoLastAction()
     }
 
     fun onSaveResultClicked(view: View) {
-        val uri = getImageCacheUri()
-        val args = EditPictureResultArgs(uri, { println("yay!") }, { println("oops!") })
-        editView.onSaveResultClicked(args)
+        savePicture()
     }
 
+
+    private fun showPicture() {
+        presenter.editPicture().sub(
+            { println("CHAR: edit!") },
+            { println("CHAR: ${it.toString()}")}
+        )
+    }
+
+    private fun savePicture() {
+        presenter.savePicture().sub(
+            { println("CHAR: saved") },
+            { println("CHAR: ${it.toString()}")}
+        )
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if(resultCode == Activity.RESULT_OK) {
-            editView.onPictureSelected(getImageCacheUri())
+            showPicture()
         }
     }
 
@@ -89,9 +117,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun getImageCacheUri(): Uri {
         val internalDir = application.filesDir
-        val file = File(internalDir, "CapturedImage")
+        val file = File(internalDir, "CapturedImage.jpg")
         val authority = BuildConfig.APPLICATION_ID + ".fileprovider"
         return FileProvider.getUriForFile(application, authority, file)
+    }
+
+
+    private fun Completable.sub(success: () -> Unit, error: (Throwable) -> Unit) {
+        val disposable = this.subscribeOn(Schedulers.io()).subscribe(success, error)
+        disposables.add(disposable)
     }
 
 }

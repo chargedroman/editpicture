@@ -1,10 +1,8 @@
 package com.r.picturechargingedit.drawers
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.RectF
-import com.r.picturechargingedit.EditPictureView
 
 /**
  *
@@ -12,35 +10,25 @@ import com.r.picturechargingedit.EditPictureView
  * Created: 18.08.20
  */
 
-class DrawerBitmap(private val view: EditPictureView) {
+class DrawerBitmap(private val drawerArgs: DrawerArgs) {
 
-    private var pictureBitmap: Bitmap? = null
-
-    private val matrix = Matrix()
     private val src = RectF(0f, 0f, 0f, 0f)
     private val dest = RectF(0f, 0f, 0f, 0f)
 
 
-    fun onNextBitmap(bitmap: Bitmap) {
-        this.pictureBitmap = bitmap
-        view.invalidate()
-    }
+    fun onDraw(canvas: Canvas) {
+        val bitmap = drawerArgs.bitmap ?: return
 
-    fun drawPictureBitmap(canvas: Canvas) {
-        val bitmap = pictureBitmap ?: return
+        val pictureWidth = bitmap.width.toFloat()
+        val pictureHeight = bitmap.height.toFloat()
+        src.apply { right = pictureWidth; bottom = pictureHeight }
 
-        src.apply {
-            right = bitmap.width.toFloat()
-            bottom = bitmap.height.toFloat()
-        }
+        val viewWidth = drawerArgs.getOriginalViewWidth().toFloat()
+        val viewHeight = drawerArgs.getOriginalViewHeight().toFloat()
+        dest.apply { right = viewWidth; bottom = viewHeight }
 
-        dest.apply {
-            right = view.width.toFloat()
-            bottom = view.height.toFloat()
-        }
-
-        matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
-        canvas.drawBitmap(bitmap, matrix, null)
+        drawerArgs.matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
+        canvas.drawBitmap(bitmap, drawerArgs.matrix, null)
     }
 
 }
