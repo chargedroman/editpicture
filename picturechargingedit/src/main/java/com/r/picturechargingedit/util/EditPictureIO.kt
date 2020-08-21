@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import org.apache.sanselan.Sanselan
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata
 import org.apache.sanselan.formats.jpeg.exifRewrite.ExifRewriter
@@ -35,7 +36,7 @@ class EditPictureIO(private val context: Context) {
             .load(picture)
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .transform(TransformBitmapMaxSize(MAX_SIZE))
+            .downsample(DownsampleStrategy.CENTER_INSIDE)
             .submit(MAX_SIZE, MAX_SIZE)
             .get()
     }
