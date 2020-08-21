@@ -1,12 +1,13 @@
 package com.r.picturechargingedit.mvp
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
+import com.r.picturechargingedit.model.ChangesModel
+import com.r.picturechargingedit.model.PictureModel
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
@@ -25,6 +26,7 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
     fun setRectRadius(rectRadius: Float)
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
 
+    fun getRectRadius(): Float
     fun getCanUndo(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>
 
@@ -39,8 +41,6 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
      */
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun getBitmap(): Bitmap?
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun startRecordingDraw(x: Float, y: Float)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun continueRecordingDraw(x: Float, y: Float)
@@ -50,7 +50,9 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
     class Factory(private val context: Context) {
         fun create(originalPicture: Uri): BaseEditPicturePresenter {
             val ioUtil = EditPictureIO(context)
-            return EditPicturePresenter(originalPicture, ioUtil)
+            val pictureModel = PictureModel()
+            val factory: (Float) -> ChangesModel = { ChangesModel(pictureModel, it) }
+            return EditPicturePresenter(originalPicture, ioUtil, factory)
         }
     }
 

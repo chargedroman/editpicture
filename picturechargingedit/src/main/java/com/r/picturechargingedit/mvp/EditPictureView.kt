@@ -8,9 +8,10 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import com.r.picturechargingedit.drawers.DrawerArgs
-import com.r.picturechargingedit.drawers.DrawerBitmap
+import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
 import com.r.picturechargingedit.model.ChangesModel
+import com.r.picturechargingedit.model.PictureModel
 
 /**
  *
@@ -30,7 +31,7 @@ class EditPictureView : View, BaseEditPictureView {
     )
 
     private val drawerArgs = DrawerArgs(this)
-    private val drawerBitmap = DrawerBitmap(drawerArgs)
+    private val drawerPicture = DrawerPicture(drawerArgs)
     private val drawerPixelatedPath = DrawerPixelatedPath(drawerArgs)
 
     private var presenter: BaseEditPicturePresenter? = null
@@ -54,7 +55,7 @@ class EditPictureView : View, BaseEditPictureView {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawerBitmap.onDraw(canvas)
+        drawerPicture.onDraw(canvas)
         drawerPixelatedPath.onDraw(canvas)
     }
 
@@ -78,8 +79,8 @@ class EditPictureView : View, BaseEditPictureView {
     }
 
 
-    override fun showBitmap(bitmap: Bitmap) {
-        drawerBitmap.showChanges(bitmap)
+    override fun showPicture(pictureModel: PictureModel) {
+        drawerPicture.showChanges(pictureModel)
         post(this::invalidate)
     }
 
@@ -88,16 +89,13 @@ class EditPictureView : View, BaseEditPictureView {
         post(this::invalidate)
     }
 
-    override fun commitChanges(changesModel: ChangesModel): Bitmap? {
-        val bitmap = presenter?.getBitmap() ?: return null
-        val canvas = Canvas(bitmap)
-        val matrix = drawerArgs.createInvertedMatrix()
+    override fun drawChanges(changesModel: ChangesModel): Bitmap? {
 
-        changesModel.mapAllCoordinates(matrix)
-
+        val canvas = changesModel.pictureModel.createCanvas() ?: return null
+        changesModel.invertAllCoordinates()
         drawerPixelatedPath.drawChangesOnCanvas(changesModel, canvas)
 
-        return bitmap
+        return changesModel.pictureModel.bitmap
     }
 
 }

@@ -1,6 +1,5 @@
 package com.r.picturechargingedit.mvp
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
@@ -17,23 +16,23 @@ import io.reactivex.Completable
 
 class EditPicturePresenter(
     private val originalPicture: Uri,
-    private val editIO: EditPictureIO
+    private val editIO: EditPictureIO,
+    private val changesModelFactory: (Float) -> ChangesModel
 ) : Presenter<BaseEditPictureView>(), BaseEditPicturePresenter {
 
     companion object {
-        const val RECT_RADIUS = 20f
+        const val INITIAL_RECT_RADIUS = 20f
     }
 
 
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
-    private var mBitmap: Bitmap? = null
 
+    override fun getRectRadius(): Float = changesModel.getRectRadius()
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
-    override fun getBitmap() = mBitmap
 
-    private var changesModel: ChangesModel = ChangesModel(RECT_RADIUS)
+    private var changesModel: ChangesModel = changesModelFactory(INITIAL_RECT_RADIUS)
 
 
     /**
@@ -73,9 +72,9 @@ class EditPicturePresenter(
      */
     override fun editPicture() = Completable.fromAction {
         val bitmap = editIO.readPictureBitmap(originalPicture)
-        mBitmap = bitmap
         changesModel.clear()
-        getView()?.showBitmap(bitmap)
+        changesModel.pictureModel.bitmap = bitmap
+        getView()?.showPicture(changesModel.pictureModel)
     }
 
     /**
@@ -89,11 +88,13 @@ class EditPicturePresenter(
         }
 
         val allChanges = changesModel
-        changesModel = ChangesModel(allChanges.getRectRadius())
-
-        val edited = getView()?.commitChanges(allChanges) ?: return@fromAction
+        val edited = getView()?.drawChanges(allChanges) ?: return@fromAction
         editIO.savePicture(originalPicture, edited)
-        getView()?.showBitmap(edited)
+
+        changesModel = changesModelFactory(INITIAL_RECT_RADIUS)
+        changesModel.pictureModel.bitmap = edited
+
+        getView()?.showPicture(changesModel.pictureModel)
         getView()?.showChanges(changesModel)
         updateCanUndo()
     }
@@ -113,10 +114,10 @@ class EditPicturePresenter(
         updateCanUndo()
     }
 
+
     override fun attach(view: BaseEditPictureView) {
         super.attach(view)
-        val bitmap = mBitmap ?: return
-        view.showBitmap(bitmap)
+        view.showPicture(changesModel.pictureModel)
     }
 
 

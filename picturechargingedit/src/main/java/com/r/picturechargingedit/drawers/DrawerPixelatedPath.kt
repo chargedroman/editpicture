@@ -24,19 +24,13 @@ class DrawerPixelatedPath(drawerArgs: DrawerArgs): Drawer<ChangesModel>(drawerAr
 
 
     override fun drawChangesOnCanvas(changes: ChangesModel, canvas: Canvas) {
-        calculateColors(changes)
+        changes.calculateColors()
         for(model in changes.getColors()) {
             for((i, rect) in model.rectPathModel.getRects().withIndex()) {
                 pathPaint.color = model.getColors().getOrNull(i) ?: Color.TRANSPARENT
                 canvas.drawRect(rect, pathPaint)
             }
         }
-    }
-
-    private fun calculateColors(changes: ChangesModel) {
-        val bitmap = drawerArgs.getCurrentBitmap() ?: return
-        val matrix = drawerArgs.createInvertedMatrix()
-        changes.calculateColors(bitmap, matrix)
     }
 
 

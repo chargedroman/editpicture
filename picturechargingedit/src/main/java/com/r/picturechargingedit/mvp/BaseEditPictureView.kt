@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.annotation.RestrictTo
 import com.r.picturechargingedit.arch.BaseView
 import com.r.picturechargingedit.model.ChangesModel
+import com.r.picturechargingedit.model.PictureModel
 
 /**
  *
@@ -17,10 +18,10 @@ interface BaseEditPictureView: BaseView {
     fun getPresenter(): BaseEditPicturePresenter?
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun showBitmap(bitmap: Bitmap)
+    fun showPicture(pictureModel: PictureModel)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showChanges(changesModel: ChangesModel)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun commitChanges(changesModel: ChangesModel): Bitmap?
+    fun drawChanges(changesModel: ChangesModel): Bitmap?
 
 }

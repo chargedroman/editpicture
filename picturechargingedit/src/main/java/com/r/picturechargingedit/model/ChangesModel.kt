@@ -1,7 +1,5 @@
 package com.r.picturechargingedit.model
 
-import android.graphics.Bitmap
-import android.graphics.Matrix
 import java.util.*
 
 /**
@@ -10,7 +8,8 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel(initialRectRadius: Float) {
+class ChangesModel(val pictureModel: PictureModel, initialRectRadius: Float) {
+
 
     private val paths = LinkedList<PathModel>()
     private val rects = LinkedList<RectPathModel>()
@@ -31,16 +30,19 @@ class ChangesModel(initialRectRadius: Float) {
     /**
      * sets the colors for each [RectColorModel]
      */
-    fun calculateColors(bitmap: Bitmap, matrix: Matrix) = synchronized(lock) {
+    fun calculateColors() = synchronized(lock) {
+        val bitmap = pictureModel.bitmap ?: return@synchronized
+        val matrix = pictureModel.matrixInverted()
         for(model in colors) {
             model.calculateColors(bitmap, matrix)
         }
     }
 
     /**
-     * maps all path and rect coordinates using the given [matrix]
+     * maps all path and rect coordinates back using the inverted [pictureModel]'s matrix
      */
-    fun mapAllCoordinates(matrix: Matrix) = synchronized(lock) {
+    fun invertAllCoordinates() = synchronized(lock) {
+        val matrix = pictureModel.matrixInverted()
 
         currentRectRadius = matrix.mapRadius(currentRectRadius)
 
