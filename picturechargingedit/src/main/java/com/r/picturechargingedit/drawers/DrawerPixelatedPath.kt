@@ -71,7 +71,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
         val pixelBuffer = try {
             val buffer = rectPixelBuffer.get(width*height)
-            drawerArgs.bitmap?.getPixels(buffer, 0, width, centerX, centerY, width, height)
+            drawerArgs.getCurrentBitmap()?.getPixels(buffer, 0, width, centerX, centerY, width, height)
             buffer
         } catch (e: IllegalArgumentException) {
             return Color.TRANSPARENT

@@ -12,21 +12,18 @@ import com.r.picturechargingedit.mvp.EditPictureView
 
 class DrawerArgs(
     private val view: EditPictureView,
-    val matrix: Matrix = Matrix(),
-    val radius: Float = RECT_RADIUS,
-    var bitmap: Bitmap? = null
+    val matrix: Matrix = Matrix()
 ) {
 
-    companion object {
-        const val RECT_RADIUS = 20f
+    fun getCurrentBitmap(): Bitmap? {
+        return view.getPresenter()?.getBitmap()
     }
 
-
-    fun getOriginalViewWidth(): Int {
+    fun getViewWidth(): Int {
         return view.width
     }
 
-    fun getOriginalViewHeight(): Int {
+    fun getViewHeight(): Int {
         return view.height
     }
 

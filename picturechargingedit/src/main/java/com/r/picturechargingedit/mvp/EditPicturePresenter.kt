@@ -1,5 +1,6 @@
 package com.r.picturechargingedit.mvp
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
@@ -19,17 +20,20 @@ class EditPicturePresenter(
     private val editIO: EditPictureIO
 ) : Presenter<BaseEditPictureView>(), BaseEditPicturePresenter {
 
+    companion object {
+        const val RECT_RADIUS = 20f
+    }
 
-    private val mIsLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(
-        EditPictureMode.NONE)
+    private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
+    private var mBitmap: Bitmap? = null
 
-    override fun isLoading() = mIsLoading
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
+    override fun getBitmap() = mBitmap
 
-    private var changesModel: ChangesModel = ChangesModel()
+    private var changesModel: ChangesModel = ChangesModel(RECT_RADIUS)
     private val lock = Object()
 
 
@@ -62,6 +66,7 @@ class EditPicturePresenter(
      */
     override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
+        mBitmap = bitmap
         changesModel.clear()
         getView()?.showBitmap(bitmap)
     }
@@ -77,7 +82,7 @@ class EditPicturePresenter(
         }
 
         val allChanges = changesModel
-        changesModel = ChangesModel()
+        changesModel = ChangesModel(RECT_RADIUS)
 
         val edited = getView()?.commitChanges(allChanges) ?: return@completable
         editIO.savePicture(originalPicture, edited)
@@ -101,6 +106,12 @@ class EditPicturePresenter(
         updateCanUndo()
     }
 
+    override fun attach(view: BaseEditPictureView) {
+        super.attach(view)
+        val bitmap = mBitmap ?: return
+        view.showBitmap(bitmap)
+    }
+
 
     private fun updateCanUndo() {
         mCanUndo.postValue(changesModel.size() > 0)
@@ -109,14 +120,13 @@ class EditPicturePresenter(
 
 
     /**
-     * utility to handling loading progress
+     * utility to synchronize opening a new picture for editing and saving it
      */
     private fun completable(block: () -> Unit): Completable = Completable.fromAction {
         synchronized(lock) {
-            mIsLoading.postValue(true)
             block()
         }
-    }.doFinally { mIsLoading.postValue(false) }
+    }
 
 
 }

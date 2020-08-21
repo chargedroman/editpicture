@@ -17,14 +17,14 @@ class DrawerBitmap(private val drawerArgs: DrawerArgs) {
 
 
     fun onDraw(canvas: Canvas) {
-        val bitmap = drawerArgs.bitmap ?: return
+        val bitmap = drawerArgs.getCurrentBitmap() ?: return
 
         val pictureWidth = bitmap.width.toFloat()
         val pictureHeight = bitmap.height.toFloat()
         src.apply { right = pictureWidth; bottom = pictureHeight }
 
-        val viewWidth = drawerArgs.getOriginalViewWidth().toFloat()
-        val viewHeight = drawerArgs.getOriginalViewHeight().toFloat()
+        val viewWidth = drawerArgs.getViewWidth().toFloat()
+        val viewHeight = drawerArgs.getViewHeight().toFloat()
         dest.apply { right = viewWidth; bottom = viewHeight }
 
         drawerArgs.matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)

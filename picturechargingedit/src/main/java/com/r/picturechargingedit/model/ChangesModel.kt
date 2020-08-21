@@ -9,7 +9,7 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel {
+class ChangesModel(val initialRectRadius: Float) {
 
     private val paths = LinkedList<PathModel>()
     private var currentPath = PathModel()

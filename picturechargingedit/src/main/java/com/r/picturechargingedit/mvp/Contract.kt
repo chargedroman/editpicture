@@ -39,9 +39,9 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
     /**
      * live data to observe relevant state
      */
-    fun isLoading(): LiveData<Boolean>
     fun getCanUndo(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>
+    fun getBitmap(): Bitmap?
 
 
 
@@ -56,6 +56,7 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
 
 interface BaseEditPictureView: BaseView {
 
+    fun getPresenter(): BaseEditPicturePresenter?
     fun showBitmap(bitmap: Bitmap)
     fun showChanges(changesModel: ChangesModel)
     fun commitChanges(changesModel: ChangesModel): Bitmap?
