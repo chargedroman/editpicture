@@ -20,6 +20,12 @@ class ChangesModel(initialRectRadius: Float) {
     private var currentRectRadius = initialRectRadius
 
 
+    fun getSize(): Int = paths.size
+    fun getPaths(): List<PathModel> = paths
+    fun getRects(): List<RectPathModel> = rects
+    fun getRectRadius(): Float = currentRectRadius
+
+
     /**
      * maps all path coordinates with the given [matrix] and updates all rects
      */
@@ -44,10 +50,6 @@ class ChangesModel(initialRectRadius: Float) {
         updateRectsFromPaths()
     }
 
-    fun getRectRadius(): Float = currentRectRadius
-    fun getSize(): Int = paths.size
-    fun getPaths(): List<PathModel> = paths
-    fun getRects(): List<RectPathModel> = rects
 
     fun clear() = synchronized(lock) {
         paths.clear()
