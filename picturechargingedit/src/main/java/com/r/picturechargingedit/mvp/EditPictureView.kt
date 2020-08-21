@@ -80,7 +80,7 @@ class EditPictureView : View, BaseEditPictureView {
     }
 
     override fun showChanges(changesModel: ChangesModel) {
-        drawerPixelatedPath.showPaths(changesModel.getRectModels(drawerArgs.radius))
+        drawerPixelatedPath.showChanges(changesModel.getRectModels(drawerArgs.radius))
         post(this::invalidate)
     }
 

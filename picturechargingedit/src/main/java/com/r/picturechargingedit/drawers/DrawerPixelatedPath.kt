@@ -16,7 +16,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
     private val pathPaint = Paint()
     private val pointBuffer = FloatArray(2)
-    private var rectPixelBuffer = IntArrayBuffer()
+    private val rectPixelBuffer = IntArrayBuffer()
 
 
     init {
@@ -31,7 +31,7 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     }
 
 
-    fun showPaths(changes: List<RectModel>) {
+    fun showChanges(changes: List<RectModel>) {
         rectModelsToDraw = changes
     }
 
