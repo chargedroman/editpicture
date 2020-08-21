@@ -25,8 +25,8 @@ class ChangesModel {
     /**
      * get ready to draw rects from the current path
      */
-    fun getRectModels(radius: Float): List<RectModel> {
-        return paths.map { it.toRectModel(radius) }
+    fun getRectsAlongPath(rectRadius: Float): List<RectPathModel> {
+        return paths.map { it.toRectModel(rectRadius) }
     }
 
 
@@ -38,9 +38,8 @@ class ChangesModel {
         paths.clear()
     }
 
-    fun undoLastAction() {
-        val canRemove = !paths.isEmpty()
-        if(canRemove) paths.removeLast()
+    fun removeLast() {
+        if(!paths.isEmpty()) paths.removeLast()
     }
 
 
@@ -65,8 +64,8 @@ class ChangesModel {
     }
 
 
-    private fun PathModel.toRectModel(rectRadius: Float): RectModel {
-        val model = RectModel()
+    private fun PathModel.toRectModel(rectRadius: Float): RectPathModel {
+        val model = RectPathModel()
         for(point in this.getPoints()) {
             model.add(point[0], point[1], rectRadius)
         }

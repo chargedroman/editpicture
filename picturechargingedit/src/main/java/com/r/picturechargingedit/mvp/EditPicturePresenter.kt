@@ -40,7 +40,7 @@ class EditPicturePresenter(
         if(undoAll) {
             changesModel.clear()
         } else {
-            changesModel.undoLastAction()
+            changesModel.removeLast()
         }
         getView()?.showChanges(changesModel)
         updateCanUndo()

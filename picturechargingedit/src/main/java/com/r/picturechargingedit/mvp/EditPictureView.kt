@@ -80,7 +80,7 @@ class EditPictureView : View, BaseEditPictureView {
     }
 
     override fun showChanges(changesModel: ChangesModel) {
-        drawerPixelatedPath.showChanges(changesModel.getRectModels(drawerArgs.radius))
+        drawerPixelatedPath.showChanges(changesModel.getRectsAlongPath(drawerArgs.radius))
         post(this::invalidate)
     }
 
@@ -88,10 +88,10 @@ class EditPictureView : View, BaseEditPictureView {
         val bitmap = drawerArgs.bitmap ?: return null
         val canvas = Canvas(bitmap)
         val matrix = drawerArgs.createInvertedMatrix()
-        val radius = matrix.mapRadius(drawerArgs.radius)
+        val rectRadius = matrix.mapRadius(drawerArgs.radius)
         changesModel.mapAllCoordinates(matrix)
 
-        val changes = changesModel.getRectModels(radius)
+        val changes = changesModel.getRectsAlongPath(rectRadius)
         drawerPixelatedPath.drawChangesOnCanvas(changes, canvas)
 
         return bitmap

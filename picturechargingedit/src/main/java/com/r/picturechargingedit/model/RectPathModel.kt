@@ -9,7 +9,7 @@ import kotlin.math.abs
  * Created: 20.08.20
  */
 
-class RectModel {
+class RectPathModel {
 
     private val rects = mutableListOf<RectF>()
     private var previousRect = RectF()
@@ -22,7 +22,7 @@ class RectModel {
         val rect = RectF(x-radius, y-radius, x+radius*2, y+radius*2)
 
         if(!previousRect.intersects(rect.left, rect.top, rect.right, rect.bottom)) {
-            rect.positionNonIntersectingRectsNearby(previousRect)
+            rect.positionNonIntersectingRectNear(previousRect)
             rects.splitRectAndAddAll(rect)
             previousRect = rect
         }
@@ -47,7 +47,7 @@ class RectModel {
     }
 
 
-    private fun RectF.positionNonIntersectingRectsNearby(previous: RectF) {
+    private fun RectF.positionNonIntersectingRectNear(previous: RectF) {
         if(previous.isEmpty) {
             return
         }

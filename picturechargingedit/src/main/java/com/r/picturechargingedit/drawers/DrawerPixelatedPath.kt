@@ -1,7 +1,7 @@
 package com.r.picturechargingedit.drawers
 
 import android.graphics.*
-import com.r.picturechargingedit.model.RectModel
+import com.r.picturechargingedit.model.RectPathModel
 import kotlin.math.sqrt
 
 /**
@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 
 class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
 
-    private var rectModelsToDraw = listOf<RectModel>()
+    private var rectPaths = listOf<RectPathModel>()
 
     private val pathPaint = Paint()
     private val pointBuffer = FloatArray(2)
@@ -26,22 +26,22 @@ class DrawerPixelatedPath(private val drawerArgs: DrawerArgs) {
     }
 
 
-    fun drawChangesOnCanvas(changes: List<RectModel>, canvas: Canvas) {
+    fun drawChangesOnCanvas(changes: List<RectPathModel>, canvas: Canvas) {
         onDraw(changes, canvas, null)
     }
 
 
-    fun showChanges(changes: List<RectModel>) {
-        rectModelsToDraw = changes
+    fun showChanges(changes: List<RectPathModel>) {
+        rectPaths = changes
     }
 
     fun onDraw(canvas: Canvas) {
-        onDraw(rectModelsToDraw, canvas, drawerArgs.createInvertedMatrix())
+        onDraw(rectPaths, canvas, drawerArgs.createInvertedMatrix())
     }
 
 
-    private fun onDraw(rectModelsToDraw: List<RectModel>, canvas: Canvas, matrix: Matrix?) {
-        for(model in rectModelsToDraw) {
+    private fun onDraw(rectPaths: List<RectPathModel>, canvas: Canvas, matrix: Matrix?) {
+        for(model in rectPaths) {
             for(rect in model.getRects()) {
                 pathPaint.color = rect.getColor(matrix)
                 canvas.drawRect(rect, pathPaint)
