@@ -25,7 +25,7 @@ class EditPictureIO(private val context: Context) {
 
     companion object {
         const val TEMP_FILE_NAME = "tmpBufferedImage"
-        const val MAX_SIZE = 3200
+        const val MAX_SIZE = 4096
     }
 
 

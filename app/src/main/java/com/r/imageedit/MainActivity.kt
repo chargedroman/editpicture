@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.MemoryCategory
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.mvp.BaseEditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
@@ -42,6 +44,16 @@ class MainActivity : AppCompatActivity() {
         presenter.setMode(EditPictureMode.PIXELATE)
 
         showPicture()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Glide.get(this).setMemoryCategory(MemoryCategory.LOW)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Glide.get(this).setMemoryCategory(MemoryCategory.NORMAL)
     }
 
     override fun onDestroy() {
