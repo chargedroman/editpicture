@@ -7,15 +7,13 @@ import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
-import com.r.picturechargingedit.arch.BaseView
-import com.r.picturechargingedit.model.ChangesModel
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
 /**
  *
  * Author: romanvysotsky
- * Created: 20.08.20
+ * Created: 21.08.20
  */
 
 interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
@@ -55,19 +53,5 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
             return EditPicturePresenter(originalPicture, ioUtil)
         }
     }
-
-}
-
-interface BaseEditPictureView: BaseView {
-
-    fun setPresenter(presenter: BaseEditPicturePresenter)
-    fun getPresenter(): BaseEditPicturePresenter?
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun showBitmap(bitmap: Bitmap)
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun showChanges(changesModel: ChangesModel)
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun commitChanges(changesModel: ChangesModel): Bitmap?
 
 }
