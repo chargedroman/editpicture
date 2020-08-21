@@ -28,9 +28,10 @@ class RectColorModel(val rectPathModel: RectPathModel) {
     fun calculateColors(bitmap: Bitmap, matrix: Matrix) {
         if(hasCalculatedColors()) return
 
-        rectColors.clear()
-        for(rect in rectPathModel.getRects()) {
-            rectColors.add(rect.getColor(bitmap, matrix))
+        val rects = rectPathModel.getRects()
+
+        for(i in rectColors.size until rects.size) {
+            rectColors.add(rects[i].getColor(bitmap, matrix))
         }
     }
 
