@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.io
+package com.r.picturechargingedit.util
 
 import android.graphics.Bitmap
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool

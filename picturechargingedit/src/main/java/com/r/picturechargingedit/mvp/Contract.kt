@@ -8,8 +8,8 @@ import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
 import com.r.picturechargingedit.arch.BaseView
-import com.r.picturechargingedit.io.EditPictureIO
 import com.r.picturechargingedit.model.ChangesModel
+import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
 /**

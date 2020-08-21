@@ -5,8 +5,8 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
-import com.r.picturechargingedit.io.EditPictureIO
 import com.r.picturechargingedit.model.ChangesModel
+import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
 /**

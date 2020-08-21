@@ -83,7 +83,7 @@ class EditPictureView : View, BaseEditPictureView {
     }
 
     override fun showChanges(changesModel: ChangesModel) {
-        drawerPixelatedPath.showChanges(changesModel.getRects())
+        drawerPixelatedPath.showChanges(changesModel)
         post(this::invalidate)
     }
 
@@ -94,10 +94,9 @@ class EditPictureView : View, BaseEditPictureView {
 
         changesModel.mapAllCoordinates(matrix)
 
-        drawerPixelatedPath.drawChangesOnCanvas(changesModel.getRects(), canvas)
+        drawerPixelatedPath.drawChangesOnCanvas(changesModel, canvas)
 
         return bitmap
     }
-
 
 }

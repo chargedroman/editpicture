@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.io
+package com.r.picturechargingedit.util
 
 import android.content.Context
 import android.graphics.Bitmap

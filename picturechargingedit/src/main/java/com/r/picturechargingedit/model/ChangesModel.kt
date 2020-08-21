@@ -1,5 +1,6 @@
 package com.r.picturechargingedit.model
 
+import android.graphics.Bitmap
 import android.graphics.Matrix
 import java.util.*
 
@@ -13,6 +14,7 @@ class ChangesModel(initialRectRadius: Float) {
 
     private val paths = LinkedList<PathModel>()
     private val rects = LinkedList<RectPathModel>()
+    private val colors = LinkedList<RectColorModel>()
     private val lock = Object()
 
     private var currentPath = PathModel()
@@ -23,8 +25,19 @@ class ChangesModel(initialRectRadius: Float) {
     fun getSize(): Int = paths.size
     fun getPaths(): List<PathModel> = paths
     fun getRects(): List<RectPathModel> = rects
+    fun getColors(): List<RectColorModel> = colors
     fun getRectRadius(): Float = currentRectRadius
 
+
+
+    /**
+     * sets the colors for each [RectColorModel]
+     */
+    fun calculateColors(bitmap: Bitmap, matrix: Matrix) = synchronized(lock) {
+        for(model in colors) {
+            model.calculateColors(bitmap, matrix)
+        }
+    }
 
     /**
      * maps all path and rect coordinates using the given [matrix]
@@ -61,11 +74,13 @@ class ChangesModel(initialRectRadius: Float) {
     fun clear() = synchronized(lock) {
         paths.clear()
         rects.clear()
+        colors.clear()
     }
 
     fun removeLast() = synchronized(lock) {
         if(!paths.isEmpty()) paths.removeLast()
         if(!rects.isEmpty()) rects.removeLast()
+        if(!colors.isEmpty()) colors.removeLast()
     }
 
 
@@ -75,6 +90,7 @@ class ChangesModel(initialRectRadius: Float) {
     fun startRecordingDraw(x: Float, y: Float) = synchronized(lock) {
         val newPath = PathModel()
         val newRect = RectPathModel()
+        val newColors = RectColorModel(newRect)
 
         currentPath = newPath
         currentRectPath = newRect
@@ -84,6 +100,7 @@ class ChangesModel(initialRectRadius: Float) {
 
         paths.add(newPath)
         rects.add(newRect)
+        colors.add(newColors)
     }
 
     /**
