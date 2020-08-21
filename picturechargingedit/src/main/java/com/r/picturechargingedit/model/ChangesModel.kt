@@ -27,17 +27,24 @@ class ChangesModel(initialRectRadius: Float) {
 
 
     /**
-     * maps all path coordinates with the given [matrix] and updates all rects
+     * maps all path and rect coordinates using the given [matrix]
      */
     fun mapAllCoordinates(matrix: Matrix) = synchronized(lock) {
-        for(path in paths) {
-            for(point in path.getPoints()) {
+
+        currentRectRadius = matrix.mapRadius(currentRectRadius)
+
+        for(model in paths) {
+            for(point in model.getPoints()) {
                 matrix.mapPoints(point)
             }
         }
 
-        currentRectRadius = matrix.mapRadius(currentRectRadius)
-        updateRectsFromPaths()
+        for(model in rects) {
+            for(rect in model.getRects()) {
+                matrix.mapRect(rect)
+            }
+        }
+
     }
 
     /**
@@ -47,7 +54,7 @@ class ChangesModel(initialRectRadius: Float) {
      */
     fun setRectRadius(rectRadius: Float) = synchronized(lock) {
         this.currentRectRadius = rectRadius
-        updateRectsFromPaths()
+        updateRectsFromPaths(rectRadius)
     }
 
 
@@ -88,13 +95,13 @@ class ChangesModel(initialRectRadius: Float) {
     }
 
 
-    private fun updateRectsFromPaths() {
+    private fun updateRectsFromPaths(rectRadius: Float) {
         rects.clear()
 
         for(path in paths) {
             val rectPath = RectPathModel()
             for(point in path.getPoints()) {
-                rectPath.add(point[0], point[1], currentRectRadius)
+                rectPath.add(point[0], point[1], rectRadius)
             }
             rects.add(rectPath)
         }
