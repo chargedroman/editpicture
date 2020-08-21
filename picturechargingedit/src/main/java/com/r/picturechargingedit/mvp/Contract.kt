@@ -23,6 +23,7 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
      * api for user
      */
 
+    fun setRectRadius(rectRadius: Float)
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
     fun undoLastAction(undoAll: Boolean = false)
 

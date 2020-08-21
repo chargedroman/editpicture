@@ -9,67 +9,93 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel(val initialRectRadius: Float) {
+class ChangesModel(initialRectRadius: Float) {
 
     private val paths = LinkedList<PathModel>()
+    private val rects = LinkedList<RectPathModel>()
+    private val lock = Object()
+
     private var currentPath = PathModel()
+    private var currentRectPath = RectPathModel()
+    private var currentRectRadius = initialRectRadius
 
 
     /**
-     * get raw paths like from point a to b
+     * maps all path coordinates with the given [matrix] and updates all rects
      */
-    fun getPaths(): List<PathModel> {
-        return paths
-    }
-
-    /**
-     * get ready to draw rects from the current path
-     */
-    fun getRectsAlongPath(rectRadius: Float): List<RectPathModel> {
-        return paths.map { it.toRectModel(rectRadius) }
-    }
-
-
-    fun size(): Int {
-        return paths.size
-    }
-
-    fun clear() {
-        paths.clear()
-    }
-
-    fun removeLast() {
-        if(!paths.isEmpty()) paths.removeLast()
-    }
-
-
-    fun startRecordingDraw(x: Float, y: Float) {
-        val newPath = PathModel()
-        currentPath = newPath
-        newPath.add(x, y)
-        paths.add(newPath)
-    }
-
-    fun continueRecordingDraw(x: Float, y: Float) {
-        currentPath.add(x, y)
-    }
-
-
-    fun mapAllCoordinates(matrix: Matrix) {
+    fun mapAllCoordinates(matrix: Matrix) = synchronized(lock) {
         for(path in paths) {
             for(point in path.getPoints()) {
                 matrix.mapPoints(point)
             }
         }
+
+        currentRectRadius = matrix.mapRadius(currentRectRadius)
+        updateRectsFromPaths()
+    }
+
+    /**
+     * sets pixelated rect radius and re calculated all rects from current paths
+     *
+     * [rectRadius] the radius which defines
+     */
+    fun setRectRadius(rectRadius: Float) = synchronized(lock) {
+        this.currentRectRadius = rectRadius
+        updateRectsFromPaths()
+    }
+
+    fun getRectRadius(): Float = currentRectRadius
+    fun getSize(): Int = paths.size
+    fun getPaths(): List<PathModel> = paths
+    fun getRects(): List<RectPathModel> = rects
+
+    fun clear() = synchronized(lock) {
+        paths.clear()
+        rects.clear()
+    }
+
+    fun removeLast() = synchronized(lock) {
+        if(!paths.isEmpty()) paths.removeLast()
+        if(!rects.isEmpty()) rects.removeLast()
     }
 
 
-    private fun PathModel.toRectModel(rectRadius: Float): RectPathModel {
-        val model = RectPathModel()
-        for(point in this.getPoints()) {
-            model.add(point[0], point[1], rectRadius)
+    /**
+     * adds a new path starting with the given point
+     */
+    fun startRecordingDraw(x: Float, y: Float) = synchronized(lock) {
+        val newPath = PathModel()
+        val newRect = RectPathModel()
+
+        currentPath = newPath
+        currentRectPath = newRect
+
+        newPath.add(x, y)
+        newRect.add(x, y, currentRectRadius)
+
+        paths.add(newPath)
+        rects.add(newRect)
+    }
+
+    /**
+     * continues the current path and adds a point to it
+     */
+    fun continueRecordingDraw(x: Float, y: Float) = synchronized(lock) {
+        currentPath.add(x, y)
+        currentRectPath.add(x, y, currentRectRadius)
+    }
+
+
+    private fun updateRectsFromPaths() {
+        rects.clear()
+
+        for(path in paths) {
+            val rectPath = RectPathModel()
+            for(point in path.getPoints()) {
+                rectPath.add(point[0], point[1], currentRectRadius)
+            }
+            rects.add(rectPath)
         }
-        return model
     }
 
 

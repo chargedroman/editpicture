@@ -34,7 +34,6 @@ class EditPicturePresenter(
     override fun getBitmap() = mBitmap
 
     private var changesModel: ChangesModel = ChangesModel(RECT_RADIUS)
-    private val lock = Object()
 
 
     /**
@@ -51,6 +50,14 @@ class EditPicturePresenter(
     }
 
     /**
+     * [rectRadius] the radius which defines the size of the pixelated rects
+     */
+    override fun setRectRadius(rectRadius: Float) {
+        changesModel.setRectRadius(rectRadius)
+        getView()?.showChanges(changesModel)
+    }
+
+    /**
      * updates the current operating [EditPictureMode]
      */
     override fun setMode(mode: EditPictureMode, clearChanges: Boolean) {
@@ -64,7 +71,7 @@ class EditPicturePresenter(
     /**
      * loads the [originalPicture] and presents it
      */
-    override fun editPicture() = completable {
+    override fun editPicture() = Completable.fromAction {
         val bitmap = editIO.readPictureBitmap(originalPicture)
         mBitmap = bitmap
         changesModel.clear()
@@ -75,16 +82,16 @@ class EditPicturePresenter(
      * applies all changes to the currently loaded bitmap and saves the
      * result to [originalPicture] (while keeping exif data)
      */
-    override fun savePicture() = completable {
+    override fun savePicture() = Completable.fromAction {
 
-        if(changesModel.size() == 0) {
-            return@completable
+        if(changesModel.getSize() == 0) {
+            return@fromAction
         }
 
         val allChanges = changesModel
         changesModel = ChangesModel(RECT_RADIUS)
 
-        val edited = getView()?.commitChanges(allChanges) ?: return@completable
+        val edited = getView()?.commitChanges(allChanges) ?: return@fromAction
         editIO.savePicture(originalPicture, edited)
         getView()?.showBitmap(edited)
         getView()?.showChanges(changesModel)
@@ -114,18 +121,7 @@ class EditPicturePresenter(
 
 
     private fun updateCanUndo() {
-        mCanUndo.postValue(changesModel.size() > 0)
-    }
-
-
-
-    /**
-     * utility to synchronize opening a new picture for editing and saving it
-     */
-    private fun completable(block: () -> Unit): Completable = Completable.fromAction {
-        synchronized(lock) {
-            block()
-        }
+        mCanUndo.postValue(changesModel.getSize() > 0)
     }
 
 
