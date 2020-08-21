@@ -23,8 +23,6 @@ class ChangesModel(initialRectRadius: Float) {
 
 
     fun getSize(): Int = paths.size
-    fun getPaths(): List<PathModel> = paths
-    fun getRects(): List<RectPathModel> = rects
     fun getColors(): List<RectColorModel> = colors
     fun getRectRadius(): Float = currentRectRadius
 
@@ -114,13 +112,16 @@ class ChangesModel(initialRectRadius: Float) {
 
     private fun updateRectsFromPaths(rectRadius: Float) {
         rects.clear()
+        colors.clear()
 
         for(path in paths) {
             val rectPath = RectPathModel()
+            val rectColor = RectColorModel(rectPath)
             for(point in path.getPoints()) {
                 rectPath.add(point[0], point[1], rectRadius)
             }
             rects.add(rectPath)
+            colors.add(rectColor)
         }
     }
 
