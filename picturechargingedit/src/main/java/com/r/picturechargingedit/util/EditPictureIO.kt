@@ -48,7 +48,10 @@ class EditPictureIO(private val context: Context) {
 
         val inputStream = saveBitmapAndGetStream(bitmap)
         val outputStream = context.contentResolver.openOutputStream(picture)
-        ExifRewriter().updateExifMetadataLossy(inputStream, outputStream, exif)
+
+        inputStream?.use {
+            ExifRewriter().updateExifMetadataLossy(it, outputStream, exif)
+        }
     }
 
 
@@ -68,14 +71,14 @@ class EditPictureIO(private val context: Context) {
     }
 
     private fun saveBitmapAndGetStream(bitmap: Bitmap): InputStream? {
-        val output = context.openFileOutput(TEMP_FILE_NAME, Context.MODE_PRIVATE)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+        context.openFileOutput(TEMP_FILE_NAME, Context.MODE_PRIVATE).use {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+        }
         return context.openFileInput(TEMP_FILE_NAME)
     }
 
-    private fun readExif(picture: Uri): TiffOutputSet? {
-        val inputStream = context.contentResolver.openInputStream(picture)
-        val metadata = Sanselan.getMetadata(inputStream, "") as? JpegImageMetadata
+    private fun readExif(picture: Uri): TiffOutputSet? = context.contentResolver.openInputStream(picture).use {
+        val metadata = Sanselan.getMetadata(it, "") as? JpegImageMetadata
         return metadata?.exif?.outputSet
     }
 
