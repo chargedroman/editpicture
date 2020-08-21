@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         btnTakePhoto = findViewById(R.id.btn_take_photo)
 
         presenter = BaseEditPicturePresenter.Factory(this).create(getImageCacheUri())
-        editView.setEditPicturePresenter(presenter)
+        editView.setPresenter(presenter)
 
         presenter.setMode(EditPictureMode.PIXELATE)
 

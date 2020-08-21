@@ -89,7 +89,7 @@ class EditPicturePresenter(
         }
 
         val allChanges = changesModel
-        changesModel = ChangesModel(RECT_RADIUS)
+        changesModel = ChangesModel(allChanges.getRectRadius())
 
         val edited = getView()?.commitChanges(allChanges) ?: return@fromAction
         editIO.savePicture(originalPicture, edited)

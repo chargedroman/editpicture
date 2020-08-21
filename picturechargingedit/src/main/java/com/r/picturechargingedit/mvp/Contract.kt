@@ -3,6 +3,7 @@ package com.r.picturechargingedit.mvp
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
@@ -25,6 +26,10 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
 
     fun setRectRadius(rectRadius: Float)
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
+
+    fun getCanUndo(): LiveData<Boolean>
+    fun getMode(): LiveData<EditPictureMode>
+
     fun undoLastAction(undoAll: Boolean = false)
 
     fun editPicture(): Completable
@@ -34,15 +39,13 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
     /**
      * called by view
      */
-    fun startRecordingDraw(x: Float, y: Float)
-    fun continueRecordingDraw(x: Float, y: Float)
 
-    /**
-     * live data to observe relevant state
-     */
-    fun getCanUndo(): LiveData<Boolean>
-    fun getMode(): LiveData<EditPictureMode>
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun getBitmap(): Bitmap?
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    fun startRecordingDraw(x: Float, y: Float)
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    fun continueRecordingDraw(x: Float, y: Float)
 
 
 
@@ -57,9 +60,14 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
 
 interface BaseEditPictureView: BaseView {
 
+    fun setPresenter(presenter: BaseEditPicturePresenter)
     fun getPresenter(): BaseEditPicturePresenter?
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showBitmap(bitmap: Bitmap)
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showChanges(changesModel: ChangesModel)
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun commitChanges(changesModel: ChangesModel): Bitmap?
 
 }

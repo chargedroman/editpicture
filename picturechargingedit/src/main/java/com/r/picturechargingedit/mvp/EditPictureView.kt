@@ -36,9 +36,13 @@ class EditPictureView : View, BaseEditPictureView {
     private var presenter: BaseEditPicturePresenter? = null
 
 
-    fun setEditPicturePresenter(presenter: BaseEditPicturePresenter) {
+    override fun setPresenter(presenter: BaseEditPicturePresenter) {
         this.presenter = presenter
         presenter.attach(this)
+    }
+
+    override fun getPresenter(): BaseEditPicturePresenter? {
+        return presenter
     }
 
 
@@ -73,9 +77,6 @@ class EditPictureView : View, BaseEditPictureView {
         return true
     }
 
-    override fun getPresenter(): BaseEditPicturePresenter? {
-        return presenter
-    }
 
     override fun showBitmap(bitmap: Bitmap) {
         post(this::invalidate)
