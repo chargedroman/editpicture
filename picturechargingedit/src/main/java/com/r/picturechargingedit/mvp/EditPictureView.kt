@@ -79,6 +79,7 @@ class EditPictureView : View, BaseEditPictureView {
 
 
     override fun showBitmap(bitmap: Bitmap) {
+        drawerBitmap.showChanges(bitmap)
         post(this::invalidate)
     }
 
