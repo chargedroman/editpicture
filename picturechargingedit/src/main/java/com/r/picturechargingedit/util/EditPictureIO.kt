@@ -13,7 +13,9 @@ import org.apache.sanselan.formats.tiff.constants.TiffDirectoryConstants
 import org.apache.sanselan.formats.tiff.constants.TiffTagConstants.TIFF_TAG_ORIENTATION
 import org.apache.sanselan.formats.tiff.write.TiffOutputDirectory
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
+import java.io.File
 import java.io.InputStream
+import java.util.*
 
 
 /**
@@ -25,7 +27,6 @@ import java.io.InputStream
 class EditPictureIO(private val context: Context) {
 
     companion object {
-        const val TEMP_FILE_NAME = "tmpBufferedImage"
         const val MAX_SIZE = 4096
     }
 
@@ -43,15 +44,16 @@ class EditPictureIO(private val context: Context) {
 
 
     fun savePicture(picture: Uri, bitmap: Bitmap) {
+        val tmpName = UUID.randomUUID().toString()
         val exif = readExif(picture) ?: emptyExif()
         removeOrientation(exif)
 
-        val inputStream = saveBitmapAndGetStream(bitmap)
+        val inputStream = saveBitmapAndGetStream(tmpName, bitmap)
         val outputStream = context.contentResolver.openOutputStream(picture)
 
-        inputStream?.use {
-            ExifRewriter().updateExifMetadataLossy(it, outputStream, exif)
-        }
+        inputStream?.use { ExifRewriter().updateExifMetadataLossy(it, outputStream, exif) }
+
+        File(context.filesDir, tmpName).delete()
     }
 
 
@@ -70,11 +72,11 @@ class EditPictureIO(private val context: Context) {
         }
     }
 
-    private fun saveBitmapAndGetStream(bitmap: Bitmap): InputStream? {
-        context.openFileOutput(TEMP_FILE_NAME, Context.MODE_PRIVATE).use {
+    private fun saveBitmapAndGetStream(tmpName: String, bitmap: Bitmap): InputStream? {
+        context.openFileOutput(tmpName, Context.MODE_PRIVATE).use {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
         }
-        return context.openFileInput(TEMP_FILE_NAME)
+        return context.openFileInput(tmpName)
     }
 
     private fun readExif(picture: Uri): TiffOutputSet? = context.contentResolver.openInputStream(picture).use {
