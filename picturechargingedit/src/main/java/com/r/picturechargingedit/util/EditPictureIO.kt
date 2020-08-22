@@ -24,10 +24,10 @@ import java.util.*
  * Created: 18.08.20
  */
 
-class EditPictureIO(private val context: Context) {
+class EditPictureIO(private val context: Context, private val downSampleSize: Int = SIZE_4_K) {
 
     companion object {
-        const val MAX_SIZE = 4096
+        const val SIZE_4_K = 4096
     }
 
 
@@ -38,7 +38,7 @@ class EditPictureIO(private val context: Context) {
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .downsample(DownsampleStrategy.CENTER_INSIDE)
-            .submit(MAX_SIZE, MAX_SIZE)
+            .submit(downSampleSize, downSampleSize)
             .get()
     }
 
