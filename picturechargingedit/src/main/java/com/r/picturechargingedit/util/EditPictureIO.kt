@@ -10,6 +10,7 @@ import org.apache.sanselan.Sanselan
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata
 import org.apache.sanselan.formats.jpeg.exifRewrite.ExifRewriter
 import org.apache.sanselan.formats.tiff.constants.TiffDirectoryConstants
+import org.apache.sanselan.formats.tiff.constants.TiffTagConstants.TIFF_TAG_ORIENTATION
 import org.apache.sanselan.formats.tiff.write.TiffOutputDirectory
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
 import java.io.File
@@ -79,11 +80,17 @@ class EditPictureIO(private val context: Context, private val downSampleSize: In
      *
      * @return exif of [picture] or an empty set
      */
-    fun readExif(picture: Uri): TiffOutputSet {
-        context.contentResolver.openInputStream(picture).use {
+    fun readExif(picture: Uri, removeOrientationTag: Boolean = true): TiffOutputSet {
+        val exif = context.contentResolver.openInputStream(picture).use {
             val metadata = Sanselan.getMetadata(it, "") as? JpegImageMetadata
-            return metadata?.exif?.outputSet ?: emptyExif()
+            metadata?.exif?.outputSet ?: emptyExif()
         }
+
+        if(removeOrientationTag) {
+            removeOrientationTag(exif)
+        }
+
+        return exif
     }
 
     /**
@@ -117,6 +124,14 @@ class EditPictureIO(private val context: Context, private val downSampleSize: In
         val dir = TiffOutputDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
         set.addDirectory(dir)
         return set
+    }
+
+    private fun removeOrientationTag(exif: TiffOutputSet?) {
+        val directories = exif?.directories ?: return
+        for (d in directories) {
+            val dir = d as? TiffOutputDirectory
+            dir?.removeField(TIFF_TAG_ORIENTATION)
+        }
     }
 
 }
