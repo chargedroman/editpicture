@@ -27,6 +27,7 @@ class EditPicturePresenter(
 
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
+    private val lock = Object()
 
     override fun getRectRadius(): Float = changesModel.getRectRadius()
     override fun getCanUndo() = mCanUndo
@@ -70,7 +71,7 @@ class EditPicturePresenter(
     /**
      * loads the [originalPicture] and presents it
      */
-    override fun editPicture() = Completable.fromAction {
+    override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
         changesModel.clear()
         changesModel.pictureModel.bitmap = bitmap
@@ -81,15 +82,16 @@ class EditPicturePresenter(
      * applies all changes to the currently loaded bitmap and saves the
      * result to [originalPicture] (while keeping exif data)
      */
-    override fun savePicture() = Completable.fromAction {
+    override fun savePicture() = completable {
 
         if(changesModel.getSize() == 0) {
-            return@fromAction
+            return@completable
         }
 
         val allChanges = changesModel
-        val edited = getView()?.drawChanges(allChanges) ?: return@fromAction
-        editIO.savePicture(originalPicture, edited)
+        val edited = getView()?.drawChanges(allChanges) ?: return@completable
+        val originalExif = editIO.readExif(originalPicture)
+        editIO.savePicture(originalPicture, edited, originalExif)
 
         changesModel = changesModelFactory(INITIAL_RECT_RADIUS)
         changesModel.pictureModel.bitmap = edited
@@ -123,6 +125,16 @@ class EditPicturePresenter(
 
     private fun updateCanUndo() {
         mCanUndo.postValue(changesModel.getSize() > 0)
+    }
+
+
+    /**
+     * utility to synchronize access to io operations on [originalPicture]
+     */
+    private fun completable(block: () -> Unit) = Completable.fromAction {
+        synchronized(lock) {
+            block()
+        }
     }
 
 
