@@ -53,13 +53,13 @@ class EditPictureView : ScalingView, BaseEditPictureView {
     }
 
 
-    override fun onDrawContent(canvas: Canvas) {
+    override fun onDrawScaled(canvas: Canvas) {
         drawerPicture.onDraw(canvas)
         drawerPixelatedPath.onDraw(canvas)
     }
 
 
-    override fun onTouchEvent(action: Int, x: Float, y: Float) {
+    override fun onTouchEventScaled(action: Int, x: Float, y: Float) {
         when (action) {
             MotionEvent.ACTION_DOWN -> {
                 presenter?.startRecordingDraw(x, y)
