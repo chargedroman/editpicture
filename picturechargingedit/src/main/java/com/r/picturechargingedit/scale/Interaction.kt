@@ -7,7 +7,6 @@ package com.r.picturechargingedit.scale
  */
 
 enum class Interaction {
-    NONE,
     CLICK,
     MOVE
 }
