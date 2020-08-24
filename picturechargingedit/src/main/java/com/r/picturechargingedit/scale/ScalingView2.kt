@@ -117,7 +117,7 @@ abstract class ScalingView2 : View {
 
     private fun scale(event: MotionEvent) {
         val newDist = spacing(event)
-        if (newDist > 10f) {
+        if (newDist > MIN_FINGER_DIST_FOR_ZOOM_EVENT) {
             mMatrix.set(mSavedMatrix)
             val scale = newDist / oldDist
             mMatrix.postScale(scale, scale, mid.x, mid.y)
@@ -144,11 +144,5 @@ abstract class ScalingView2 : View {
     }
 
 
-    private val valuesBuffer = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f ,0f)
-
-    private fun getTotalScale(): Float {
-        mMatrix.getValues(valuesBuffer)
-        return valuesBuffer[0]
-    }
 
 }
