@@ -113,7 +113,7 @@ class EditPicturePresenter(
 
     override fun continueRecordingDraw(x: Float, y: Float) {
         if(mMode.value == EditPictureMode.NONE) return
-        if(mMode.value == EditPictureMode.PIXELATE_CLICK) return
+        if(mMode.value == EditPictureMode.PIXELATE_VIA_CLICK) return
 
         changesModel.continueRecordingDraw(x, y)
         getView()?.showChanges(changesModel)

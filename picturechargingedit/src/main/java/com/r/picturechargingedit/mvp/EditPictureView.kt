@@ -49,8 +49,9 @@ class EditPictureView : ScalingView, BaseEditPictureView {
 
     override fun showMode(mode: EditPictureMode) {
         when(mode) {
-            EditPictureMode.PIXELATE_CLICK -> setZoomAndScaleEnabled(true)
-            EditPictureMode.PIXELATE_DRAG -> setZoomAndScaleEnabled(false)
+            EditPictureMode.NONE -> setZoomAndScaleEnabled(true)
+            EditPictureMode.PIXELATE_VIA_CLICK -> setZoomAndScaleEnabled(true)
+            EditPictureMode.PIXELATE_VIA_DRAG -> setZoomAndScaleEnabled(false)
             else -> Unit
         }
         invalidate()
