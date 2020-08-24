@@ -29,6 +29,15 @@ abstract class ScalingView2 : View {
         defStyleAttr
     )
 
+
+    companion object {
+        const val MIN_SCALE = 1f
+        const val MAX_SCALE = 10f
+
+        const val MIN_FINGER_DIST_FOR_ZOOM_EVENT = 10f
+    }
+
+
     // these matrices will be used to move and zoom image
     private val mMatrix: Matrix = Matrix()
     private val mSavedMatrix: Matrix = Matrix()
@@ -83,7 +92,7 @@ abstract class ScalingView2 : View {
 
     private fun onPointerDown(event: MotionEvent) {
         oldDist = spacing(event)
-        if (oldDist > 10f) {
+        if (oldDist > MIN_FINGER_DIST_FOR_ZOOM_EVENT) {
             mSavedMatrix.set(mMatrix)
             midPoint(mid, event)
             mode = ZOOM
@@ -92,17 +101,26 @@ abstract class ScalingView2 : View {
 
     private fun onMove(event: MotionEvent) {
         if (mode == DRAG) {
-            mMatrix.set(mSavedMatrix)
-            val dx = event.x - start.x
-            val dy = event.y - start.y
-            mMatrix.postTranslate(dx, dy)
+            translate(event)
         } else if (mode == ZOOM) {
-            val newDist = spacing(event)
-            if (newDist > 10f) {
-                mMatrix.set(mSavedMatrix)
-                val scale = newDist / oldDist
-                mMatrix.postScale(scale, scale, mid.x, mid.y)
-            }
+            scale(event)
+        }
+    }
+
+
+    private fun translate(event: MotionEvent) {
+        mMatrix.set(mSavedMatrix)
+        val dx = event.x - start.x
+        val dy = event.y - start.y
+        mMatrix.postTranslate(dx, dy)
+    }
+
+    private fun scale(event: MotionEvent) {
+        val newDist = spacing(event)
+        if (newDist > 10f) {
+            mMatrix.set(mSavedMatrix)
+            val scale = newDist / oldDist
+            mMatrix.postScale(scale, scale, mid.x, mid.y)
         }
     }
 
@@ -123,6 +141,14 @@ abstract class ScalingView2 : View {
         val x = event.getX(0) + event.getX(1)
         val y = event.getY(0) + event.getY(1)
         point[x / 2] = y / 2
+    }
+
+
+    private val valuesBuffer = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f ,0f)
+
+    private fun getTotalScale(): Float {
+        mMatrix.getValues(valuesBuffer)
+        return valuesBuffer[0]
     }
 
 }
