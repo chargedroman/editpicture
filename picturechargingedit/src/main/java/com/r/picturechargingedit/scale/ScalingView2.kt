@@ -41,6 +41,7 @@ abstract class ScalingView2 : View {
     // these matrices will be used to move and zoom image
     private val mMatrix: Matrix = Matrix()
     private val mSavedMatrix: Matrix = Matrix()
+    private val mValuesBuffer = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f ,0f)
 
     // we can be in one of these 3 states
     private val NONE = 0
@@ -77,6 +78,7 @@ abstract class ScalingView2 : View {
 
         canvas.apply {
             save()
+            updateMatrixToNotDrawOutOfBounds(mMatrix)
             setMatrix(mMatrix)
             onDrawScaled(canvas)
             restore()
@@ -113,6 +115,7 @@ abstract class ScalingView2 : View {
         val dx = event.x - start.x
         val dy = event.y - start.y
         mMatrix.postTranslate(dx, dy)
+        updateMatrixToNotDrawOutOfBounds(mMatrix)
     }
 
     private fun scale(event: MotionEvent) {
@@ -121,6 +124,7 @@ abstract class ScalingView2 : View {
             mMatrix.set(mSavedMatrix)
             val scale = newDist / oldDist
             mMatrix.postScale(scale, scale, mid.x, mid.y)
+            updateMatrixToNotDrawOutOfBounds(mMatrix)
         }
     }
 
@@ -143,6 +147,28 @@ abstract class ScalingView2 : View {
         point[x / 2] = y / 2
     }
 
+
+
+    private fun updateMatrixToNotDrawOutOfBounds(matrix: Matrix) {
+        matrix.getValues(mValuesBuffer)
+
+        val zoomFactor = mValuesBuffer[0]
+
+        //scalex
+        mValuesBuffer[0] = zoomFactor.coerceAtLeast(MIN_SCALE).coerceAtMost(MAX_SCALE)
+        //scaley
+        mValuesBuffer[4] = zoomFactor.coerceAtLeast(MIN_SCALE).coerceAtMost(MAX_SCALE)
+
+        val leastX = -zoomFactor*width + width
+        val leastY = -zoomFactor*height + height
+
+        //translate x
+        mValuesBuffer[2] = mValuesBuffer[2].coerceAtMost(0f).coerceAtLeast(leastX)
+        //translate y
+        mValuesBuffer[5] = mValuesBuffer[5].coerceAtMost(0f).coerceAtLeast(leastY)
+
+        matrix.setValues(mValuesBuffer)
+    }
 
 
 }
