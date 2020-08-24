@@ -28,6 +28,7 @@ abstract class ScalingView : View {
 
     private val scalingHandler = ScalingHandler()
     private val interactionHandler = InteractionHandler()
+    private var zoomScaleEnabled = true
 
 
     abstract fun onDrawScaled(canvas: Canvas)
@@ -43,10 +44,14 @@ abstract class ScalingView : View {
         scalingHandler.setMinMaxScale(minScale, maxScale)
     }
 
+    fun setZoomAndScaleEnabled(zoomScaleEnabled: Boolean) {
+        this.zoomScaleEnabled = zoomScaleEnabled
+    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
-        scalingHandler.onTouchEvent(event)
+        if(zoomScaleEnabled)
+            scalingHandler.onTouchEvent(event)
 
         val matrix = scalingHandler.getInvertedMatrix()
         interactionHandler.onTouchEvent(event, matrix, this::onTouchScaled)

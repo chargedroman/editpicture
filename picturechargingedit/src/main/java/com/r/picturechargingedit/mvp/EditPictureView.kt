@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.AttributeSet
+import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.drawers.DrawerArgs
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
@@ -44,6 +45,15 @@ class EditPictureView : ScalingView, BaseEditPictureView {
 
     override fun getPresenter(): BaseEditPicturePresenter? {
         return presenter
+    }
+
+    override fun showMode(mode: EditPictureMode) {
+        when(mode) {
+            EditPictureMode.PIXELATE_CLICK -> setZoomAndScaleEnabled(true)
+            EditPictureMode.PIXELATE_DRAG -> setZoomAndScaleEnabled(false)
+            else -> Unit
+        }
+        invalidate()
     }
 
 

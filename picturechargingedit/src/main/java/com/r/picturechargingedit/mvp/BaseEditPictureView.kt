@@ -2,6 +2,7 @@ package com.r.picturechargingedit.mvp
 
 import android.graphics.Bitmap
 import androidx.annotation.RestrictTo
+import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BaseView
 import com.r.picturechargingedit.model.ChangesModel
 import com.r.picturechargingedit.model.PictureModel
@@ -17,6 +18,9 @@ interface BaseEditPictureView: BaseView {
     fun setPresenter(presenter: BaseEditPicturePresenter)
     fun getPresenter(): BaseEditPicturePresenter?
 
+
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    fun showMode(mode: EditPictureMode)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showPicture(pictureModel: PictureModel)
     @RestrictTo(RestrictTo.Scope.LIBRARY)

@@ -62,6 +62,7 @@ class EditPicturePresenter(
      */
     override fun setMode(mode: EditPictureMode, clearChanges: Boolean) {
         mMode.postValue(mode)
+        getView()?.showMode(mode)
         if(clearChanges) {
             changesModel.clear()
             getView()?.showChanges(changesModel)
