@@ -67,7 +67,7 @@ class EditPictureIO(private val context: Context, private val downSampleSize: In
      * then copies it to [saveLocation] including it's original exif
      */
     fun downSample(original: Uri, saveLocation: Uri) {
-        val originalExif = readExif(original)
+        val originalExif = readExif(original, false)
         val file = readPictureFile(original)
         val downSampledUri = Uri.fromFile(file)
         val inputStream = context.contentResolver.openInputStream(downSampledUri)
