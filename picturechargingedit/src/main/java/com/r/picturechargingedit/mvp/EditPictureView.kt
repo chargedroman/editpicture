@@ -6,12 +6,12 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.View
 import com.r.picturechargingedit.drawers.DrawerArgs
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
 import com.r.picturechargingedit.model.ChangesModel
 import com.r.picturechargingedit.model.PictureModel
+import com.r.picturechargingedit.scale.ScalingView
 
 /**
  *
@@ -20,7 +20,7 @@ import com.r.picturechargingedit.model.PictureModel
  */
 
 @SuppressLint("ClickableViewAccessibility")
-class EditPictureView : View, BaseEditPictureView {
+class EditPictureView : ScalingView, BaseEditPictureView {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -53,29 +53,21 @@ class EditPictureView : View, BaseEditPictureView {
     }
 
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
+    override fun onDrawContent(canvas: Canvas) {
         drawerPicture.onDraw(canvas)
         drawerPixelatedPath.onDraw(canvas)
     }
 
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-
-        if(event == null) {
-            return super.onTouchEvent(event)
-        }
-
-        when (event.action) {
+    override fun onTouchEvent(action: Int, x: Float, y: Float) {
+        when (action) {
             MotionEvent.ACTION_DOWN -> {
-                presenter?.startRecordingDraw(event.x, event.y)
+                presenter?.startRecordingDraw(x, y)
             }
             MotionEvent.ACTION_MOVE -> {
-                presenter?.continueRecordingDraw(event.x, event.y)
+                presenter?.continueRecordingDraw(x, y)
             }
         }
-
-        return true
     }
 
 
