@@ -10,6 +10,7 @@ import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
 import com.r.picturechargingedit.model.ChangesModel
 import com.r.picturechargingedit.model.PictureModel
+import com.r.picturechargingedit.scale.Interaction
 import com.r.picturechargingedit.scale.ScalingView
 
 /**
@@ -61,6 +62,7 @@ class EditPictureView : ScalingView, BaseEditPictureView {
         when(type) {
             Interaction.CLICK -> presenter?.startRecordingDraw(x, y)
             Interaction.MOVE -> presenter?.continueRecordingDraw(x, y)
+            else -> Unit
         }
     }
 
