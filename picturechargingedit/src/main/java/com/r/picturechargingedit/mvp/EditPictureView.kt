@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.AttributeSet
-import android.view.MotionEvent
 import com.r.picturechargingedit.drawers.DrawerArgs
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
@@ -58,15 +57,10 @@ class EditPictureView : ScalingView, BaseEditPictureView {
         drawerPixelatedPath.onDraw(canvas)
     }
 
-
-    override fun onTouchEventScaled(action: Int, x: Float, y: Float) {
-        when (action) {
-            MotionEvent.ACTION_DOWN -> {
-                presenter?.startRecordingDraw(x, y)
-            }
-            MotionEvent.ACTION_MOVE -> {
-                presenter?.continueRecordingDraw(x, y)
-            }
+    override fun onTouchScaled(type: Interaction, x: Float, y: Float) {
+        when(type) {
+            Interaction.CLICK -> presenter?.startRecordingDraw(x, y)
+            Interaction.MOVE -> presenter?.continueRecordingDraw(x, y)
         }
     }
 

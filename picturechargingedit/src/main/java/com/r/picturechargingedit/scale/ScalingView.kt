@@ -34,8 +34,14 @@ abstract class ScalingView : View {
         const val MIN_SCALE = 1f
         const val MAX_SCALE = 10f
         const val MIN_FINGER_DIST_FOR_ZOOM_EVENT = 10f
+        private const val CLICK_THRESHOLD = 200L
     }
 
+
+    enum class Interaction {
+        CLICK,
+        MOVE
+    }
 
     private enum class Mode {
         NONE,
@@ -44,6 +50,7 @@ abstract class ScalingView : View {
     }
 
     private var mode = Mode.NONE
+    private var lastTouchEventDownTime: Long = 0L
     private var minScale = MIN_SCALE
     private var maxScale = MAX_SCALE
 
@@ -62,7 +69,7 @@ abstract class ScalingView : View {
 
 
     abstract fun onDrawScaled(canvas: Canvas)
-    abstract fun onTouchEventScaled(action: Int, x: Float, y: Float)
+    abstract fun onTouchScaled(type: Interaction, x: Float, y: Float)
 
 
 
@@ -73,15 +80,8 @@ abstract class ScalingView : View {
 
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-
-        when (event.action and MotionEvent.ACTION_MASK) {
-            MotionEvent.ACTION_DOWN -> onDown(event)
-            MotionEvent.ACTION_POINTER_DOWN -> onPointerDown(event)
-            MotionEvent.ACTION_MOVE -> onMove(event)
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> mode = Mode.NONE
-        }
-
-        mapEventPoint(event)
+        handleScalingAndTranslating(event)
+        handleInteractionEvents(event)
         invalidate()
         return true
     }
@@ -99,13 +99,33 @@ abstract class ScalingView : View {
         }
     }
 
+    private fun handleScalingAndTranslating(event: MotionEvent) {
+        when (event.action and MotionEvent.ACTION_MASK) {
+            MotionEvent.ACTION_DOWN -> onDown(event)
+            MotionEvent.ACTION_POINTER_DOWN -> onPointerDown(event)
+            MotionEvent.ACTION_MOVE -> onMove(event)
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> mode = Mode.NONE
+        }
+    }
 
-    private fun mapEventPoint(event: MotionEvent) {
+    private fun handleInteractionEvents(event: MotionEvent) {
         mPointBuffer[0] = event.x
         mPointBuffer[1] = event.y
         mMatrix.invert(mMatrixInverted)
         mMatrixInverted.mapPoints(mPointBuffer)
-        onTouchEventScaled(event.action, mPointBuffer[0], mPointBuffer[1])
+
+        if(event.action == MotionEvent.ACTION_MOVE) {
+            onTouchScaled(Interaction.MOVE, mPointBuffer[0], mPointBuffer[1])
+        }
+
+        if(event.action == MotionEvent.ACTION_DOWN && event.pointerCount == 1) {
+            lastTouchEventDownTime = event.eventTime
+        }
+
+        if(event.action == MotionEvent.ACTION_UP && event.pointerCount == 1
+            && (event.eventTime - lastTouchEventDownTime) < CLICK_THRESHOLD) {
+            onTouchScaled(Interaction.CLICK, mPointBuffer[0], mPointBuffer[1])
+        }
     }
 
 
@@ -176,22 +196,22 @@ abstract class ScalingView : View {
         matrix.getValues(mMatrixBuffer)
 
         val zoomFactor = mMatrixBuffer[0]
-
-        //scalex
-        mMatrixBuffer[0] = zoomFactor.coerceAtLeast(minScale).coerceAtMost(maxScale)
-        //scaley
-        mMatrixBuffer[4] = zoomFactor.coerceAtLeast(minScale).coerceAtMost(maxScale)
-
-        val leastX = -zoomFactor*width + width
-        val leastY = -zoomFactor*height + height
-
-        //translate x
-        mMatrixBuffer[2] = mMatrixBuffer[2].coerceAtMost(0f).coerceAtLeast(leastX)
-        //translate y
-        mMatrixBuffer[5] = mMatrixBuffer[5].coerceAtMost(0f).coerceAtLeast(leastY)
+        updateScaleBounds(zoomFactor)
+        updateTranslateBounds(zoomFactor)
 
         matrix.setValues(mMatrixBuffer)
     }
 
+    private fun updateScaleBounds(zoomFactor: Float) {
+        mMatrixBuffer[0] = zoomFactor.coerceAtLeast(minScale).coerceAtMost(maxScale)
+        mMatrixBuffer[4] = zoomFactor.coerceAtLeast(minScale).coerceAtMost(maxScale)
+    }
+
+    private fun updateTranslateBounds(zoomFactor: Float) {
+        val leastX = -zoomFactor*width + width
+        val leastY = -zoomFactor*height + height
+        mMatrixBuffer[2] = mMatrixBuffer[2].coerceAtMost(0f).coerceAtLeast(leastX)
+        mMatrixBuffer[5] = mMatrixBuffer[5].coerceAtMost(0f).coerceAtLeast(leastY)
+    }
 
 }

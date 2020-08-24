@@ -8,5 +8,6 @@ package com.r.picturechargingedit
 
 enum class EditPictureMode {
     NONE,
-    PIXELATE
+    PIXELATE_DRAG,
+    PIXELATE_CLICK
 }

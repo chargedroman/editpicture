@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         presenter = BaseEditPicturePresenter.Factory(this).create(getImageCacheUri())
         editView.setPresenter(presenter)
 
-        presenter.setMode(EditPictureMode.PIXELATE)
+        presenter.setMode(EditPictureMode.PIXELATE_CLICK)
 
         showPicture()
     }
