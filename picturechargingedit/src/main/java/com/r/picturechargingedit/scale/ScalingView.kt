@@ -29,26 +29,38 @@ abstract class ScalingView: View {
 
     private var mScaleFactor = 1f
 
+    private val mPivotPoint  = floatArrayOf(0f, 0f)
+    private val mEventPoint = floatArrayOf(0f, 0f)
+
+    private val mCanvasMatrix = Matrix()
+    private val mCanvasMatrixInverted = Matrix()
+
     private val mScaleListener = ScaleListener {
         mScaleFactor *= it.scaleFactor
         mScaleFactor = 1f.coerceAtLeast(mScaleFactor.coerceAtMost(20f))
+
+        mPivotPoint[0] = it.focusX
+        mPivotPoint[1] = it.focusY
+
+        mCanvasMatrixInverted.mapPoints(mPivotPoint)
+
+        mCanvasMatrix.setScale(mScaleFactor, mScaleFactor, mPivotPoint[0], mPivotPoint[1])
+        mCanvasMatrix.invert(mCanvasMatrixInverted)
+
         invalidate()
     }
 
     private val mScaleDetector = ScaleGestureDetector(context, mScaleListener)
-    private val mPointBuffer = floatArrayOf(0f, 0f)
-    private val mCanvasMatrix = Matrix()
-    private val mCanvasMatrixInverted = Matrix()
 
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         mScaleDetector.onTouchEvent(event)
 
-        mPointBuffer[0] = event.x
-        mPointBuffer[1] = event.y
-        mCanvasMatrix.invert(mCanvasMatrixInverted)
-        mCanvasMatrixInverted.mapPoints(mPointBuffer)
-        onTouchEvent(event.action, mPointBuffer[0], mPointBuffer[1])
+        mEventPoint[0] = event.x
+        mEventPoint[1] = event.y
+        mCanvasMatrixInverted.mapPoints(mEventPoint)
+
+        onTouchEvent(event.action, mEventPoint[0], mEventPoint[1])
 
         return true
     }
@@ -58,8 +70,7 @@ abstract class ScalingView: View {
 
         canvas.apply {
             save()
-            scale(mScaleFactor, mScaleFactor)
-            mCanvasMatrix.setScale(mScaleFactor, mScaleFactor)
+            setMatrix(mCanvasMatrix)
             onDrawContent(canvas)
             restore()
         }
