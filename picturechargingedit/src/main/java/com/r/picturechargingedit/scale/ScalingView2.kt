@@ -44,12 +44,16 @@ abstract class ScalingView2 : View {
     }
 
     private var mode = Mode.NONE
+    private var minScale = MIN_SCALE
+    private var maxScale = MAX_SCALE
 
 
     // these matrices will be used to move and zoom image
     private val mMatrix: Matrix = Matrix()
+    private val mMatrixInverted: Matrix = Matrix()
     private val mSavedMatrix: Matrix = Matrix()
-    private val mValuesBuffer = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f ,0f)
+    private val mMatrixBuffer = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f ,0f)
+    private val mPointBuffer = floatArrayOf(0f, 0f)
 
     // remember some things for zooming
     private val start = PointF()
@@ -61,6 +65,13 @@ abstract class ScalingView2 : View {
     abstract fun onTouchEventScaled(action: Int, x: Float, y: Float)
 
 
+
+    fun setMinMaxScale(minScale: Float, maxScale: Float) {
+        this.minScale = minScale
+        this.maxScale = maxScale
+    }
+
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
 
         when (event.action and MotionEvent.ACTION_MASK) {
@@ -70,6 +81,7 @@ abstract class ScalingView2 : View {
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> mode = Mode.NONE
         }
 
+        mapEventPoint(event)
         invalidate()
         return true
     }
@@ -85,6 +97,15 @@ abstract class ScalingView2 : View {
             onDrawScaled(canvas)
             restore()
         }
+    }
+
+
+    private fun mapEventPoint(event: MotionEvent) {
+        mPointBuffer[0] = event.x
+        mPointBuffer[1] = event.y
+        mMatrix.invert(mMatrixInverted)
+        mMatrixInverted.mapPoints(mPointBuffer)
+        onTouchEventScaled(event.action, mPointBuffer[0], mPointBuffer[1])
     }
 
 
@@ -152,24 +173,24 @@ abstract class ScalingView2 : View {
 
 
     private fun updateMatrixToNotDrawOutOfBounds(matrix: Matrix) {
-        matrix.getValues(mValuesBuffer)
+        matrix.getValues(mMatrixBuffer)
 
-        val zoomFactor = mValuesBuffer[0]
+        val zoomFactor = mMatrixBuffer[0]
 
         //scalex
-        mValuesBuffer[0] = zoomFactor.coerceAtLeast(MIN_SCALE).coerceAtMost(MAX_SCALE)
+        mMatrixBuffer[0] = zoomFactor.coerceAtLeast(minScale).coerceAtMost(maxScale)
         //scaley
-        mValuesBuffer[4] = zoomFactor.coerceAtLeast(MIN_SCALE).coerceAtMost(MAX_SCALE)
+        mMatrixBuffer[4] = zoomFactor.coerceAtLeast(minScale).coerceAtMost(maxScale)
 
         val leastX = -zoomFactor*width + width
         val leastY = -zoomFactor*height + height
 
         //translate x
-        mValuesBuffer[2] = mValuesBuffer[2].coerceAtMost(0f).coerceAtLeast(leastX)
+        mMatrixBuffer[2] = mMatrixBuffer[2].coerceAtMost(0f).coerceAtLeast(leastX)
         //translate y
-        mValuesBuffer[5] = mValuesBuffer[5].coerceAtMost(0f).coerceAtLeast(leastY)
+        mMatrixBuffer[5] = mMatrixBuffer[5].coerceAtMost(0f).coerceAtLeast(leastY)
 
-        matrix.setValues(mValuesBuffer)
+        matrix.setValues(mMatrixBuffer)
     }
 
 
