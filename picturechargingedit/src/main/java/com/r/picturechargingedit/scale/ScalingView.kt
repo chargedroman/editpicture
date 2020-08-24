@@ -27,6 +27,8 @@ abstract class ScalingView: View {
         defStyleAttr
     )
 
+    private val scaleMin = 1f
+    private val scaleMax = 10f
 
     private var mScaleFactor = 1f
 
@@ -74,7 +76,7 @@ abstract class ScalingView: View {
 
     private fun onScale(it: ScaleGestureDetector) {
         mScaleFactor *= it.scaleFactor
-        mScaleFactor = 1f.coerceAtLeast(mScaleFactor.coerceAtMost(10f))
+        mScaleFactor = scaleMin.coerceAtLeast(mScaleFactor.coerceAtMost(scaleMax))
 
         mPivotPoint[0] = it.focusX
         mPivotPoint[1] = it.focusY
