@@ -11,7 +11,7 @@ import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
 import com.r.picturechargingedit.model.ChangesModel
 import com.r.picturechargingedit.model.PictureModel
-import com.r.picturechargingedit.scale.ScalingView
+import com.r.picturechargingedit.scale.ScalingView2
 
 /**
  *
@@ -20,7 +20,7 @@ import com.r.picturechargingedit.scale.ScalingView
  */
 
 @SuppressLint("ClickableViewAccessibility")
-class EditPictureView : ScalingView, BaseEditPictureView {
+class EditPictureView : ScalingView2, BaseEditPictureView {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
