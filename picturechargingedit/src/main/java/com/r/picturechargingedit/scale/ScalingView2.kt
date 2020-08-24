@@ -33,21 +33,23 @@ abstract class ScalingView2 : View {
     companion object {
         const val MIN_SCALE = 1f
         const val MAX_SCALE = 10f
-
         const val MIN_FINGER_DIST_FOR_ZOOM_EVENT = 10f
     }
+
+
+    private enum class Mode {
+        NONE,
+        TRANSLATE,
+        SCALE
+    }
+
+    private var mode = Mode.NONE
 
 
     // these matrices will be used to move and zoom image
     private val mMatrix: Matrix = Matrix()
     private val mSavedMatrix: Matrix = Matrix()
     private val mValuesBuffer = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f ,0f)
-
-    // we can be in one of these 3 states
-    private val NONE = 0
-    private val DRAG = 1
-    private val ZOOM = 2
-    private var mode = NONE
 
     // remember some things for zooming
     private val start = PointF()
@@ -65,7 +67,7 @@ abstract class ScalingView2 : View {
             MotionEvent.ACTION_DOWN -> onDown(event)
             MotionEvent.ACTION_POINTER_DOWN -> onPointerDown(event)
             MotionEvent.ACTION_MOVE -> onMove(event)
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> mode = NONE
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> mode = Mode.NONE
         }
 
         invalidate()
@@ -89,7 +91,7 @@ abstract class ScalingView2 : View {
     private fun onDown(event: MotionEvent) {
         mSavedMatrix.set(mMatrix)
         start[event.x] = event.y
-        mode = DRAG
+        mode = Mode.TRANSLATE
     }
 
     private fun onPointerDown(event: MotionEvent) {
@@ -97,14 +99,14 @@ abstract class ScalingView2 : View {
         if (oldDist > MIN_FINGER_DIST_FOR_ZOOM_EVENT) {
             mSavedMatrix.set(mMatrix)
             midPoint(mid, event)
-            mode = ZOOM
+            mode = Mode.SCALE
         }
     }
 
     private fun onMove(event: MotionEvent) {
-        if (mode == DRAG) {
+        if (mode == Mode.TRANSLATE) {
             translate(event)
-        } else if (mode == ZOOM) {
+        } else if (mode == Mode.SCALE) {
             scale(event)
         }
     }
