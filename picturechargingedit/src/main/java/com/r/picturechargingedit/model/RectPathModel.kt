@@ -9,14 +9,14 @@ import kotlin.math.abs
  * Created: 20.08.20
  */
 
-class RectPathModel {
+class RectPathModel: RectPath {
 
     private val rects = mutableListOf<RectF>()
     private var previousRect = RectF()
 
-    fun getRects(): List<RectF> {
-        return rects
-    }
+
+    override fun getRects(): List<RectF> = rects
+
 
     fun add(x: Float, y: Float, radius: Float) {
         val rect = RectF(x-radius, y-radius, x+radius*2, y+radius*2)

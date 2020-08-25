@@ -25,8 +25,8 @@ class DrawerPixelatedPath(drawerArgs: DrawerArgs): Drawer<Changes>(drawerArgs) {
 
     override fun drawChangesOnCanvas(changes: Changes, canvas: Canvas) {
         changes.calculateColors()
-        for(model in changes.getColors()) {
-            for((i, rect) in model.rectPathModel.getRects().withIndex()) {
+        for(model in changes.getColorModels()) {
+            for((i, rect) in model.getRectPathModel().getRects().withIndex()) {
                 pathPaint.color = model.getColors().getOrNull(i) ?: Color.TRANSPARENT
                 canvas.drawRect(rect, pathPaint)
             }

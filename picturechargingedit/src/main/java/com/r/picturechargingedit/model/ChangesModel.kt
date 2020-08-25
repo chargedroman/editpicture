@@ -22,7 +22,7 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
 
 
     override fun getSize(): Int = paths.size
-    override fun getColors(): List<RectColorModel> = colors
+    override fun getColorModels(): List<RectColorModel> = colors
     override fun getPictureModel(): Picture = pictureModel
     override fun getRectRadius(): Float = currentRectRadius
 
@@ -133,6 +133,7 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
             colors.add(rectColor)
         }
     }
+
 
 
 }

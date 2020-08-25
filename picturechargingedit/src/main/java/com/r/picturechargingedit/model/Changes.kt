@@ -8,7 +8,7 @@ package com.r.picturechargingedit.model
 
 interface Changes {
 
-    fun getColors(): List<RectColorModel>
+    fun getColorModels(): List<RectColor>
     fun getPictureModel(): Picture
     fun getRectRadius(): Float
     fun setRectRadius(rectRadius: Float)

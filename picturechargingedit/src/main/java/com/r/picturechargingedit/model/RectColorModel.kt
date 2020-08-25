@@ -14,7 +14,7 @@ import kotlin.math.sqrt
  * Created: 21.08.20
  */
 
-class RectColorModel(val rectPathModel: RectPathModel) {
+class RectColorModel(private val rectPathModel: RectPathModel): RectColor {
 
     private val pointBuffer = FloatArray(2)
     private val rectPixelBuffer = IntArrayBuffer()
@@ -22,7 +22,8 @@ class RectColorModel(val rectPathModel: RectPathModel) {
     private val rectColors = mutableListOf<Int>()
 
 
-    fun getColors(): List<Int> = rectColors
+    override fun getRectPathModel(): RectPath = rectPathModel
+    override fun getColors(): List<Int> = rectColors
 
 
     fun calculateColors(bitmap: Bitmap, matrix: Matrix) {
