@@ -5,7 +5,8 @@ import androidx.annotation.RestrictTo
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BaseView
 import com.r.picturechargingedit.model.Changes
-import com.r.picturechargingedit.model.PictureModel
+import com.r.picturechargingedit.model.Picture
+
 
 /**
  *
@@ -22,7 +23,7 @@ interface BaseEditPictureView: BaseView {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showMode(mode: EditPictureMode)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun showPicture(pictureModel: PictureModel)
+    fun showPicture(pictureModel: Picture)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showChanges(changesModel: Changes)
     @RestrictTo(RestrictTo.Scope.LIBRARY)

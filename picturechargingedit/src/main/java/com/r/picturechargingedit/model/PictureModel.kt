@@ -11,18 +11,25 @@ import android.graphics.Matrix
  * Created: 21.08.20
  */
 
-class PictureModel {
+class PictureModel: Picture {
 
-    var bitmap: Bitmap? = null
-    val matrix = Matrix()
+    private var bitmap: Bitmap? = null
+    private val matrix = Matrix()
+
+    override fun getMatrix(): Matrix = matrix
+    override fun getBitmap(): Bitmap? = bitmap
+
+    override fun setBitmap(bitmap: Bitmap) {
+        this.bitmap = bitmap
+    }
 
 
-    fun createCanvas(): Canvas? {
+    override fun createBitmapCanvas(): Canvas? {
         val bitmap = bitmap ?: return null
         return Canvas(bitmap)
     }
 
-    fun matrixInverted(): Matrix {
+    override fun getMatrixInverted(): Matrix {
         val inverted = Matrix()
         matrix.invert(inverted)
         return inverted

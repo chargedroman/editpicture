@@ -8,7 +8,7 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel(private val pictureModel: PictureModel, initialRectRadius: Float): Changes {
+class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float): Changes {
 
 
     private val paths = LinkedList<PathModel>()
@@ -23,7 +23,7 @@ class ChangesModel(private val pictureModel: PictureModel, initialRectRadius: Fl
 
     override fun getSize(): Int = paths.size
     override fun getColors(): List<RectColorModel> = colors
-    override fun getPictureModel(): PictureModel = pictureModel
+    override fun getPictureModel(): Picture = pictureModel
     override fun getRectRadius(): Float = currentRectRadius
 
 
@@ -32,8 +32,8 @@ class ChangesModel(private val pictureModel: PictureModel, initialRectRadius: Fl
      * sets the colors for each [RectColorModel]
      */
     override fun calculateColors() = synchronized(lock) {
-        val bitmap = pictureModel.bitmap ?: return@synchronized
-        val matrix = pictureModel.matrixInverted()
+        val bitmap = pictureModel.getBitmap() ?: return@synchronized
+        val matrix = pictureModel.getMatrixInverted()
         for(model in colors) {
             model.calculateColors(bitmap, matrix)
         }
@@ -43,7 +43,7 @@ class ChangesModel(private val pictureModel: PictureModel, initialRectRadius: Fl
      * maps all path and rect coordinates back using the inverted [pictureModel]'s matrix
      */
     override fun invertAllCoordinates() = synchronized(lock) {
-        val matrix = pictureModel.matrixInverted()
+        val matrix = pictureModel.getMatrixInverted()
 
         currentRectRadius = matrix.mapRadius(currentRectRadius)
 

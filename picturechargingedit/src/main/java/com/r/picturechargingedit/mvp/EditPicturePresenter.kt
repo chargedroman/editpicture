@@ -75,7 +75,7 @@ class EditPicturePresenter(
     override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
         changesModel.clear()
-        changesModel.getPictureModel().bitmap = bitmap
+        changesModel.getPictureModel().setBitmap(bitmap)
         getView()?.showPicture(changesModel.getPictureModel())
     }
 
@@ -95,7 +95,7 @@ class EditPicturePresenter(
         editIO.savePicture(originalPicture, edited, originalExif)
 
         changesModel = changesModelFactory(changesModel.getRectRadius())
-        changesModel.getPictureModel().bitmap = edited
+        changesModel.getPictureModel().setBitmap(edited)
 
         getView()?.showPicture(changesModel.getPictureModel())
         getView()?.showChanges(changesModel)
