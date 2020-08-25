@@ -3,7 +3,7 @@ package com.r.picturechargingedit.drawers
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import com.r.picturechargingedit.model.ChangesModel
+import com.r.picturechargingedit.model.Changes
 
 /**
  *
@@ -11,7 +11,7 @@ import com.r.picturechargingedit.model.ChangesModel
  * Created: 18.08.20
  */
 
-class DrawerPixelatedPath(drawerArgs: DrawerArgs): Drawer<ChangesModel>(drawerArgs) {
+class DrawerPixelatedPath(drawerArgs: DrawerArgs): Drawer<Changes>(drawerArgs) {
 
     private val pathPaint = Paint()
 
@@ -23,7 +23,7 @@ class DrawerPixelatedPath(drawerArgs: DrawerArgs): Drawer<ChangesModel>(drawerAr
     }
 
 
-    override fun drawChangesOnCanvas(changes: ChangesModel, canvas: Canvas) {
+    override fun drawChangesOnCanvas(changes: Changes, canvas: Canvas) {
         changes.calculateColors()
         for(model in changes.getColors()) {
             for((i, rect) in model.rectPathModel.getRects().withIndex()) {

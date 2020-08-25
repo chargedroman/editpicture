@@ -9,7 +9,7 @@ import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.drawers.DrawerArgs
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
-import com.r.picturechargingedit.model.ChangesModel
+import com.r.picturechargingedit.model.Changes
 import com.r.picturechargingedit.model.PictureModel
 import com.r.picturechargingedit.scale.Interaction
 import com.r.picturechargingedit.scale.ScalingView
@@ -83,18 +83,19 @@ class EditPictureView : ScalingView, BaseEditPictureView {
         post(this::invalidate)
     }
 
-    override fun showChanges(changesModel: ChangesModel) {
+    override fun showChanges(changesModel: Changes) {
         drawerPixelatedPath.showChanges(changesModel)
         post(this::invalidate)
     }
 
-    override fun drawChanges(changesModel: ChangesModel): Bitmap? {
+    override fun drawChanges(changesModel: Changes): Bitmap? {
 
-        val canvas = changesModel.pictureModel.createCanvas() ?: return null
+        val canvas = changesModel.getPictureModel().createCanvas() ?: return null
+
         changesModel.invertAllCoordinates()
         drawerPixelatedPath.drawChangesOnCanvas(changesModel, canvas)
 
-        return changesModel.pictureModel.bitmap
+        return changesModel.getPictureModel().bitmap
     }
 
 }

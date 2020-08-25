@@ -8,7 +8,7 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel(val pictureModel: PictureModel, initialRectRadius: Float) {
+class ChangesModel(private val pictureModel: PictureModel, initialRectRadius: Float): Changes {
 
 
     private val paths = LinkedList<PathModel>()
@@ -21,16 +21,17 @@ class ChangesModel(val pictureModel: PictureModel, initialRectRadius: Float) {
     private var currentRectRadius = initialRectRadius
 
 
-    fun getSize(): Int = paths.size
-    fun getColors(): List<RectColorModel> = colors
-    fun getRectRadius(): Float = currentRectRadius
+    override fun getSize(): Int = paths.size
+    override fun getColors(): List<RectColorModel> = colors
+    override fun getPictureModel(): PictureModel = pictureModel
+    override fun getRectRadius(): Float = currentRectRadius
 
 
 
     /**
      * sets the colors for each [RectColorModel]
      */
-    fun calculateColors() = synchronized(lock) {
+    override fun calculateColors() = synchronized(lock) {
         val bitmap = pictureModel.bitmap ?: return@synchronized
         val matrix = pictureModel.matrixInverted()
         for(model in colors) {
@@ -41,7 +42,7 @@ class ChangesModel(val pictureModel: PictureModel, initialRectRadius: Float) {
     /**
      * maps all path and rect coordinates back using the inverted [pictureModel]'s matrix
      */
-    fun invertAllCoordinates() = synchronized(lock) {
+    override fun invertAllCoordinates() = synchronized(lock) {
         val matrix = pictureModel.matrixInverted()
 
         currentRectRadius = matrix.mapRadius(currentRectRadius)
@@ -65,19 +66,19 @@ class ChangesModel(val pictureModel: PictureModel, initialRectRadius: Float) {
      *
      * [rectRadius] the radius which defines
      */
-    fun setRectRadius(rectRadius: Float) = synchronized(lock) {
+    override fun setRectRadius(rectRadius: Float) = synchronized(lock) {
         this.currentRectRadius = rectRadius
         updateRectsFromPaths(rectRadius)
     }
 
 
-    fun clear() = synchronized(lock) {
+    override fun clear() = synchronized(lock) {
         paths.clear()
         rects.clear()
         colors.clear()
     }
 
-    fun removeLast() = synchronized(lock) {
+    override fun removeLast() = synchronized(lock) {
         if(!paths.isEmpty()) paths.removeLast()
         if(!rects.isEmpty()) rects.removeLast()
         if(!colors.isEmpty()) colors.removeLast()
@@ -87,7 +88,7 @@ class ChangesModel(val pictureModel: PictureModel, initialRectRadius: Float) {
     /**
      * adds a new path starting with the given point
      */
-    fun startRecordingDraw(x: Float, y: Float) = synchronized(lock) {
+    override fun startRecordingDraw(x: Float, y: Float) = synchronized(lock) {
         val newPath = PathModel()
         val newRect = RectPathModel()
         val newColors = RectColorModel(newRect)
@@ -101,12 +102,13 @@ class ChangesModel(val pictureModel: PictureModel, initialRectRadius: Float) {
         paths.add(newPath)
         rects.add(newRect)
         colors.add(newColors)
+        Unit
     }
 
     /**
      * continues the current path and adds a point to it
      */
-    fun continueRecordingDraw(x: Float, y: Float) = synchronized(lock) {
+    override fun continueRecordingDraw(x: Float, y: Float) = synchronized(lock) {
         if(getSize() == 0) {
             startRecordingDraw(x, y)
             return@synchronized

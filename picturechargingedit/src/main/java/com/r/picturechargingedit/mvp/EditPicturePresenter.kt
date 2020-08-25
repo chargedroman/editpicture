@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
-import com.r.picturechargingedit.model.ChangesModel
+import com.r.picturechargingedit.model.Changes
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
@@ -17,7 +17,7 @@ import io.reactivex.Completable
 class EditPicturePresenter(
     private val originalPicture: Uri,
     private val editIO: EditPictureIO,
-    private val changesModelFactory: (Float) -> ChangesModel
+    private val changesModelFactory: (Float) -> Changes
 ) : Presenter<BaseEditPictureView>(), BaseEditPicturePresenter {
 
     companion object {
@@ -33,7 +33,7 @@ class EditPicturePresenter(
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
 
-    private var changesModel: ChangesModel = changesModelFactory(INITIAL_RECT_RADIUS)
+    private var changesModel: Changes = changesModelFactory(INITIAL_RECT_RADIUS)
 
 
     /**
@@ -75,8 +75,8 @@ class EditPicturePresenter(
     override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
         changesModel.clear()
-        changesModel.pictureModel.bitmap = bitmap
-        getView()?.showPicture(changesModel.pictureModel)
+        changesModel.getPictureModel().bitmap = bitmap
+        getView()?.showPicture(changesModel.getPictureModel())
     }
 
     /**
@@ -95,9 +95,9 @@ class EditPicturePresenter(
         editIO.savePicture(originalPicture, edited, originalExif)
 
         changesModel = changesModelFactory(changesModel.getRectRadius())
-        changesModel.pictureModel.bitmap = edited
+        changesModel.getPictureModel().bitmap = edited
 
-        getView()?.showPicture(changesModel.pictureModel)
+        getView()?.showPicture(changesModel.getPictureModel())
         getView()?.showChanges(changesModel)
         updateCanUndo()
     }
@@ -123,7 +123,7 @@ class EditPicturePresenter(
 
     override fun attach(view: BaseEditPictureView) {
         super.attach(view)
-        view.showPicture(changesModel.pictureModel)
+        view.showPicture(changesModel.getPictureModel())
     }
 
 
