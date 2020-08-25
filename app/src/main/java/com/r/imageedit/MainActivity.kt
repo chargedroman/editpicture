@@ -16,8 +16,8 @@ import androidx.core.content.FileProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.MemoryCategory
 import com.r.picturechargingedit.EditPictureMode
-import com.r.picturechargingedit.mvp.BaseEditPicturePresenter
-import com.r.picturechargingedit.mvp.EditPictureView
+import com.r.picturechargingedit.mvp.EditPicturePresenter
+import com.r.picturechargingedit.mvp.impl.EditPictureViewImpl
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -25,9 +25,9 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var editView: EditPictureView
+    lateinit var editView: EditPictureViewImpl
     lateinit var btnTakePhoto: Button
-    lateinit var presenter: BaseEditPicturePresenter
+    lateinit var presenter: EditPicturePresenter
 
     private val disposables = CompositeDisposable()
 
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         editView = findViewById(R.id.view_edit)
         btnTakePhoto = findViewById(R.id.btn_take_photo)
 
-        presenter = BaseEditPicturePresenter.Factory(this).create(getImageCacheUri())
+        presenter = EditPicturePresenter.Factory(this).create(getImageCacheUri())
         editView.setPresenter(presenter)
 
         presenter.setMode(EditPictureMode.PIXELATE_VIA_CLICK)

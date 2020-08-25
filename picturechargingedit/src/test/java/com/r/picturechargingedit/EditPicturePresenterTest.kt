@@ -3,8 +3,8 @@ package com.r.picturechargingedit
 import android.net.Uri
 import com.nhaarman.mockitokotlin2.mock
 import com.r.picturechargingedit.model.Changes
-import com.r.picturechargingedit.mvp.BaseEditPictureView
-import com.r.picturechargingedit.mvp.EditPicturePresenter
+import com.r.picturechargingedit.mvp.EditPictureView
+import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
 import com.r.picturechargingedit.util.EditPictureIO
 import org.junit.Test
 
@@ -15,7 +15,7 @@ import org.junit.Test
  */
 class EditPicturePresenterTest {
 
-    val viewMock: BaseEditPictureView = mock()
+    val viewMock: EditPictureView = mock()
 
     val pictureUriMock: Uri = mock()
     val editIOMock: EditPictureIO = mock()
@@ -23,8 +23,12 @@ class EditPicturePresenterTest {
 
     val changesModelFactory: (Float) -> Changes = { changesMock }
 
-    fun initPresenter(): EditPicturePresenter {
-        return EditPicturePresenter(pictureUriMock, editIOMock, changesModelFactory)
+    fun initPresenter(): EditPicturePresenterImpl {
+        return EditPicturePresenterImpl(
+            pictureUriMock,
+            editIOMock,
+            changesModelFactory
+        )
             .also { it.attach(viewMock) }
     }
 
