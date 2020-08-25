@@ -109,6 +109,7 @@ class ChangesModel(val pictureModel: PictureModel, initialRectRadius: Float) {
     fun continueRecordingDraw(x: Float, y: Float) = synchronized(lock) {
         if(getSize() == 0) {
             startRecordingDraw(x, y)
+            return@synchronized
         }
 
         currentPath.add(x, y)

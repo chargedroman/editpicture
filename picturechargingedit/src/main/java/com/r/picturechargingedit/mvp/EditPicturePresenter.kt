@@ -94,7 +94,7 @@ class EditPicturePresenter(
         val originalExif = editIO.readExif(originalPicture)
         editIO.savePicture(originalPicture, edited, originalExif)
 
-        changesModel = changesModelFactory(INITIAL_RECT_RADIUS)
+        changesModel = changesModelFactory(changesModel.getRectRadius())
         changesModel.pictureModel.bitmap = edited
 
         getView()?.showPicture(changesModel.pictureModel)

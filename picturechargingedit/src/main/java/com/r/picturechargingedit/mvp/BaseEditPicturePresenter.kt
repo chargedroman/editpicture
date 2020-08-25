@@ -49,7 +49,7 @@ interface BaseEditPicturePresenter : BasePresenter<BaseEditPictureView> {
 
     class Factory(private val context: Context) {
         fun create(originalPicture: Uri): BaseEditPicturePresenter {
-            val ioUtil = EditPictureIO(context)
+            val ioUtil = EditPictureIO.create(context)
             val pictureModel = PictureModel()
             val factory: (Float) -> ChangesModel = { ChangesModel(pictureModel, it) }
             return EditPicturePresenter(originalPicture, ioUtil, factory)
