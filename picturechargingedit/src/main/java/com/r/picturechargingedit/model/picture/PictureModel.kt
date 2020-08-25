@@ -1,8 +1,9 @@
-package com.r.picturechargingedit.model
+package com.r.picturechargingedit.model.picture
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
+import com.r.picturechargingedit.model.Picture
 
 /**
  * keeps the bitmap and the matrix mapping the custom view coordinates to the bitmap's coordinates

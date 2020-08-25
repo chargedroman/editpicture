@@ -1,9 +1,11 @@
-package com.r.picturechargingedit.model
+package com.r.picturechargingedit.model.changes
 
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.RectF
+import com.r.picturechargingedit.model.RectColor
+import com.r.picturechargingedit.model.RectPath
 import com.r.picturechargingedit.util.IntArrayBuffer
 import kotlin.math.sqrt
 
@@ -14,7 +16,8 @@ import kotlin.math.sqrt
  * Created: 21.08.20
  */
 
-class RectColorModel(private val rectPathModel: RectPathModel): RectColor {
+class RectColorModel(private val rectPathModel: RectPathModel):
+    RectColor {
 
     private val pointBuffer = FloatArray(2)
     private val rectPixelBuffer = IntArrayBuffer()

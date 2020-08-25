@@ -6,8 +6,8 @@ import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
-import com.r.picturechargingedit.model.ChangesModel
-import com.r.picturechargingedit.model.PictureModel
+import com.r.picturechargingedit.model.changes.ChangesModel
+import com.r.picturechargingedit.model.picture.PictureModel
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 

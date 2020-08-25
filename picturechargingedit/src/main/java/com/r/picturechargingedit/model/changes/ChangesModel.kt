@@ -1,5 +1,7 @@
-package com.r.picturechargingedit.model
+package com.r.picturechargingedit.model.changes
 
+import com.r.picturechargingedit.model.Changes
+import com.r.picturechargingedit.model.Picture
 import java.util.*
 
 /**
@@ -8,7 +10,8 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float): Changes {
+class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
+    Changes {
 
 
     private val paths = LinkedList<PathModel>()
@@ -17,7 +20,8 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
     private val lock = Object()
 
     private var currentPath = PathModel()
-    private var currentRectPath = RectPathModel()
+    private var currentRectPath =
+        RectPathModel()
     private var currentRectRadius = initialRectRadius
 
 
@@ -91,7 +95,8 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
     override fun startRecordingDraw(x: Float, y: Float) = synchronized(lock) {
         val newPath = PathModel()
         val newRect = RectPathModel()
-        val newColors = RectColorModel(newRect)
+        val newColors =
+            RectColorModel(newRect)
 
         currentPath = newPath
         currentRectPath = newRect
@@ -124,8 +129,10 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
         colors.clear()
 
         for(path in paths) {
-            val rectPath = RectPathModel()
-            val rectColor = RectColorModel(rectPath)
+            val rectPath =
+                RectPathModel()
+            val rectColor =
+                RectColorModel(rectPath)
             for(point in path.getPoints()) {
                 rectPath.add(point[0], point[1], rectRadius)
             }
