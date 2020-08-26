@@ -14,7 +14,7 @@ class InteractionHandler {
     companion object {
         private const val CLICK_THRESHOLD = 200L
         private const val DISTANCE_THRESHOLD = 100L
-        private const val MOVE_AMOUNT_THRESHOLD = 4
+        private const val MOVE_AMOUNT_THRESHOLD = 3
     }
 
     private val mPointBuffer = floatArrayOf(0f, 0f)
