@@ -61,6 +61,12 @@ class ScalingHandler {
         return mMatrixInverted
     }
 
+    fun getCurrentScalingFactor(): Float {
+        mMatrix.getValues(mMatrixBuffer)
+        return mMatrixBuffer[0]
+    }
+
+
     fun onDraw(canvas: Canvas) {
         updateMatrixToNotDrawOutOfBounds(mMatrix)
         canvas.setMatrix(mMatrix)
@@ -111,10 +117,22 @@ class ScalingHandler {
     private fun scale(event: MotionEvent) {
         val newDist = spacing(event)
         if (newDist > MIN_FINGER_DIST_FOR_ZOOM_EVENT) {
+
             mMatrix.set(mSavedMatrix)
+
             val scale = newDist / oldDist
-            mMatrix.postScale(scale, scale, mid.x, mid.y)
-            updateMatrixToNotDrawOutOfBounds(mMatrix)
+            val currentScale = getCurrentScalingFactor()
+            val nextScale = scale*currentScale
+            val inAllowedScaleRange = nextScale in minScale..maxScale
+
+            if(inAllowedScaleRange) {
+                mMatrix.postScale(scale, scale, mid.x, mid.y)
+            } else {
+                val minMax = nextScale.coerceAtLeast(minScale).coerceAtMost(maxScale)
+                val reverseScaleToMinMax = minMax/currentScale
+                mMatrix.postScale(reverseScaleToMinMax, reverseScaleToMinMax, mid.x, mid.y)
+            }
+
         }
     }
 
