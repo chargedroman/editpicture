@@ -14,12 +14,14 @@ class InteractionHandler {
     companion object {
         private const val CLICK_THRESHOLD = 200L
         private const val DISTANCE_THRESHOLD = 100L
+        private const val MOVE_AMOUNT_THRESHOLD = 4
     }
 
     private val mPointBuffer = floatArrayOf(0f, 0f)
     private var mLastTouchEventDownTime = 0L
     private var mLastTouchEventDownX = 0f
     private var mLastTouchEventDownY = 0f
+    private var mMoveEventCount = 0
 
 
     fun onTouchEvent(
@@ -42,9 +44,23 @@ class InteractionHandler {
 
 
     private fun handleMoveEvent(event: MotionEvent, onEventDetected: (Interaction, Float, Float) -> Unit) {
-        if(event.action == MotionEvent.ACTION_MOVE) {
+
+        if(event.action == MotionEvent.ACTION_DOWN && event.pointerCount == 1) {
+            mMoveEventCount = 0
+        }
+
+        if(event.action == MotionEvent.ACTION_UP) {
+            mMoveEventCount = 0
+        }
+
+        if(event.action == MotionEvent.ACTION_MOVE && event.pointerCount == 1) {
+            mMoveEventCount++
+        }
+
+        if(event.isMove()) {
             onEventDetected(Interaction.MOVE, mPointBuffer[0], mPointBuffer[1])
         }
+
     }
 
     private fun handleClickEvent(event: MotionEvent, onEventDetected: (Interaction, Float, Float) -> Unit) {
@@ -63,6 +79,13 @@ class InteractionHandler {
 
     private fun MotionEvent.isDown(): Boolean {
         return action == MotionEvent.ACTION_DOWN && pointerCount == 1
+    }
+
+
+    private fun MotionEvent.isMove(): Boolean {
+        return action == MotionEvent.ACTION_MOVE
+                && pointerCount == 1
+                && mMoveEventCount > MOVE_AMOUNT_THRESHOLD
     }
 
 
