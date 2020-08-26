@@ -111,7 +111,6 @@ class ScalingHandler {
         val dx = event.x - start.x
         val dy = event.y - start.y
         mMatrix.postTranslate(dx, dy)
-        updateMatrixToNotDrawOutOfBounds(mMatrix)
     }
 
     private fun scale(event: MotionEvent) {
@@ -157,28 +156,19 @@ class ScalingHandler {
 
 
     /**
-     * updates the matrix such that the image can not be translated outside of the view bounds
+     * updates the matrix such that the image is not be translated outside of the view bounds
      */
     private fun updateMatrixToNotDrawOutOfBounds(matrix: Matrix) {
         matrix.getValues(mMatrixBuffer)
 
         val zoomFactor = mMatrixBuffer[0]
-        updateScaleBounds(zoomFactor)
-        updateTranslateBounds(zoomFactor)
-
-        matrix.setValues(mMatrixBuffer)
-    }
-
-    private fun updateScaleBounds(zoomFactor: Float) {
-        mMatrixBuffer[0] = zoomFactor.coerceAtLeast(minScale).coerceAtMost(maxScale)
-        mMatrixBuffer[4] = zoomFactor.coerceAtLeast(minScale).coerceAtMost(maxScale)
-    }
-
-    private fun updateTranslateBounds(zoomFactor: Float) {
         val leastX = -zoomFactor*boundsWidth + boundsWidth
         val leastY = -zoomFactor*boundsHeight + boundsHeight
         mMatrixBuffer[2] = mMatrixBuffer[2].coerceAtMost(0f).coerceAtLeast(leastX)
         mMatrixBuffer[5] = mMatrixBuffer[5].coerceAtMost(0f).coerceAtLeast(leastY)
+
+        matrix.setValues(mMatrixBuffer)
     }
+
 
 }
