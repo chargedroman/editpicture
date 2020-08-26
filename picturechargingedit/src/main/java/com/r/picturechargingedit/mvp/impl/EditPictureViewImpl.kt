@@ -52,9 +52,9 @@ class EditPictureViewImpl : ScalingView,
 
     override fun showMode(mode: EditPictureMode) {
         when(mode) {
-            EditPictureMode.NONE -> setZoomAndScaleEnabled(true)
-            EditPictureMode.PIXELATE_VIA_CLICK -> setZoomAndScaleEnabled(true)
-            EditPictureMode.PIXELATE_VIA_DRAG -> setZoomAndScaleEnabled(false)
+            EditPictureMode.NONE -> setTranslateScaleEnabled(true, true)
+            EditPictureMode.PIXELATE_VIA_CLICK -> setTranslateScaleEnabled(true, true)
+            EditPictureMode.PIXELATE_VIA_DRAG -> setTranslateScaleEnabled(false, true)
             else -> Unit
         }
         invalidate()
@@ -92,12 +92,9 @@ class EditPictureViewImpl : ScalingView,
     }
 
     override fun drawChanges(changesModel: Changes): Bitmap? {
-
         val canvas = changesModel.getPictureModel().createBitmapCanvas() ?: return null
-
         changesModel.invertAllCoordinates()
         drawerPixelatedPath.drawChangesOnCanvas(changesModel, canvas)
-
         return changesModel.getPictureModel().getBitmap()
     }
 

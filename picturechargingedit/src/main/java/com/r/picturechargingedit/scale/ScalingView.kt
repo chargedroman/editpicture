@@ -15,7 +15,7 @@ import android.view.View
  */
 
 @SuppressLint("ClickableViewAccessibility")
-abstract class ScalingView : View {
+abstract class ScalingView : View, Scaling {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -28,11 +28,28 @@ abstract class ScalingView : View {
 
     private val scalingHandler = ScalingHandler()
     private val interactionHandler = InteractionHandler()
-    private var zoomScaleEnabled = true
 
 
     abstract fun onDrawScaled(canvas: Canvas)
     abstract fun onTouchScaled(type: Interaction, x: Float, y: Float)
+
+
+
+    override fun setTranslateScaleEnabled(translate: Boolean, scale: Boolean) {
+        scalingHandler.setTranslateScaleEnabled(translate, scale)
+    }
+
+    override fun setMinMaxScale(minScale: Float, maxScale: Float) {
+        scalingHandler.setMinMaxScale(minScale, maxScale)
+    }
+
+    override fun setBoundsWidthHeight(width: Int, height: Int) {
+        scalingHandler.setBoundsWidthHeight(width, height)
+    }
+
+    override fun getCurrentScalingFactor(): Float {
+        return scalingHandler.getCurrentScalingFactor()
+    }
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -40,22 +57,11 @@ abstract class ScalingView : View {
         scalingHandler.setBoundsWidthHeight(width, height)
     }
 
-    fun setMinMaxScale(minScale: Float, maxScale: Float) {
-        scalingHandler.setMinMaxScale(minScale, maxScale)
-    }
-
-    fun setZoomAndScaleEnabled(zoomScaleEnabled: Boolean) {
-        this.zoomScaleEnabled = zoomScaleEnabled
-    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-
-        if(zoomScaleEnabled)
-            scalingHandler.onTouchEvent(event)
-
+        scalingHandler.onTouchEvent(event)
         val matrix = scalingHandler.getInvertedMatrix()
         interactionHandler.onTouchEvent(event, matrix, this::onTouchScaled)
-
         invalidate()
         return true
     }

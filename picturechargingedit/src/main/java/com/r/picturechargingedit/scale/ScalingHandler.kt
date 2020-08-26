@@ -14,7 +14,7 @@ import android.view.MotionEvent
  * Created: 24.08.20
  */
 
-class ScalingHandler {
+class ScalingHandler : Scaling {
 
     companion object {
         const val MIN_SCALE = 1f
@@ -22,7 +22,7 @@ class ScalingHandler {
         const val MIN_FINGER_DIST_FOR_ZOOM_EVENT = 10f
     }
 
-    private enum class Mode {
+    enum class Mode {
         NONE,
         TRANSLATE,
         SCALE
@@ -44,24 +44,26 @@ class ScalingHandler {
     private val start = PointF()
     private val mid = PointF()
     private var oldDist = 1f
+    private var translatingEnabled = true
+    private var scalingEnabled = true
 
 
-    fun setMinMaxScale(minScale: Float, maxScale: Float) {
+    override fun setTranslateScaleEnabled(translate: Boolean, scale: Boolean) {
+        translatingEnabled = translate
+        scalingEnabled = scale
+    }
+
+    override fun setMinMaxScale(minScale: Float, maxScale: Float) {
         this.minScale = minScale
         this.maxScale = maxScale
     }
 
-    fun setBoundsWidthHeight(width: Int, height: Int) {
+    override fun setBoundsWidthHeight(width: Int, height: Int) {
         this.boundsWidth = width
         this.boundsHeight = height
     }
 
-    fun getInvertedMatrix(): Matrix {
-        mMatrix.invert(mMatrixInverted)
-        return mMatrixInverted
-    }
-
-    fun getCurrentScalingFactor(): Float {
+    override fun getCurrentScalingFactor(): Float {
         mMatrix.getValues(mMatrixBuffer)
         return mMatrixBuffer[0]
     }
@@ -80,6 +82,12 @@ class ScalingHandler {
             MotionEvent.ACTION_MOVE -> onMove(event)
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> mode = Mode.NONE
         }
+    }
+
+
+    fun getInvertedMatrix(): Matrix {
+        mMatrix.invert(mMatrixInverted)
+        return mMatrixInverted
     }
 
 
@@ -110,7 +118,9 @@ class ScalingHandler {
         mMatrix.set(mSavedMatrix)
         val dx = event.x - start.x
         val dy = event.y - start.y
-        mMatrix.postTranslate(dx, dy)
+
+        if(translatingEnabled)
+            mMatrix.postTranslate(dx, dy)
     }
 
     private fun scale(event: MotionEvent) {

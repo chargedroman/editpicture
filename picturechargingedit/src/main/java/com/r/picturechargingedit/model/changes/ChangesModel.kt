@@ -95,8 +95,7 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
     override fun startRecordingDraw(x: Float, y: Float) = synchronized(lock) {
         val newPath = PathModel()
         val newRect = RectPathModel()
-        val newColors =
-            RectColorModel(newRect)
+        val newColors = RectColorModel(newRect)
 
         currentPath = newPath
         currentRectPath = newRect
@@ -129,10 +128,8 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
         colors.clear()
 
         for(path in paths) {
-            val rectPath =
-                RectPathModel()
-            val rectColor =
-                RectColorModel(rectPath)
+            val rectPath = RectPathModel()
+            val rectColor = RectColorModel(rectPath)
             for(point in path.getPoints()) {
                 rectPath.add(point[0], point[1], rectRadius)
             }
