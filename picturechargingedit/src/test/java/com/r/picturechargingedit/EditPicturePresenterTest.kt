@@ -84,9 +84,9 @@ class EditPicturePresenterTest {
         val presenter = initPresenter()
         val radius = 42f
 
-        presenter.setRectRadius(radius)
+        presenter.setRectRadiusFactor(radius)
 
-        verify(changesMock, times(1)).setRectRadius(radius)
+        verify(changesMock, times(1)).setRectRadiusFactor(radius)
         verify(viewMock, times(1)).showChanges(changesMock)
     }
 

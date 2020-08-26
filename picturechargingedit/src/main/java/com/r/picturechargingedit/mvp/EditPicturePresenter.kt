@@ -24,10 +24,11 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
      * api for user
      */
 
-    fun setRectRadius(rectRadius: Float)
+    fun setRectRadiusFactor(rectRadiusFactor: Float)
+    fun getRectRadiusFactor(): Float
+    fun getRectRadius(): Float
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
 
-    fun getRectRadius(): Float
     fun getCanUndo(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>
 
@@ -42,9 +43,9 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
      */
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun startRecordingDraw(x: Float, y: Float)
+    fun startRecordingDraw(x: Float, y: Float, radius: Float)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun continueRecordingDraw(x: Float, y: Float)
+    fun continueRecordingDraw(x: Float, y: Float, radius: Float)
 
 
 

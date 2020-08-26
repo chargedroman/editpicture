@@ -1,5 +1,7 @@
 package com.r.picturechargingedit.scale
 
+import android.graphics.Matrix
+
 
 /**
  *
@@ -13,5 +15,6 @@ interface Scaling {
     fun setMinMaxScale(minScale: Float, maxScale: Float)
     fun setBoundsWidthHeight(width: Int, height: Int)
     fun getCurrentScalingFactor(): Float
+    fun getInvertedScalingMatrix(): Matrix
 
 }

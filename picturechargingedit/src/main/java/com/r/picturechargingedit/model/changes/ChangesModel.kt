@@ -10,8 +10,7 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
-    Changes {
+class ChangesModel(private val pictureModel: Picture, initialRectRadiusFactor: Float): Changes {
 
 
     private val paths = LinkedList<PathModel>()
@@ -20,15 +19,14 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
     private val lock = Object()
 
     private var currentPath = PathModel()
-    private var currentRectPath =
-        RectPathModel()
-    private var currentRectRadius = initialRectRadius
+    private var currentRectPath = RectPathModel()
+    private var currentRectRadiusFactor = initialRectRadiusFactor
 
 
     override fun getSize(): Int = paths.size
     override fun getColorModels(): List<RectColorModel> = colors
     override fun getPictureModel(): Picture = pictureModel
-    override fun getRectRadius(): Float = currentRectRadius
+    override fun getRectRadiusFactor(): Float = currentRectRadiusFactor
 
 
 
@@ -49,8 +47,6 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
     override fun invertAllCoordinates() = synchronized(lock) {
         val matrix = pictureModel.getMatrixInverted()
 
-        currentRectRadius = matrix.mapRadius(currentRectRadius)
-
         for(model in paths) {
             for(point in model.getPoints()) {
                 matrix.mapPoints(point)
@@ -66,13 +62,12 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
     }
 
     /**
-     * sets pixelated rect radius and re calculated all rects from current paths
+     * sets pixelated rect radius factor
      *
-     * [rectRadius] the radius which defines
+     * [rectRadiusFactor] the radius by which to multiply future rects
      */
-    override fun setRectRadius(rectRadius: Float) = synchronized(lock) {
-        this.currentRectRadius = rectRadius
-        updateRectsFromPaths(rectRadius)
+    override fun setRectRadiusFactor(rectRadiusFactor: Float) = synchronized(lock) {
+        this.currentRectRadiusFactor = rectRadiusFactor
     }
 
 
@@ -92,7 +87,7 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
     /**
      * adds a new path starting with the given point
      */
-    override fun startRecordingDraw(x: Float, y: Float) = synchronized(lock) {
+    override fun startRecordingDraw(x: Float, y: Float, radius: Float) = synchronized(lock) {
         val newPath = PathModel()
         val newRect = RectPathModel()
         val newColors = RectColorModel(newRect)
@@ -101,7 +96,7 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
         currentRectPath = newRect
 
         newPath.add(x, y)
-        newRect.add(x, y, currentRectRadius)
+        newRect.add(x, y, radius*currentRectRadiusFactor)
 
         paths.add(newPath)
         rects.add(newRect)
@@ -112,27 +107,10 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadius: Float):
     /**
      * continues the current path and adds a point to it
      */
-    override fun continueRecordingDraw(x: Float, y: Float) = synchronized(lock) {
+    override fun continueRecordingDraw(x: Float, y: Float, radius: Float) = synchronized(lock) {
         currentPath.add(x, y)
-        currentRectPath.add(x, y, currentRectRadius)
+        currentRectPath.add(x, y, radius*currentRectRadiusFactor)
     }
-
-
-    private fun updateRectsFromPaths(rectRadius: Float) {
-        rects.clear()
-        colors.clear()
-
-        for(path in paths) {
-            val rectPath = RectPathModel()
-            val rectColor = RectColorModel(rectPath)
-            for(point in path.getPoints()) {
-                rectPath.add(point[0], point[1], rectRadius)
-            }
-            rects.add(rectPath)
-            colors.add(rectColor)
-        }
-    }
-
 
 
 }

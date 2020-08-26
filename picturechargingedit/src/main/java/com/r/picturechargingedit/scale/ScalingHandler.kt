@@ -85,7 +85,7 @@ class ScalingHandler : Scaling {
     }
 
 
-    fun getInvertedMatrix(): Matrix {
+    override fun getInvertedScalingMatrix(): Matrix {
         mMatrix.invert(mMatrixInverted)
         return mMatrixInverted
     }

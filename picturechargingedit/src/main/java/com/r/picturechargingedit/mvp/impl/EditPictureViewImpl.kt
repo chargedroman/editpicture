@@ -73,9 +73,13 @@ class EditPictureViewImpl : ScalingView,
     }
 
     override fun onTouchScaled(type: Interaction, x: Float, y: Float) {
+        val radius = presenter?.getRectRadius() ?: return
+        val matrix = getInvertedScalingMatrix()
+        val mappedRadius = matrix.mapRadius(radius)
+
         when(type) {
-            Interaction.CLICK -> presenter?.startRecordingDraw(x, y)
-            Interaction.MOVE -> presenter?.continueRecordingDraw(x, y)
+            Interaction.CLICK -> presenter?.startRecordingDraw(x, y, mappedRadius)
+            Interaction.MOVE -> presenter?.continueRecordingDraw(x, y, mappedRadius)
             else -> Unit
         }
     }

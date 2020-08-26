@@ -1,5 +1,6 @@
 package com.r.picturechargingedit.mvp.impl
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
@@ -24,19 +25,24 @@ class EditPicturePresenterImpl(
     EditPicturePresenter {
 
     companion object {
-        const val INITIAL_RECT_RADIUS = 20f
+        const val INITIAL_RECT_RADIUS_FACTOR = 1f
+        private const val THOUSAND = 1000f
+        private const val RELATIVE_RECT_RADIUS_FACTOR = 1.6f
     }
 
 
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
+    private var mRelativeRectRadius = INITIAL_RECT_RADIUS_FACTOR
     private val lock = Object()
 
-    override fun getRectRadius(): Float = changesModel.getRectRadius()
+    override fun getRectRadiusFactor(): Float = changesModel.getRectRadiusFactor()
+    override fun getRectRadius(): Float = mRelativeRectRadius * changesModel.getRectRadiusFactor()
+
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
 
-    private var changesModel: Changes = changesModelFactory(INITIAL_RECT_RADIUS)
+    private var changesModel: Changes = changesModelFactory(INITIAL_RECT_RADIUS_FACTOR)
 
 
     /**
@@ -53,10 +59,11 @@ class EditPicturePresenterImpl(
     }
 
     /**
-     * [rectRadius] the radius which defines the size of the pixelated rects
+     * [rectRadiusFactor] the factor by which the radius will be multiplied
+     * the actual rect radius is relative to the bitmap size
      */
-    override fun setRectRadius(rectRadius: Float) {
-        changesModel.setRectRadius(rectRadius)
+    override fun setRectRadiusFactor(rectRadiusFactor: Float) {
+        changesModel.setRectRadiusFactor(rectRadiusFactor)
         getView()?.showChanges(changesModel)
     }
 
@@ -79,6 +86,7 @@ class EditPicturePresenterImpl(
         val bitmap = editIO.readPictureBitmap(originalPicture)
         changesModel.clear()
         changesModel.getPictureModel().setBitmap(bitmap)
+        mRelativeRectRadius = getRelativePixelatedRectRadius(bitmap)
         getView()?.showPicture(changesModel.getPictureModel())
     }
 
@@ -97,7 +105,7 @@ class EditPicturePresenterImpl(
         val originalExif = editIO.readExif(originalPicture)
         editIO.savePicture(originalPicture, edited, originalExif)
 
-        changesModel = changesModelFactory(changesModel.getRectRadius())
+        changesModel = changesModelFactory(changesModel.getRectRadiusFactor())
         changesModel.getPictureModel().setBitmap(edited)
 
         getView()?.showPicture(changesModel.getPictureModel())
@@ -106,19 +114,19 @@ class EditPicturePresenterImpl(
     }
 
 
-    override fun startRecordingDraw(x: Float, y: Float) {
+    override fun startRecordingDraw(x: Float, y: Float, radius: Float) {
         if(mMode.value == EditPictureMode.NONE) return
 
-        changesModel.startRecordingDraw(x, y)
+        changesModel.startRecordingDraw(x, y, radius)
         getView()?.showChanges(changesModel)
         updateCanUndo()
     }
 
-    override fun continueRecordingDraw(x: Float, y: Float) {
+    override fun continueRecordingDraw(x: Float, y: Float, radius: Float) {
         if(mMode.value == EditPictureMode.NONE) return
         if(mMode.value == EditPictureMode.PIXELATE_VIA_CLICK) return
 
-        changesModel.continueRecordingDraw(x, y)
+        changesModel.continueRecordingDraw(x, y, radius)
         getView()?.showChanges(changesModel)
         updateCanUndo()
     }
@@ -142,6 +150,13 @@ class EditPicturePresenterImpl(
         synchronized(lock) {
             block()
         }
+    }
+
+
+    private fun getRelativePixelatedRectRadius(bitmap: Bitmap): Float {
+        val width = bitmap.width/THOUSAND
+        val height = bitmap.height/THOUSAND
+        return width * height * RELATIVE_RECT_RADIUS_FACTOR
     }
 
 

@@ -10,8 +10,8 @@ interface Changes {
 
     fun getColorModels(): List<RectColor>
     fun getPictureModel(): Picture
-    fun getRectRadius(): Float
-    fun setRectRadius(rectRadius: Float)
+    fun getRectRadiusFactor(): Float
+    fun setRectRadiusFactor(rectRadiusFactor: Float)
 
     fun calculateColors()
     fun invertAllCoordinates()
@@ -20,7 +20,7 @@ interface Changes {
     fun getSize(): Int
     fun removeLast()
 
-    fun startRecordingDraw(x: Float, y: Float)
-    fun continueRecordingDraw(x: Float, y: Float)
+    fun startRecordingDraw(x: Float, y: Float, radius: Float)
+    fun continueRecordingDraw(x: Float, y: Float, radius: Float)
 
 }

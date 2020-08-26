@@ -3,6 +3,7 @@ package com.r.picturechargingedit.scale
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -52,6 +53,10 @@ abstract class ScalingView : View, Scaling {
         return scalingHandler.getCurrentScalingFactor()
     }
 
+    override fun getInvertedScalingMatrix(): Matrix {
+        return scalingHandler.getInvertedScalingMatrix()
+    }
+
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -61,7 +66,7 @@ abstract class ScalingView : View, Scaling {
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         scalingHandler.onTouchEvent(event)
-        val matrix = scalingHandler.getInvertedMatrix()
+        val matrix = scalingHandler.getInvertedScalingMatrix()
         interactionHandler.onTouchEvent(event, matrix, this::onTouchScaled)
         invalidate()
         return true
