@@ -22,7 +22,16 @@ class InteractionHandler {
     private var mLastTouchEventDownX = 0f
     private var mLastTouchEventDownY = 0f
     private var mMoveEventCount = 0
+    private var mStartedMoving = false
 
+    private var translatingEnabled = true
+    private var scalingEnabled = true
+
+
+    fun setTranslateScaleEnabled(translate: Boolean, scale: Boolean) {
+        translatingEnabled = translate
+        scalingEnabled = scale
+    }
 
     fun onTouchEvent(
         event: MotionEvent,
@@ -47,6 +56,7 @@ class InteractionHandler {
 
         if(event.action == MotionEvent.ACTION_DOWN && event.pointerCount == 1) {
             mMoveEventCount = 0
+            mStartedMoving = true
         }
 
         if(event.action == MotionEvent.ACTION_UP) {
@@ -58,7 +68,12 @@ class InteractionHandler {
         }
 
         if(event.isMove()) {
-            onEventDetected(Interaction.MOVE, mPointBuffer[0], mPointBuffer[1])
+             if(mStartedMoving && !translatingEnabled) {
+                 onEventDetected(Interaction.CLICK, mPointBuffer[0], mPointBuffer[1])
+                 mStartedMoving = false
+             } else {
+                 onEventDetected(Interaction.MOVE, mPointBuffer[0], mPointBuffer[1])
+             }
         }
 
     }

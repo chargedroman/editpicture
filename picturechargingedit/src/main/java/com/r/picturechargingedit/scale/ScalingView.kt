@@ -37,6 +37,7 @@ abstract class ScalingView : View, Scaling {
 
     override fun setTranslateScaleEnabled(translate: Boolean, scale: Boolean) {
         scalingHandler.setTranslateScaleEnabled(translate, scale)
+        interactionHandler.setTranslateScaleEnabled(translate, scale)
     }
 
     override fun setMinMaxScale(minScale: Float, maxScale: Float) {
