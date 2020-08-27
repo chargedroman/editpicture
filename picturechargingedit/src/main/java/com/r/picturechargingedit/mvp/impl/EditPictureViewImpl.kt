@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.AttributeSet
 import com.r.picturechargingedit.EditPictureMode
-import com.r.picturechargingedit.drawers.DrawerArgs
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
 import com.r.picturechargingedit.model.Changes
@@ -34,9 +33,8 @@ class EditPictureViewImpl : ScalingView,
         defStyleAttr
     )
 
-    private val drawerArgs = DrawerArgs(this)
-    private val drawerPicture = DrawerPicture(drawerArgs)
-    private val drawerPixelatedPath = DrawerPixelatedPath(drawerArgs)
+    private val drawerPicture = DrawerPicture()
+    private val drawerPixelatedPath = DrawerPixelatedPath()
 
     private var presenter: EditPicturePresenter? = null
 
