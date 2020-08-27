@@ -22,9 +22,9 @@ fun RectF.setZero() {
     bottom = 0f
 }
 
-fun RectF.isZero(): Boolean {
-    return top == 0f &&
-    left == 0f &&
-    right == 0f &&
-    bottom == 0f
+fun RectF.add(rectF: RectF) {
+    top += rectF.top
+    left += rectF.left
+    right += rectF.right
+    bottom += rectF.bottom
 }

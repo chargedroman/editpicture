@@ -3,6 +3,7 @@ package com.r.picturechargingedit.model.crop
 import android.graphics.RectF
 import android.view.MotionEvent
 import com.r.picturechargingedit.EditPictureMode
+import com.r.picturechargingedit.arch.add
 import com.r.picturechargingedit.arch.copyInto
 import com.r.picturechargingedit.arch.setZero
 import com.r.picturechargingedit.model.picture.Picture
@@ -18,60 +19,23 @@ class CropModel(private val pictureModel: Picture): Crop {
 
 
     private enum class CropArea(val add: (RectF, Float, Float) -> Unit) {
-
         NONE({ _, _, _ -> }),
 
-        LEFT({ rect, dx, dy ->
-            rect.left += dx
-            rect.right += dx
-        }),
+        LEFT({ rect, dx, _ -> rect.left += dx }),
+        RIGHT({ rect, dx, _ -> rect.right += dx }),
+        TOP({ rect, _, dy -> rect.top += dy }),
+        BOTTOM({ rect, _, dy -> rect.bottom += dy }),
 
-        RIGHT({ rect, dx, dy ->
-            rect.left += dx
-            rect.right += dx
-        }),
-
-        TOP({ rect, dx, dy ->
-            rect.top += dy
-            rect.bottom += dy
-        }),
-
-        BOTTOM({ rect, dx, dy ->
-            rect.top += dy
-            rect.bottom += dy
-        }),
-
-        TOPLEFT({ rect, dx, dy ->
-            rect.left += dx
-            rect.right += dx
-            rect.top += dy
-            rect.bottom += dy
-        }),
-
-        TOPRIGHT({ rect, dx, dy ->
-            rect.left += dx
-            rect.right += dx
-            rect.top += dy
-            rect.bottom += dy
-        }),
-
-        BOTTOMLEFT({ rect, dx, dy ->
-            rect.left += dx
-            rect.right += dx
-            rect.top += dy
-            rect.bottom += dy
-        }),
-
-        BOTTOMRIGHT({ rect, dx, dy ->
-            rect.left += dx
-            rect.right += dx
-            rect.top += dy
-            rect.bottom += dy
-        });
+        TOPLEFT({ rect, dx, dy -> rect.top += dy; rect.left += dx }),
+        TOPRIGHT({ rect, dx, dy -> rect.top += dy; rect.right += dx }),
+        BOTTOMLEFT({ rect, dx, dy -> rect.bottom += dy; rect.left += dx }),
+        BOTTOMRIGHT({ rect, dx, dy -> rect.bottom += dy; rect.right += dx });
     }
 
 
     private var currentCropArea: CropArea = CropArea.NONE
+    private val originalBoundsRect: RectF = RectF()
+    private val deltaRect: RectF = RectF()
     private val croppingRect: RectF = RectF()
     private val bufferRect: RectF = RectF()
 
@@ -99,11 +63,10 @@ class CropModel(private val pictureModel: Picture): Crop {
             return
         }
 
-        croppingRectRadius = event.mappedMargin
-        pictureModel.getBitmapBounds().copyInto(croppingRect)
-
+        pictureModel.getBitmapBoundsMapped().copyInto(originalBoundsRect)
 
         if(event.isDown()) {
+            croppingRectRadius = event.mappedMargin
             currentCropArea = calculateCurrentCropArea(event)
             if(currentCropArea != CropArea.NONE) {
                 lastEvent = event
@@ -117,6 +80,7 @@ class CropModel(private val pictureModel: Picture): Crop {
 
         if(event.isMove() && currentCropArea != CropArea.NONE) {
             cropRectWith(event)
+            this.lastEvent = event
         }
 
     }
@@ -127,15 +91,25 @@ class CropModel(private val pictureModel: Picture): Crop {
         val area = currentCropArea
 
         if(lastEvent == null) {
-            this.lastEvent = event
             return
         }
 
         val dx = event.mappedX - lastEvent.mappedX
         val dy = event.mappedY - lastEvent.mappedY
 
-        area.add(croppingRect, dx, dy)
-        println("CHAR: add! $dx $dy")
+        area.add(deltaRect, dx, dy)
+
+        originalBoundsRect.copyInto(bufferRect)
+        bufferRect.add(deltaRect)
+        bufferRect.copyInto(croppingRect)
+        croppingRect.limitBoundsTo(originalBoundsRect)
+    }
+
+    private fun RectF.limitBoundsTo(rectF: RectF) {
+        left = left.coerceAtLeast(rectF.left).coerceAtMost(rectF.right)
+        right = right.coerceAtLeast(rectF.left).coerceAtMost(rectF.right)
+        top = top.coerceAtLeast(rectF.top).coerceAtMost(rectF.bottom)
+        bottom = bottom.coerceAtLeast(rectF.top).coerceAtMost(rectF.bottom)
     }
 
 
