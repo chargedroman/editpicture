@@ -24,7 +24,6 @@ class DrawerPixelation: Drawer<Pixelation>() {
 
 
     override fun drawChangesOnCanvas(changes: Pixelation, canvas: Canvas) {
-        changes.calculateColors()
         for(model in changes.getColorModels()) {
             for((i, rect) in model.getRectPathModel().getRects().withIndex()) {
                 pathPaint.color = model.getColors().getOrNull(i) ?: Color.TRANSPARENT

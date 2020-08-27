@@ -25,18 +25,6 @@ class PixelationModel(private val pictureModel: Picture): Pixelation {
     override fun getColorModels(): List<RectColorModel> = colors
 
 
-
-    /**
-     * sets the colors for each [RectColorModel]
-     */
-    override fun calculateColors() = synchronized(lock) {
-        val bitmap = pictureModel.getBitmap() ?: return@synchronized
-        val matrix = pictureModel.getMatrixInverted()
-        for(model in colors) {
-            model.calculateColors(bitmap, matrix)
-        }
-    }
-
     /**
      * maps all path and rect coordinates back using the inverted [pictureModel]'s matrix
      */
@@ -88,7 +76,8 @@ class PixelationModel(private val pictureModel: Picture): Pixelation {
         paths.add(newPath)
         rects.add(newRect)
         colors.add(newColors)
-        Unit
+
+        calculateColors()
     }
 
     /**
@@ -97,7 +86,19 @@ class PixelationModel(private val pictureModel: Picture): Pixelation {
     override fun continueRecordingDraw(x: Float, y: Float, radius: Float) = synchronized(lock) {
         currentPath.add(x, y)
         currentRectPath.add(x, y, radius)
+        calculateColors()
     }
 
+
+    /**
+     * sets the colors for each [RectColorModel]
+     */
+    private fun calculateColors() = synchronized(lock) {
+        val bitmap = pictureModel.getBitmap() ?: return@synchronized
+        val matrix = pictureModel.getMatrixInverted()
+        for(model in colors) {
+            model.calculateColors(bitmap, matrix)
+        }
+    }
 
 }
