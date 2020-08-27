@@ -62,7 +62,7 @@ class EditPicturePresenterTest {
 
         verify(changesMock, times(1)).clear()
         verify(changesMock, times(0)).removeLast()
-        verify(viewMock, times(1)).showChanges(changesMock)
+        verify(viewMock, times(2)).showChanges(changesMock)
     }
 
     @Test
@@ -74,7 +74,7 @@ class EditPicturePresenterTest {
 
         verify(changesMock, times(0)).clear()
         verify(changesMock, times(1)).removeLast()
-        verify(viewMock, times(1)).showChanges(changesMock)
+        verify(viewMock, times(2)).showChanges(changesMock)
     }
 
 
@@ -87,7 +87,7 @@ class EditPicturePresenterTest {
         presenter.setRectRadiusFactor(radius)
 
         verify(changesMock, times(1)).setRectRadiusFactor(radius)
-        verify(viewMock, times(1)).showChanges(changesMock)
+        verify(viewMock, times(2)).showChanges(changesMock)
     }
 
 
@@ -102,7 +102,7 @@ class EditPicturePresenterTest {
         assertEquals(mode, presenter.getMode().value)
         verify(viewMock, times(1)).showMode(mode)
         verify(changesMock, times(1)).clear()
-        verify(viewMock, times(1)).showChanges(changesMock)
+        verify(viewMock, times(2)).showChanges(changesMock)
     }
 
     @Test
@@ -116,7 +116,7 @@ class EditPicturePresenterTest {
         assertEquals(presenter.getMode().value, mode)
         verify(viewMock, times(1)).showMode(mode)
         verify(changesMock, times(0)).clear()
-        verify(viewMock, times(0)).showChanges(changesMock)
+        verify(viewMock, times(1)).showChanges(changesMock)
     }
 
 
@@ -163,7 +163,7 @@ class EditPicturePresenterTest {
 
         verify(viewMock, times(1)).drawChanges(changesMock)
         verify(editPictureMock, times(1)).savePicture(pictureUriMock, editedBitmap, exif)
-        verify(viewMock, times(1)).showChanges(changesMock)
+        verify(viewMock, times(2)).showChanges(changesMock)
         verify(viewMock, times(2)).showPicture(pictueModelMock)
     }
 
@@ -217,7 +217,7 @@ class EditPicturePresenterTest {
 
         assertEquals(true, presenter.getCanUndo().value)
         verify(changesMock, times(1)).startRecordingDraw(x, y, r)
-        verify(viewMock, times(1)).showChanges(changesMock)
+        verify(viewMock, times(2)).showChanges(changesMock)
     }
 
     @Test
@@ -257,7 +257,7 @@ class EditPicturePresenterTest {
         presenter.setMode(mode)
         presenter.continueRecordingDraw(x, y, r)
         verify(changesMock, times(1)).continueRecordingDraw(x, y, r)
-        verify(viewMock, times(1)).showChanges(changesMock)
+        verify(viewMock, times(2)).showChanges(changesMock)
     }
 
 
