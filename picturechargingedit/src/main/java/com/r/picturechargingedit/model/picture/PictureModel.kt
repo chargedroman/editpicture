@@ -36,7 +36,7 @@ class PictureModel: Picture {
 
 
     override fun setBitmap(bitmap: Bitmap) {
-        this.bitmapMargin = calculateBitmapMargin(bitmap)
+        this.bitmapMargin = calculateBitmapMargin(bitmap).coerceAtLeast(MARGIN_STANDARD)
         this.bitmap = bitmap
     }
 
