@@ -118,10 +118,12 @@ class EditPicturePresenterImpl(
 
         val cropRect = cropModel.getCroppingRect()
         pictureModel.getMatrixInverted().mapRect(cropRect)
-        val originalExif = editIO.readExif(originalPicture)
-        val edited = editIO.cropBitmap(bitmap, cropRect.toRect())
-        editIO.savePicture(originalPicture, edited, originalExif)
+        val rect = cropRect.toRect()
 
+        savePicture().blockingAwait()
+        val originalExif = editIO.readExif(originalPicture)
+        val edited = editIO.cropBitmap(bitmap, rect)
+        editIO.savePicture(originalPicture, edited, originalExif)
         editPicture().blockingAwait()
 
         getView()?.notifyChanged()
