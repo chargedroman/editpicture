@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
-import com.r.picturechargingedit.model.Changes
+import com.r.picturechargingedit.model.changes.Changes
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.util.EditPictureIO

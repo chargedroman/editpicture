@@ -1,7 +1,6 @@
 package com.r.picturechargingedit.model.changes
 
 import android.graphics.RectF
-import com.r.picturechargingedit.model.RectPath
 import kotlin.math.abs
 
 /**

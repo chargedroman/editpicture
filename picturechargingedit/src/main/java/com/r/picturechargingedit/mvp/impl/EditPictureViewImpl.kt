@@ -8,8 +8,8 @@ import android.util.AttributeSet
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelatedPath
-import com.r.picturechargingedit.model.Changes
-import com.r.picturechargingedit.model.Picture
+import com.r.picturechargingedit.model.changes.Changes
+import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.scale.Interaction

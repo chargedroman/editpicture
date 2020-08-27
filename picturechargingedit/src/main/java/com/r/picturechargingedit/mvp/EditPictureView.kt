@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import androidx.annotation.RestrictTo
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BaseView
-import com.r.picturechargingedit.model.Changes
-import com.r.picturechargingedit.model.Picture
+import com.r.picturechargingedit.model.changes.Changes
+import com.r.picturechargingedit.model.picture.Picture
 
 
 /**

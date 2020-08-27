@@ -3,7 +3,7 @@ package com.r.picturechargingedit.drawers
 import android.graphics.Canvas
 import android.graphics.Matrix
 import android.graphics.RectF
-import com.r.picturechargingedit.model.Picture
+import com.r.picturechargingedit.model.picture.Picture
 
 /**
  *

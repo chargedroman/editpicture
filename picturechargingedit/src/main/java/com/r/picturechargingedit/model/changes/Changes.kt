@@ -1,4 +1,6 @@
-package com.r.picturechargingedit.model
+package com.r.picturechargingedit.model.changes
+
+import com.r.picturechargingedit.model.picture.Picture
 
 /**
  *

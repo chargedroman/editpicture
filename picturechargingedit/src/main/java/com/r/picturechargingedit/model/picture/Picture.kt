@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.model
+package com.r.picturechargingedit.model.picture
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

@@ -1,7 +1,6 @@
 package com.r.picturechargingedit.model.changes
 
-import com.r.picturechargingedit.model.Changes
-import com.r.picturechargingedit.model.Picture
+import com.r.picturechargingedit.model.picture.Picture
 import java.util.*
 
 /**

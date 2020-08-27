@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
-import com.r.picturechargingedit.model.Changes
-import com.r.picturechargingedit.model.Picture
+import com.r.picturechargingedit.model.changes.Changes
+import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
 import com.r.picturechargingedit.util.EditPictureIO

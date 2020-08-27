@@ -3,7 +3,7 @@ package com.r.picturechargingedit.drawers
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import com.r.picturechargingedit.model.Changes
+import com.r.picturechargingedit.model.changes.Changes
 
 /**
  *

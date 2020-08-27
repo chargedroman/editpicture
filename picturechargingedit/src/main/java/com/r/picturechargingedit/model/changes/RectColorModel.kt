@@ -4,8 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.RectF
-import com.r.picturechargingedit.model.RectColor
-import com.r.picturechargingedit.model.RectPath
 import com.r.picturechargingedit.util.IntArrayBuffer
 import kotlin.math.sqrt
 
