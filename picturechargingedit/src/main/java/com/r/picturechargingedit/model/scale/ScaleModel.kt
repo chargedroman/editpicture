@@ -2,7 +2,6 @@ package com.r.picturechargingedit.model.scale
 
 import android.graphics.Matrix
 import android.graphics.PointF
-import android.graphics.RectF
 import android.view.MotionEvent
 import com.r.picturechargingedit.model.picture.Picture
 
@@ -39,7 +38,6 @@ class ScaleModel(private val pictureModel: Picture): ModeSettable(), Scale {
     private val mSavedMatrix: Matrix = Matrix()
     private val mInvertedMatrix: Matrix = Matrix()
     private val mMatrixBuffer = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f ,0f)
-    private val mRectBufferSize = RectF()
 
     // remember some things for zooming
     private val start = PointF()
@@ -184,20 +182,9 @@ class ScaleModel(private val pictureModel: Picture): ModeSettable(), Scale {
 
 
     private fun setBoundsWidthHeight() {
-        val bitmap = pictureModel.getBitmap() ?: return
-        val matrix = pictureModel.getMatrix()
-
-        mRectBufferSize.apply {
-            top = 0f
-            left = 0f
-            right = bitmap.width.toFloat()
-            bottom = bitmap.height.toFloat()
-        }
-
-        matrix.mapRect(mRectBufferSize)
-
-        this.boundsWidth = mRectBufferSize.right.toInt()
-        this.boundsHeight = mRectBufferSize.bottom.toInt()
+        val bounds = pictureModel.getBitmapBoundsMapped()
+        this.boundsWidth = bounds.right.toInt()
+        this.boundsHeight = bounds.bottom.toInt()
     }
 
 

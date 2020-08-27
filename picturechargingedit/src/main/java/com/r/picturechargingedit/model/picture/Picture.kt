@@ -3,6 +3,7 @@ package com.r.picturechargingedit.model.picture
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
+import android.graphics.RectF
 
 /**
  *
@@ -13,11 +14,16 @@ import android.graphics.Matrix
 interface Picture {
 
     fun setBitmap(bitmap: Bitmap)
+
     fun getBitmap(): Bitmap?
-    fun createBitmapCanvas(): Canvas?
     fun getBitmapMargin(): Float
+
+    fun getBitmapBounds(): RectF
+    fun getBitmapBoundsMapped(): RectF
 
     fun getMatrixInverted(): Matrix
     fun getMatrix(): Matrix
+
+    fun createBitmapCanvas(): Canvas?
 
 }

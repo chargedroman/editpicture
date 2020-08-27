@@ -2,7 +2,6 @@ package com.r.picturechargingedit.drawers
 
 import android.graphics.Canvas
 import android.graphics.Matrix
-import android.graphics.RectF
 import com.r.picturechargingedit.arch.Drawer
 import com.r.picturechargingedit.model.picture.Picture
 
@@ -14,13 +13,13 @@ import com.r.picturechargingedit.model.picture.Picture
 
 class DrawerPicture: Drawer<Picture>() {
 
-    private val src = RectF(0f, 0f, 0f, 0f)
-    private val dest = RectF(0f, 0f, 0f, 0f)
-
 
     override fun drawChangesOnCanvas(changes: Picture, canvas: Canvas) {
         val bitmap = changes.getBitmap() ?: return
         val matrix = changes.getMatrix()
+
+        val src = changes.getBitmapBounds()
+        val dest = changes.getBitmapBoundsMapped()
 
         val pictureWidth = bitmap.width.toFloat()
         val pictureHeight = bitmap.height.toFloat()

@@ -3,6 +3,7 @@ package com.r.picturechargingedit.model.picture
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Matrix
+import android.graphics.RectF
 
 /**
  * keeps the bitmap and the matrix mapping the custom view coordinates to the bitmap's coordinates
@@ -23,8 +24,12 @@ class PictureModel: Picture {
     private var bitmap: Bitmap? = null
     private var bitmapMargin: Float = MARGIN_STANDARD
     private val matrix = Matrix()
+    private val bitmapBounds = RectF()
+    private val bitmapBoundsMapped = RectF()
 
 
+    override fun getBitmapBoundsMapped(): RectF = bitmapBoundsMapped
+    override fun getBitmapBounds(): RectF = bitmapBounds
     override fun getBitmapMargin(): Float = bitmapMargin
     override fun getMatrix(): Matrix = matrix
     override fun getBitmap(): Bitmap? = bitmap
