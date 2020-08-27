@@ -1,6 +1,7 @@
 package com.r.picturechargingedit.drawers
 
 import android.graphics.Canvas
+import com.r.picturechargingedit.arch.Drawer
 import com.r.picturechargingedit.model.crop.Crop
 
 /**
