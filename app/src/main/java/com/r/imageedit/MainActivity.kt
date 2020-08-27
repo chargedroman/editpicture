@@ -8,7 +8,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Button
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,11 +25,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     lateinit var editView: EditPictureViewImpl
-    lateinit var btnTakePhoto: Button
     lateinit var presenter: EditPicturePresenter
+    lateinit var spinner: Spinner
 
     private val disposables = CompositeDisposable()
 
@@ -36,13 +38,12 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         editView = findViewById(R.id.view_edit)
-        btnTakePhoto = findViewById(R.id.btn_take_photo)
+        spinner = findViewById(R.id.spinner_mode)
 
         presenter = EditPicturePresenter.Factory(this).create(getImageCacheUri())
         editView.setPresenter(presenter)
 
-        presenter.setMode(EditPictureMode.CROP)
-
+        setupSpinner()
         showPicture()
     }
 
@@ -73,6 +74,10 @@ class MainActivity : AppCompatActivity() {
         savePicture()
     }
 
+    fun onCropClicked(view: View) {
+        cropPicture()
+    }
+
 
     private fun showPicture() {
         presenter.editPicture().sub(
@@ -82,8 +87,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun savePicture() {
-        presenter.cropPicture().sub(
+        presenter.savePicture().sub(
             { println("CHAR: saved") },
+            { println("CHAR: ${it.toString()}")}
+        )
+    }
+
+    private fun cropPicture() {
+        presenter.cropPicture().sub(
+            { println("CHAR: cropped") },
             { println("CHAR: ${it.toString()}")}
         )
     }
@@ -138,6 +150,22 @@ class MainActivity : AppCompatActivity() {
     private fun Completable.sub(success: () -> Unit, error: (Throwable) -> Unit) {
         val disposable = this.subscribeOn(Schedulers.io()).observeOn(Schedulers.computation()).subscribe(success, error)
         disposables.add(disposable)
+    }
+
+
+    private fun setupSpinner() {
+        val options = EditPictureMode.values().map { it.name }
+        spinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, options)
+        spinner.onItemSelectedListener = this
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+
+    }
+
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+        val mode = EditPictureMode.values()[p2]
+        presenter.setMode(mode)
     }
 
 }
