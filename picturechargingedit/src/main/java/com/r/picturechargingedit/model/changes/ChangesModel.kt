@@ -9,7 +9,7 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel(private val pictureModel: Picture, initialRectRadiusFactor: Float): Changes {
+class ChangesModel(private val pictureModel: Picture): Changes {
 
 
     private val paths = LinkedList<PathModel>()
@@ -19,13 +19,10 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadiusFactor: F
 
     private var currentPath = PathModel()
     private var currentRectPath = RectPathModel()
-    private var currentRectRadiusFactor = initialRectRadiusFactor
 
 
     override fun getSize(): Int = paths.size
     override fun getColorModels(): List<RectColorModel> = colors
-    override fun getPictureModel(): Picture = pictureModel
-    override fun getRectRadiusFactor(): Float = currentRectRadiusFactor
 
 
 
@@ -60,15 +57,6 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadiusFactor: F
 
     }
 
-    /**
-     * sets pixelated rect radius factor
-     *
-     * [rectRadiusFactor] the radius by which to multiply future rects
-     */
-    override fun setRectRadiusFactor(rectRadiusFactor: Float) = synchronized(lock) {
-        this.currentRectRadiusFactor = rectRadiusFactor
-    }
-
 
     override fun clear() = synchronized(lock) {
         paths.clear()
@@ -95,7 +83,7 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadiusFactor: F
         currentRectPath = newRect
 
         newPath.add(x, y)
-        newRect.add(x, y, radius*currentRectRadiusFactor)
+        newRect.add(x, y, radius)
 
         paths.add(newPath)
         rects.add(newRect)
@@ -108,7 +96,7 @@ class ChangesModel(private val pictureModel: Picture, initialRectRadiusFactor: F
      */
     override fun continueRecordingDraw(x: Float, y: Float, radius: Float) = synchronized(lock) {
         currentPath.add(x, y)
-        currentRectPath.add(x, y, radius*currentRectRadiusFactor)
+        currentRectPath.add(x, y, radius)
     }
 
 

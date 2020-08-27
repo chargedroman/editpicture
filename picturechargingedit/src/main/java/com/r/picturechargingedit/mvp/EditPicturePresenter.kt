@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
 import com.r.picturechargingedit.model.changes.ChangesModel
+import com.r.picturechargingedit.model.crop.CropModel
 import com.r.picturechargingedit.model.picture.PictureModel
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
 import com.r.picturechargingedit.util.EditPictureIO
@@ -24,8 +25,6 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
      * api for user
      */
 
-    fun setRectRadiusFactor(rectRadiusFactor: Float)
-    fun getRectRadiusFactor(): Float
     fun getRectRadius(): Float
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
 
@@ -53,11 +52,14 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
         fun create(originalPicture: Uri): EditPicturePresenter {
             val ioUtil = EditPictureIO.create(context)
             val pictureModel = PictureModel()
-            val factory: (Float) -> ChangesModel = { ChangesModel(pictureModel, it) }
+            val changesModel = ChangesModel(pictureModel)
+            val cropModel = CropModel(pictureModel)
             return EditPicturePresenterImpl(
                 originalPicture,
                 ioUtil,
-                factory
+                pictureModel,
+                changesModel,
+                cropModel
             )
         }
     }

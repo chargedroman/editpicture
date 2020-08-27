@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
 import com.r.picturechargingedit.model.changes.Changes
+import com.r.picturechargingedit.model.crop.Crop
+import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.util.EditPictureIO
@@ -20,7 +22,9 @@ import io.reactivex.Completable
 class EditPicturePresenterImpl(
     private val originalPicture: Uri,
     private val editIO: EditPictureIO,
-    private val changesModelFactory: (Float) -> Changes
+    private val pictureModel: Picture,
+    private val changesModel: Changes,
+    private val cropModel: Crop
 ) : Presenter<EditPictureView>(),
     EditPicturePresenter {
 
@@ -36,13 +40,10 @@ class EditPicturePresenterImpl(
     private var mRelativeRectRadius = INITIAL_RECT_RADIUS_FACTOR
     private val lock = Object()
 
-    override fun getRectRadiusFactor(): Float = changesModel.getRectRadiusFactor()
-    override fun getRectRadius(): Float = mRelativeRectRadius * changesModel.getRectRadiusFactor()
+    override fun getRectRadius(): Float = mRelativeRectRadius
 
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
-
-    private var changesModel: Changes = changesModelFactory(INITIAL_RECT_RADIUS_FACTOR)
 
 
     /**
@@ -58,14 +59,6 @@ class EditPicturePresenterImpl(
         updateCanUndo()
     }
 
-    /**
-     * [rectRadiusFactor] the factor by which the radius will be multiplied
-     * the actual rect radius is relative to the bitmap size
-     */
-    override fun setRectRadiusFactor(rectRadiusFactor: Float) {
-        changesModel.setRectRadiusFactor(rectRadiusFactor)
-        getView()?.showChanges(changesModel)
-    }
 
     /**
      * updates the current operating [EditPictureMode]
@@ -85,9 +78,9 @@ class EditPicturePresenterImpl(
     override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
         changesModel.clear()
-        changesModel.getPictureModel().setBitmap(bitmap)
+        pictureModel.setBitmap(bitmap)
         mRelativeRectRadius = getRelativePixelatedRectRadius(bitmap)
-        getView()?.showPicture(changesModel.getPictureModel())
+        getView()?.showPicture(pictureModel)
     }
 
     /**
@@ -100,15 +93,14 @@ class EditPicturePresenterImpl(
             return@completable
         }
 
-        val allChanges = changesModel
-        val edited = getView()?.drawChanges(allChanges) ?: return@completable
+        val edited = getView()?.drawChanges(pictureModel, changesModel) ?: return@completable
         val originalExif = editIO.readExif(originalPicture)
         editIO.savePicture(originalPicture, edited, originalExif)
 
-        changesModel = changesModelFactory(changesModel.getRectRadiusFactor())
-        changesModel.getPictureModel().setBitmap(edited)
+        changesModel.clear()
+        pictureModel.setBitmap(edited)
 
-        getView()?.showPicture(changesModel.getPictureModel())
+        getView()?.showPicture(pictureModel)
         getView()?.showChanges(changesModel)
         updateCanUndo()
     }
@@ -134,7 +126,7 @@ class EditPicturePresenterImpl(
 
     override fun attach(view: EditPictureView) {
         super.attach(view)
-        view.showPicture(changesModel.getPictureModel())
+        view.showPicture(pictureModel)
         view.showChanges(changesModel)
 
         val mode = mMode.value ?: return

@@ -27,6 +27,6 @@ interface EditPictureView: BaseView {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showChanges(changesModel: Changes)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun drawChanges(changesModel: Changes): Bitmap?
+    fun drawChanges(pictureModel: Picture, changesModel: Changes): Bitmap?
 
 }

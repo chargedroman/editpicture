@@ -94,11 +94,11 @@ class EditPictureViewImpl : ScalingView,
         post(this::invalidate)
     }
 
-    override fun drawChanges(changesModel: Changes): Bitmap? {
-        val canvas = changesModel.getPictureModel().createBitmapCanvas() ?: return null
+    override fun drawChanges(pictureModel: Picture, changesModel: Changes): Bitmap? {
+        val canvas = pictureModel.createBitmapCanvas() ?: return null
         changesModel.invertAllCoordinates()
         drawerPixelatedPath.drawChangesOnCanvas(changesModel, canvas)
-        return changesModel.getPictureModel().getBitmap()
+        return pictureModel.getBitmap()
     }
 
 }

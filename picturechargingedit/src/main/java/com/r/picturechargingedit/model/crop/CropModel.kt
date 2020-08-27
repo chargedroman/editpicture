@@ -8,7 +8,7 @@ import com.r.picturechargingedit.model.picture.Picture
  * Created: 27.08.20
  */
 
-class CropModel(val pictureModel: Picture) {
+class CropModel(val pictureModel: Picture): Crop {
 
 
 
