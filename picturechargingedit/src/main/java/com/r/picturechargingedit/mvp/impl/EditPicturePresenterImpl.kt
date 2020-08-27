@@ -10,6 +10,8 @@ import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
+import com.r.picturechargingedit.scale.ScalingInteraction
+import com.r.picturechargingedit.scale.ScalingMotionEvent
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
@@ -105,22 +107,15 @@ class EditPicturePresenterImpl(
         updateCanUndo()
     }
 
+    override fun onTouchEvent(event: ScalingMotionEvent, mappedRadius: Float) {
+        val mode = mMode.value ?: return
 
-    override fun startRecordingDraw(x: Float, y: Float, radius: Float) {
-        if(mMode.value == EditPictureMode.NONE) return
-
-        pixelationModel.startRecordingDraw(x, y, radius)
-        getView()?.showPixelation(pixelationModel)
-        updateCanUndo()
-    }
-
-    override fun continueRecordingDraw(x: Float, y: Float, radius: Float) {
-        if(mMode.value == EditPictureMode.NONE) return
-        if(mMode.value == EditPictureMode.PIXELATE_VIA_CLICK) return
-
-        pixelationModel.continueRecordingDraw(x, y, radius)
-        getView()?.showPixelation(pixelationModel)
-        updateCanUndo()
+        if(mode.isPixelation()) {
+            when(event.interaction) {
+                ScalingInteraction.CLICK -> startRecordingPixelation(event.mappedX, event.mappedY, mappedRadius)
+                ScalingInteraction.MOVE -> continueRecordingPixelation(event.mappedX, event.mappedY, mappedRadius)
+            }
+        }
     }
 
 
@@ -131,6 +126,21 @@ class EditPicturePresenterImpl(
 
         val mode = mMode.value ?: return
         view.showMode(mode)
+    }
+
+
+    private fun startRecordingPixelation(x: Float, y: Float, radius: Float) {
+        pixelationModel.startRecordingDraw(x, y, radius)
+        getView()?.showPixelation(pixelationModel)
+        updateCanUndo()
+    }
+
+    private fun continueRecordingPixelation(x: Float, y: Float, radius: Float) {
+        if(mMode.value == EditPictureMode.PIXELATE_VIA_CLICK) return
+
+        pixelationModel.continueRecordingDraw(x, y, radius)
+        getView()?.showPixelation(pixelationModel)
+        updateCanUndo()
     }
 
 

@@ -8,7 +8,16 @@ package com.r.picturechargingedit
 
 enum class EditPictureMode {
     NONE,
+
     PIXELATE,
     PIXELATE_VIA_DRAG,
-    PIXELATE_VIA_CLICK
+    PIXELATE_VIA_CLICK,
+
+    CROP;
+
+
+    fun isPixelation(): Boolean {
+        return this == PIXELATE || this == PIXELATE_VIA_DRAG || this == PIXELATE_VIA_CLICK
+    }
+
 }

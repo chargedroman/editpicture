@@ -10,6 +10,7 @@ import com.r.picturechargingedit.model.crop.CropModel
 import com.r.picturechargingedit.model.picture.PictureModel
 import com.r.picturechargingedit.model.pixelation.PixelationModel
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
+import com.r.picturechargingedit.scale.ScalingMotionEvent
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
@@ -42,9 +43,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
      */
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun startRecordingDraw(x: Float, y: Float, radius: Float)
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun continueRecordingDraw(x: Float, y: Float, radius: Float)
+    fun onTouchEvent(event: ScalingMotionEvent, mappedRadius: Float)
 
 
 
