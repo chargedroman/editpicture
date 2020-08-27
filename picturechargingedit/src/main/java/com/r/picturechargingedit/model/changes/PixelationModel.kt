@@ -9,7 +9,7 @@ import java.util.*
  * Created: 19.08.20
  */
 
-class ChangesModel(private val pictureModel: Picture): Changes {
+class PixelationModel(private val pictureModel: Picture): Pixelation {
 
 
     private val paths = LinkedList<PathModel>()

@@ -7,8 +7,8 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.drawers.DrawerPicture
-import com.r.picturechargingedit.drawers.DrawerPixelatedPath
-import com.r.picturechargingedit.model.changes.Changes
+import com.r.picturechargingedit.drawers.DrawerPixelation
+import com.r.picturechargingedit.model.changes.Pixelation
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
@@ -34,7 +34,7 @@ class EditPictureViewImpl : ScalingView,
     )
 
     private val drawerPicture = DrawerPicture()
-    private val drawerPixelatedPath = DrawerPixelatedPath()
+    private val drawerPixelation = DrawerPixelation()
 
     private var presenter: EditPicturePresenter? = null
 
@@ -68,7 +68,7 @@ class EditPictureViewImpl : ScalingView,
 
     override fun onDrawScaled(canvas: Canvas) {
         drawerPicture.onDraw(canvas)
-        drawerPixelatedPath.onDraw(canvas)
+        drawerPixelation.onDraw(canvas)
     }
 
     override fun onTouchScaled(type: Interaction, x: Float, y: Float) {
@@ -89,15 +89,15 @@ class EditPictureViewImpl : ScalingView,
         post(this::invalidate)
     }
 
-    override fun showChanges(changesModel: Changes) {
-        drawerPixelatedPath.showChanges(changesModel)
+    override fun showChanges(changesModel: Pixelation) {
+        drawerPixelation.showChanges(changesModel)
         post(this::invalidate)
     }
 
-    override fun drawChanges(pictureModel: Picture, changesModel: Changes): Bitmap? {
+    override fun drawChanges(pictureModel: Picture, changesModel: Pixelation): Bitmap? {
         val canvas = pictureModel.createBitmapCanvas() ?: return null
         changesModel.invertAllCoordinates()
-        drawerPixelatedPath.drawChangesOnCanvas(changesModel, canvas)
+        drawerPixelation.drawChangesOnCanvas(changesModel, canvas)
         return pictureModel.getBitmap()
     }
 

@@ -6,7 +6,7 @@ package com.r.picturechargingedit.model.changes
  * Created: 25.08.20
  */
 
-interface Changes {
+interface Pixelation {
 
     fun getColorModels(): List<RectColor>
 

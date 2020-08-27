@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
-import com.r.picturechargingedit.model.changes.Changes
+import com.r.picturechargingedit.model.changes.Pixelation
 import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.mvp.EditPicturePresenter
@@ -23,7 +23,7 @@ class EditPicturePresenterImpl(
     private val originalPicture: Uri,
     private val editIO: EditPictureIO,
     private val pictureModel: Picture,
-    private val changesModel: Changes,
+    private val changesModel: Pixelation,
     private val cropModel: Crop
 ) : Presenter<EditPictureView>(),
     EditPicturePresenter {

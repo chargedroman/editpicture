@@ -6,7 +6,7 @@ import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
-import com.r.picturechargingedit.model.changes.ChangesModel
+import com.r.picturechargingedit.model.changes.PixelationModel
 import com.r.picturechargingedit.model.crop.CropModel
 import com.r.picturechargingedit.model.picture.PictureModel
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
@@ -52,7 +52,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
         fun create(originalPicture: Uri): EditPicturePresenter {
             val ioUtil = EditPictureIO.create(context)
             val pictureModel = PictureModel()
-            val changesModel = ChangesModel(pictureModel)
+            val changesModel = PixelationModel(pictureModel)
             val cropModel = CropModel(pictureModel)
             return EditPicturePresenterImpl(
                 originalPicture,

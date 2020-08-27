@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
-import com.r.picturechargingedit.model.changes.Changes
+import com.r.picturechargingedit.model.changes.Pixelation
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
@@ -31,10 +31,10 @@ class EditPicturePresenterTest {
     val viewMock: EditPictureView = mock()
     val pictureUriMock: Uri = mock()
     val editPictureMock: EditPictureIO = mock()
-    val changesMock: Changes = mock()
+    val changesMock: Pixelation = mock()
     val pictueModelMock: Picture = mock()
 
-    val changesModelFactory: (Float) -> Changes = { changesMock }
+    val changesModelFactory: (Float) -> Pixelation = { changesMock }
 
 
     fun initPresenter(): EditPicturePresenterImpl {
