@@ -32,7 +32,7 @@ abstract class ScalingView : View, Scaling {
 
 
     abstract fun onDrawScaled(canvas: Canvas)
-    abstract fun onTouchScaled(type: Interaction, x: Float, y: Float)
+    abstract fun onTouchEventScaled(event: ScalingMotionEvent)
 
 
 
@@ -67,7 +67,7 @@ abstract class ScalingView : View, Scaling {
     override fun onTouchEvent(event: MotionEvent): Boolean {
         scalingHandler.onTouchEvent(event)
         val matrix = scalingHandler.getInvertedScalingMatrix()
-        interactionHandler.onTouchEvent(event, matrix, this::onTouchScaled)
+        interactionHandler.onTouchEvent(event, matrix, this::onTouchEventScaled)
         invalidate()
         return true
     }

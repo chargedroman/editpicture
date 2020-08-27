@@ -38,7 +38,7 @@ class InteractionHandler {
     fun onTouchEvent(
         event: MotionEvent,
         matrix: Matrix,
-        onEventDetected: (Interaction, Float, Float) -> Unit
+        onEventDetected: (ScalingMotionEvent) -> Unit
     ) {
 
         mapPoint(event, matrix)
@@ -54,7 +54,7 @@ class InteractionHandler {
     }
 
 
-    private fun handleMoveEvent(event: MotionEvent, onEventDetected: (Interaction, Float, Float) -> Unit) {
+    private fun handleMoveEvent(event: MotionEvent, onEventDetected: (ScalingMotionEvent) -> Unit) {
 
         if(event.action == MotionEvent.ACTION_DOWN && event.pointerCount == 1) {
             mMoveEventCount = 0
@@ -75,16 +75,16 @@ class InteractionHandler {
 
         if(event.isMove()) {
              if(mStartedMoving && !translatingEnabled) {
-                 onEventDetected(Interaction.CLICK, mPointBuffer[0], mPointBuffer[1])
+                 onEventDetected(event.toScalingMotionEvent(ScalingInteraction.CLICK))
                  mStartedMoving = false
              } else {
-                 onEventDetected(Interaction.MOVE, mPointBuffer[0], mPointBuffer[1])
+                 onEventDetected(event.toScalingMotionEvent(ScalingInteraction.MOVE))
              }
         }
 
     }
 
-    private fun handleClickEvent(event: MotionEvent, onEventDetected: (Interaction, Float, Float) -> Unit) {
+    private fun handleClickEvent(event: MotionEvent, onEventDetected: (ScalingMotionEvent) -> Unit) {
 
         if(event.isDown()) {
             mLastTouchEventDownTime = event.eventTime
@@ -93,8 +93,12 @@ class InteractionHandler {
         }
 
         if(event.isUp()) {
-            onEventDetected(Interaction.CLICK, mPointBuffer[0], mPointBuffer[1])
+            onEventDetected(event.toScalingMotionEvent(ScalingInteraction.CLICK))
         }
+    }
+
+    private fun MotionEvent.toScalingMotionEvent(interaction: ScalingInteraction): ScalingMotionEvent {
+        return ScalingMotionEvent(this, interaction, mPointBuffer[0], mPointBuffer[1])
     }
 
 

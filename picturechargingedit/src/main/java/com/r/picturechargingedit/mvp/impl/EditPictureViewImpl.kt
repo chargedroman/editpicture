@@ -12,7 +12,8 @@ import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
-import com.r.picturechargingedit.scale.Interaction
+import com.r.picturechargingedit.scale.ScalingInteraction
+import com.r.picturechargingedit.scale.ScalingMotionEvent
 import com.r.picturechargingedit.scale.ScalingView
 
 /**
@@ -71,14 +72,14 @@ class EditPictureViewImpl : ScalingView,
         drawerPixelation.onDraw(canvas)
     }
 
-    override fun onTouchScaled(type: Interaction, x: Float, y: Float) {
+    override fun onTouchEventScaled(event: ScalingMotionEvent) {
         val radius = presenter?.getRectRadius() ?: return
         val matrix = getInvertedScalingMatrix()
         val mappedRadius = matrix.mapRadius(radius)
 
-        when(type) {
-            Interaction.CLICK -> presenter?.startRecordingDraw(x, y, mappedRadius)
-            Interaction.MOVE -> presenter?.continueRecordingDraw(x, y, mappedRadius)
+        when(event.interaction) {
+            ScalingInteraction.CLICK -> presenter?.startRecordingDraw(event.mappedX, event.mappedY, mappedRadius)
+            ScalingInteraction.MOVE -> presenter?.continueRecordingDraw(event.mappedX, event.mappedY, mappedRadius)
             else -> Unit
         }
     }

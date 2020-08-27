@@ -6,7 +6,7 @@ package com.r.picturechargingedit.scale
  * Created: 24.08.20
  */
 
-enum class Interaction {
+enum class ScalingInteraction {
     CLICK,
     MOVE
 }
