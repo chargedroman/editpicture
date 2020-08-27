@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.model.changes
+package com.r.picturechargingedit.model.pixelation
 
 import android.graphics.RectF
 

@@ -8,8 +8,8 @@ import android.util.AttributeSet
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelation
-import com.r.picturechargingedit.model.changes.Pixelation
 import com.r.picturechargingedit.model.picture.Picture
+import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.scale.Interaction
@@ -89,15 +89,15 @@ class EditPictureViewImpl : ScalingView,
         post(this::invalidate)
     }
 
-    override fun showChanges(changesModel: Pixelation) {
-        drawerPixelation.showChanges(changesModel)
+    override fun showPixelation(pixelationModel: Pixelation) {
+        drawerPixelation.showChanges(pixelationModel)
         post(this::invalidate)
     }
 
-    override fun drawChanges(pictureModel: Picture, changesModel: Pixelation): Bitmap? {
+    override fun drawPixelation(pictureModel: Picture, pixelationModel: Pixelation): Bitmap? {
         val canvas = pictureModel.createBitmapCanvas() ?: return null
-        changesModel.invertAllCoordinates()
-        drawerPixelation.drawChangesOnCanvas(changesModel, canvas)
+        pixelationModel.invertAllCoordinates()
+        drawerPixelation.drawChangesOnCanvas(pixelationModel, canvas)
         return pictureModel.getBitmap()
     }
 

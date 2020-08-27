@@ -3,7 +3,7 @@ package com.r.picturechargingedit.drawers
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import com.r.picturechargingedit.model.changes.Pixelation
+import com.r.picturechargingedit.model.pixelation.Pixelation
 
 /**
  *

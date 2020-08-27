@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import androidx.annotation.RestrictTo
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BaseView
-import com.r.picturechargingedit.model.changes.Pixelation
 import com.r.picturechargingedit.model.picture.Picture
+import com.r.picturechargingedit.model.pixelation.Pixelation
 
 
 /**
@@ -25,8 +25,8 @@ interface EditPictureView: BaseView {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showPicture(pictureModel: Picture)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun showChanges(changesModel: Pixelation)
+    fun showPixelation(pixelationModel: Pixelation)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun drawChanges(pictureModel: Picture, changesModel: Pixelation): Bitmap?
+    fun drawPixelation(pictureModel: Picture, pixelationModel: Pixelation): Bitmap?
 
 }

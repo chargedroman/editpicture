@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
-import com.r.picturechargingedit.model.changes.Pixelation
 import com.r.picturechargingedit.model.picture.Picture
+import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
 import com.r.picturechargingedit.util.EditPictureIO
@@ -62,7 +62,7 @@ class EditPicturePresenterTest {
 
         verify(changesMock, times(1)).clear()
         verify(changesMock, times(0)).removeLast()
-        verify(viewMock, times(2)).showChanges(changesMock)
+        verify(viewMock, times(2)).showPixelation(changesMock)
     }
 
     @Test
@@ -74,7 +74,7 @@ class EditPicturePresenterTest {
 
         verify(changesMock, times(0)).clear()
         verify(changesMock, times(1)).removeLast()
-        verify(viewMock, times(2)).showChanges(changesMock)
+        verify(viewMock, times(2)).showPixelation(changesMock)
     }
 
 
@@ -87,7 +87,7 @@ class EditPicturePresenterTest {
         presenter.setRectRadiusFactor(radius)
 
         verify(changesMock, times(1)).setRectRadiusFactor(radius)
-        verify(viewMock, times(2)).showChanges(changesMock)
+        verify(viewMock, times(2)).showPixelation(changesMock)
     }
 
 
@@ -102,7 +102,7 @@ class EditPicturePresenterTest {
         assertEquals(mode, presenter.getMode().value)
         verify(viewMock, times(1)).showMode(mode)
         verify(changesMock, times(1)).clear()
-        verify(viewMock, times(2)).showChanges(changesMock)
+        verify(viewMock, times(2)).showPixelation(changesMock)
     }
 
     @Test
@@ -116,7 +116,7 @@ class EditPicturePresenterTest {
         assertEquals(presenter.getMode().value, mode)
         verify(viewMock, times(1)).showMode(mode)
         verify(changesMock, times(0)).clear()
-        verify(viewMock, times(1)).showChanges(changesMock)
+        verify(viewMock, times(1)).showPixelation(changesMock)
     }
 
 
@@ -145,7 +145,7 @@ class EditPicturePresenterTest {
 
         presenter.savePicture().blockingAwait()
 
-        verify(viewMock, times(0)).drawChanges(any())
+        verify(viewMock, times(0)).drawPixelation(any())
     }
 
     @Test
@@ -156,14 +156,14 @@ class EditPicturePresenterTest {
 
         val presenter = initPresenter()
         whenever(changesMock.getSize()).thenReturn(1)
-        whenever(viewMock.drawChanges(changesMock)).thenReturn(editedBitmap)
+        whenever(viewMock.drawPixelation(changesMock)).thenReturn(editedBitmap)
         whenever(editPictureMock.readExif(pictureUriMock, true)).thenReturn(exif)
 
         presenter.savePicture().blockingAwait()
 
-        verify(viewMock, times(1)).drawChanges(changesMock)
+        verify(viewMock, times(1)).drawPixelation(changesMock)
         verify(editPictureMock, times(1)).savePicture(pictureUriMock, editedBitmap, exif)
-        verify(viewMock, times(2)).showChanges(changesMock)
+        verify(viewMock, times(2)).showPixelation(changesMock)
         verify(viewMock, times(2)).showPicture(pictueModelMock)
     }
 
@@ -217,7 +217,7 @@ class EditPicturePresenterTest {
 
         assertEquals(true, presenter.getCanUndo().value)
         verify(changesMock, times(1)).startRecordingDraw(x, y, r)
-        verify(viewMock, times(2)).showChanges(changesMock)
+        verify(viewMock, times(2)).showPixelation(changesMock)
     }
 
     @Test
@@ -257,7 +257,7 @@ class EditPicturePresenterTest {
         presenter.setMode(mode)
         presenter.continueRecordingDraw(x, y, r)
         verify(changesMock, times(1)).continueRecordingDraw(x, y, r)
-        verify(viewMock, times(2)).showChanges(changesMock)
+        verify(viewMock, times(2)).showPixelation(changesMock)
     }
 
 

@@ -5,9 +5,9 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
-import com.r.picturechargingedit.model.changes.Pixelation
 import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.picture.Picture
+import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.util.EditPictureIO
@@ -23,7 +23,7 @@ class EditPicturePresenterImpl(
     private val originalPicture: Uri,
     private val editIO: EditPictureIO,
     private val pictureModel: Picture,
-    private val changesModel: Pixelation,
+    private val pixelationModel: Pixelation,
     private val cropModel: Crop
 ) : Presenter<EditPictureView>(),
     EditPicturePresenter {
@@ -51,11 +51,11 @@ class EditPicturePresenterImpl(
      */
     override fun undoLastAction(undoAll: Boolean) {
         if(undoAll) {
-            changesModel.clear()
+            pixelationModel.clear()
         } else {
-            changesModel.removeLast()
+            pixelationModel.removeLast()
         }
-        getView()?.showChanges(changesModel)
+        getView()?.showPixelation(pixelationModel)
         updateCanUndo()
     }
 
@@ -67,8 +67,8 @@ class EditPicturePresenterImpl(
         mMode.postValue(mode)
         getView()?.showMode(mode)
         if(clearChanges) {
-            changesModel.clear()
-            getView()?.showChanges(changesModel)
+            pixelationModel.clear()
+            getView()?.showPixelation(pixelationModel)
         }
     }
 
@@ -77,7 +77,7 @@ class EditPicturePresenterImpl(
      */
     override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
-        changesModel.clear()
+        pixelationModel.clear()
         pictureModel.setBitmap(bitmap)
         mRelativeRectRadius = getRelativePixelatedRectRadius(bitmap)
         getView()?.showPicture(pictureModel)
@@ -89,19 +89,19 @@ class EditPicturePresenterImpl(
      */
     override fun savePicture() = completable {
 
-        if(changesModel.getSize() == 0) {
+        if(pixelationModel.getSize() == 0) {
             return@completable
         }
 
-        val edited = getView()?.drawChanges(pictureModel, changesModel) ?: return@completable
+        val edited = getView()?.drawPixelation(pictureModel, pixelationModel) ?: return@completable
         val originalExif = editIO.readExif(originalPicture)
         editIO.savePicture(originalPicture, edited, originalExif)
 
-        changesModel.clear()
+        pixelationModel.clear()
         pictureModel.setBitmap(edited)
 
         getView()?.showPicture(pictureModel)
-        getView()?.showChanges(changesModel)
+        getView()?.showPixelation(pixelationModel)
         updateCanUndo()
     }
 
@@ -109,8 +109,8 @@ class EditPicturePresenterImpl(
     override fun startRecordingDraw(x: Float, y: Float, radius: Float) {
         if(mMode.value == EditPictureMode.NONE) return
 
-        changesModel.startRecordingDraw(x, y, radius)
-        getView()?.showChanges(changesModel)
+        pixelationModel.startRecordingDraw(x, y, radius)
+        getView()?.showPixelation(pixelationModel)
         updateCanUndo()
     }
 
@@ -118,8 +118,8 @@ class EditPicturePresenterImpl(
         if(mMode.value == EditPictureMode.NONE) return
         if(mMode.value == EditPictureMode.PIXELATE_VIA_CLICK) return
 
-        changesModel.continueRecordingDraw(x, y, radius)
-        getView()?.showChanges(changesModel)
+        pixelationModel.continueRecordingDraw(x, y, radius)
+        getView()?.showPixelation(pixelationModel)
         updateCanUndo()
     }
 
@@ -127,7 +127,7 @@ class EditPicturePresenterImpl(
     override fun attach(view: EditPictureView) {
         super.attach(view)
         view.showPicture(pictureModel)
-        view.showChanges(changesModel)
+        view.showPixelation(pixelationModel)
 
         val mode = mMode.value ?: return
         view.showMode(mode)
@@ -135,7 +135,7 @@ class EditPicturePresenterImpl(
 
 
     private fun updateCanUndo() {
-        mCanUndo.postValue(changesModel.getSize() > 0)
+        mCanUndo.postValue(pixelationModel.getSize() > 0)
     }
 
 

@@ -6,9 +6,9 @@ import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
-import com.r.picturechargingedit.model.changes.PixelationModel
 import com.r.picturechargingedit.model.crop.CropModel
 import com.r.picturechargingedit.model.picture.PictureModel
+import com.r.picturechargingedit.model.pixelation.PixelationModel
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
@@ -52,13 +52,13 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
         fun create(originalPicture: Uri): EditPicturePresenter {
             val ioUtil = EditPictureIO.create(context)
             val pictureModel = PictureModel()
-            val changesModel = PixelationModel(pictureModel)
+            val pixelationModel = PixelationModel(pictureModel)
             val cropModel = CropModel(pictureModel)
             return EditPicturePresenterImpl(
                 originalPicture,
                 ioUtil,
                 pictureModel,
-                changesModel,
+                pixelationModel,
                 cropModel
             )
         }
