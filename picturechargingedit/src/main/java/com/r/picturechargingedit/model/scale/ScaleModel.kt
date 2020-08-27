@@ -73,6 +73,10 @@ class ScaleModel(private val pictureModel: Picture): ModeSettable(), Scale {
         }
     }
 
+    override fun reset() {
+        mMatrix.setScale(1f, 1f)
+        mSavedMatrix.setScale(1f, 1f)
+    }
 
     private fun onDown(event: MotionEvent) {
         mSavedMatrix.set(mMatrix)
