@@ -18,7 +18,7 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 class CropModel(private val pictureModel: Picture): Crop {
 
     companion object {
-        private const val HITBOX_FACTOR = 4f
+        private const val HITBOX_FACTOR = 6f
     }
 
 
@@ -180,34 +180,38 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun touchingLeftHitBox(event: ScalingMotionEvent): Boolean {
-        bufferRect.top = croppingRect.top - event.hitBox()
-        bufferRect.bottom = croppingRect.bottom + event.hitBox()
-        bufferRect.left = croppingRect.left - event.hitBox()
-        bufferRect.right = croppingRect.left + event.hitBox()
+        val hitBox = event.hitBox()
+        bufferRect.top = croppingRect.top - hitBox
+        bufferRect.bottom = croppingRect.bottom + hitBox
+        bufferRect.left = croppingRect.left - hitBox
+        bufferRect.right = croppingRect.left + hitBox
         return bufferRect.contains(event.mappedX, event.mappedY)
     }
 
     private fun touchingRightHitBox(event: ScalingMotionEvent): Boolean {
-        bufferRect.top = croppingRect.top - event.hitBox()
-        bufferRect.bottom = croppingRect.bottom + event.hitBox()
-        bufferRect.left = croppingRect.right - event.hitBox()
-        bufferRect.right = croppingRect.right + event.hitBox()
+        val hitBox = event.hitBox()
+        bufferRect.top = croppingRect.top - hitBox
+        bufferRect.bottom = croppingRect.bottom + hitBox
+        bufferRect.left = croppingRect.right - hitBox
+        bufferRect.right = croppingRect.right + hitBox
         return bufferRect.contains(event.mappedX, event.mappedY)
     }
 
     private fun touchingTopHitBox(event: ScalingMotionEvent): Boolean {
-        bufferRect.top = croppingRect.top - event.hitBox()
-        bufferRect.bottom = croppingRect.top + event.hitBox()
-        bufferRect.left = croppingRect.left - event.hitBox()
-        bufferRect.right = croppingRect.right + event.hitBox()
+        val hitBox = event.hitBox()
+        bufferRect.top = croppingRect.top - hitBox
+        bufferRect.bottom = croppingRect.top + hitBox
+        bufferRect.left = croppingRect.left - hitBox
+        bufferRect.right = croppingRect.right + hitBox
         return bufferRect.contains(event.mappedX, event.mappedY)
     }
 
     private fun touchingBottomHitBox(event: ScalingMotionEvent): Boolean {
-        bufferRect.top = croppingRect.bottom - event.hitBox()
-        bufferRect.bottom = croppingRect.bottom + event.hitBox()
-        bufferRect.left = croppingRect.left - event.hitBox()
-        bufferRect.right = croppingRect.right + event.hitBox()
+        val hitBox = event.hitBox()
+        bufferRect.top = croppingRect.bottom - hitBox
+        bufferRect.bottom = croppingRect.bottom + hitBox
+        bufferRect.left = croppingRect.left - hitBox
+        bufferRect.right = croppingRect.right + hitBox
         return bufferRect.contains(event.mappedX, event.mappedY)
     }
 
