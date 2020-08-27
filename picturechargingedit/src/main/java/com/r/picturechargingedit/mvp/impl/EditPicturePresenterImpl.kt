@@ -126,6 +126,8 @@ class EditPicturePresenterImpl(
                 ScalingInteraction.CLICK -> startRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
                 ScalingInteraction.MOVE -> continueRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
             }
+        } else if(mode.isCropping()) {
+            cropModel.onTouchEvent(event)
         }
 
         getView()?.notifyChanged()

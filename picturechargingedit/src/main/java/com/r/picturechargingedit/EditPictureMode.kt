@@ -20,4 +20,8 @@ enum class EditPictureMode {
         return this == PIXELATE || this == PIXELATE_VIA_DRAG || this == PIXELATE_VIA_CLICK
     }
 
+    fun isCropping(): Boolean {
+        return this == CROP
+    }
+
 }

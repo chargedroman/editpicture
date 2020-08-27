@@ -1,5 +1,7 @@
 package com.r.picturechargingedit.model.crop
 
+import com.r.picturechargingedit.model.scale.ScalingMotionEvent
+
 /**
  *
  * Author: romanvysotsky
@@ -7,5 +9,7 @@ package com.r.picturechargingedit.model.crop
  */
 
 interface Crop {
+
+    fun onTouchEvent(event: ScalingMotionEvent)
 
 }
