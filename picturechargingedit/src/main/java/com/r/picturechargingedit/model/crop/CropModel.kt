@@ -67,6 +67,7 @@ class CropModel(private val pictureModel: Picture): Crop {
 
     override fun setMode(mode: EditPictureMode) {
         canDrawRect = mode.isCropping()
+        updateBounds()
     }
 
 
@@ -85,6 +86,8 @@ class CropModel(private val pictureModel: Picture): Crop {
             originalBoundsRect.copyInto(croppingRect)
         }
 
+        croppingRectRadius = pictureModel.getBitmapMargin()
+
         pictureModel.getBitmapBounds().copyInto(bufferRect)
         pictureModel.getMatrix().mapRect(bufferRect)
         bufferRect.copyInto(originalBoundsRect)
@@ -93,7 +96,6 @@ class CropModel(private val pictureModel: Picture): Crop {
     private fun actDependingOnEventAction(event: ScalingMotionEvent) {
 
         if(event.isDown()) {
-            croppingRectRadius = event.mappedMargin
             currentCropArea = calculateCurrentCropArea(event)
             if(currentCropArea != CropArea.NONE) {
                 lastEvent = event
@@ -187,7 +189,7 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun touchingLeftHitBox(event: ScalingMotionEvent): Boolean {
-        val hitBox = event.hitBox()
+        val hitBox = hitBox()
         bufferRect.top = croppingRect.top - hitBox
         bufferRect.bottom = croppingRect.bottom + hitBox
         bufferRect.left = croppingRect.left - hitBox
@@ -196,7 +198,7 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun touchingRightHitBox(event: ScalingMotionEvent): Boolean {
-        val hitBox = event.hitBox()
+        val hitBox = hitBox()
         bufferRect.top = croppingRect.top - hitBox
         bufferRect.bottom = croppingRect.bottom + hitBox
         bufferRect.left = croppingRect.right - hitBox
@@ -205,7 +207,7 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun touchingTopHitBox(event: ScalingMotionEvent): Boolean {
-        val hitBox = event.hitBox()
+        val hitBox = hitBox()
         bufferRect.top = croppingRect.top - hitBox
         bufferRect.bottom = croppingRect.top + hitBox
         bufferRect.left = croppingRect.left - hitBox
@@ -214,7 +216,7 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun touchingBottomHitBox(event: ScalingMotionEvent): Boolean {
-        val hitBox = event.hitBox()
+        val hitBox = hitBox()
         bufferRect.top = croppingRect.bottom - hitBox
         bufferRect.bottom = croppingRect.bottom + hitBox
         bufferRect.left = croppingRect.left - hitBox
@@ -222,8 +224,8 @@ class CropModel(private val pictureModel: Picture): Crop {
         return bufferRect.contains(event.mappedX, event.mappedY)
     }
 
-    private fun ScalingMotionEvent.hitBox(): Float {
-        return mappedMargin*HITBOX_FACTOR
+    private fun hitBox(): Float {
+        return croppingRectRadius*HITBOX_FACTOR
     }
 
 }
