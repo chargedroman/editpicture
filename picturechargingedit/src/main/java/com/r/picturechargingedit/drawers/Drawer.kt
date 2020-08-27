@@ -8,7 +8,7 @@ import android.graphics.Canvas
  * Created: 21.08.20
  */
 
-abstract class Drawer<T>(val drawerArgs: DrawerArgs) {
+abstract class Drawer<T> {
 
     private var changes: T? = null
 

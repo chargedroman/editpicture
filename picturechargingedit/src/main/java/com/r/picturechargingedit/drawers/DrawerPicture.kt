@@ -11,7 +11,7 @@ import com.r.picturechargingedit.model.Picture
  * Created: 18.08.20
  */
 
-class DrawerPicture(drawerArgs: DrawerArgs): Drawer<Picture>(drawerArgs) {
+class DrawerPicture: Drawer<Picture>() {
 
     private val src = RectF(0f, 0f, 0f, 0f)
     private val dest = RectF(0f, 0f, 0f, 0f)
@@ -24,8 +24,8 @@ class DrawerPicture(drawerArgs: DrawerArgs): Drawer<Picture>(drawerArgs) {
         val pictureHeight = bitmap.height.toFloat()
         src.apply { right = pictureWidth; bottom = pictureHeight }
 
-        val viewWidth = drawerArgs.getViewWidth().toFloat()
-        val viewHeight = drawerArgs.getViewHeight().toFloat()
+        val viewWidth = canvas.width.toFloat()
+        val viewHeight = canvas.height.toFloat()
         dest.apply { right = viewWidth; bottom = viewHeight }
 
         changes.getMatrix().setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)

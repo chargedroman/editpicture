@@ -11,7 +11,7 @@ import com.r.picturechargingedit.model.Changes
  * Created: 18.08.20
  */
 
-class DrawerPixelatedPath(drawerArgs: DrawerArgs): Drawer<Changes>(drawerArgs) {
+class DrawerPixelatedPath: Drawer<Changes>() {
 
     private val pathPaint = Paint()
 
