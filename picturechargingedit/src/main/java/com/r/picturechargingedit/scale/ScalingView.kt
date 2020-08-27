@@ -28,7 +28,7 @@ abstract class ScalingView : View, Scaling {
 
 
     private val scalingHandler = ScalingHandler()
-    private val interactionHandler = InteractionHandler()
+    private val interactionHandler = ScalingViewInteractionHandler()
 
 
     abstract fun onDrawScaled(canvas: Canvas)

@@ -9,7 +9,7 @@ import android.view.MotionEvent
  * Created: 24.08.20
  */
 
-class InteractionHandler {
+class ScalingViewInteractionHandler {
 
     companion object {
         private const val SCALE_THRESHOLD = 400L
