@@ -19,6 +19,7 @@ class DrawerPicture: Drawer<Picture>() {
 
     override fun drawChangesOnCanvas(changes: Picture, canvas: Canvas) {
         val bitmap = changes.getBitmap() ?: return
+        val matrix = changes.getMatrix()
 
         val pictureWidth = bitmap.width.toFloat()
         val pictureHeight = bitmap.height.toFloat()
@@ -28,8 +29,8 @@ class DrawerPicture: Drawer<Picture>() {
         val viewHeight = canvas.height.toFloat()
         dest.apply { right = viewWidth; bottom = viewHeight }
 
-        changes.getMatrix().setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
-        canvas.drawBitmap(bitmap, changes.getMatrix(), null)
+        matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
+        canvas.drawBitmap(bitmap, matrix, null)
     }
 
 }
