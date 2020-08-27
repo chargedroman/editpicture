@@ -2,7 +2,6 @@ package com.r.picturechargingedit.mvp.impl
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -100,12 +99,8 @@ class EditPictureViewImpl : View, EditPictureView {
     }
 
 
-
-    override fun drawPixelation(pictureModel: Picture, pixelationModel: Pixelation): Bitmap? {
-        val canvas = pictureModel.createBitmapCanvas() ?: return null
-        pixelationModel.invertAllCoordinates()
+    override fun drawPixelation(pixelationModel: Pixelation, canvas: Canvas) {
         drawerPixelation.drawChangesOnCanvas(pixelationModel, canvas)
-        return pictureModel.getBitmap()
     }
 
 }

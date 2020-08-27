@@ -1,6 +1,6 @@
 package com.r.picturechargingedit.mvp
 
-import android.graphics.Bitmap
+import android.graphics.Canvas
 import androidx.annotation.RestrictTo
 import com.r.picturechargingedit.arch.BaseView
 import com.r.picturechargingedit.model.crop.Crop
@@ -32,6 +32,6 @@ interface EditPictureView: BaseView {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showPixelation(pixelationModel: Pixelation)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun drawPixelation(pictureModel: Picture, pixelationModel: Pixelation): Bitmap?
+    fun drawPixelation(pixelationModel: Pixelation, canvas: Canvas)
 
 }
