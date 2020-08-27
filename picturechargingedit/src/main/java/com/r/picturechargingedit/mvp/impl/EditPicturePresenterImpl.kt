@@ -104,9 +104,10 @@ class EditPicturePresenterImpl(
 
     override fun attach(view: EditPictureView) {
         super.attach(view)
-        view.showScale(scaleModel)
         view.showPicture(pictureModel)
+        view.showScale(scaleModel)
         view.showPixelation(pixelationModel)
+        view.showCrop(cropModel)
     }
 
 

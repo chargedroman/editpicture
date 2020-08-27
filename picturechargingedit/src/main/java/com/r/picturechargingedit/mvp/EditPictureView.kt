@@ -3,6 +3,7 @@ package com.r.picturechargingedit.mvp
 import android.graphics.Bitmap
 import androidx.annotation.RestrictTo
 import com.r.picturechargingedit.arch.BaseView
+import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.model.scale.Scale
@@ -22,6 +23,8 @@ interface EditPictureView: BaseView {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun notifyChanged()
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    fun showCrop(cropModel: Crop)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showScale(scaleModel: Scale)
     @RestrictTo(RestrictTo.Scope.LIBRARY)

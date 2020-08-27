@@ -7,9 +7,11 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.r.picturechargingedit.drawers.DrawerCrop
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelation
 import com.r.picturechargingedit.drawers.DrawerScale
+import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.model.scale.Scale
@@ -34,6 +36,7 @@ class EditPictureViewImpl : View, EditPictureView {
     )
 
     private val drawerScale = DrawerScale()
+    private val drawerCrop = DrawerCrop()
     private val drawerPicture = DrawerPicture()
     private val drawerPixelation = DrawerPixelation()
 
@@ -78,6 +81,10 @@ class EditPictureViewImpl : View, EditPictureView {
 
     override fun notifyChanged() {
         post(this::invalidate)
+    }
+
+    override fun showCrop(cropModel: Crop) {
+        drawerCrop.showChanges(cropModel)
     }
 
     override fun showScale(scaleModel: Scale) {
