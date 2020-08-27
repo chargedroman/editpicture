@@ -5,8 +5,8 @@ import android.view.MotionEvent
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.scale.ModeSettable
 import com.r.picturechargingedit.model.scale.Scale
-import com.r.picturechargingedit.scale.ScalingInteraction
-import com.r.picturechargingedit.scale.ScalingMotionEvent
+import com.r.picturechargingedit.model.scale.ScalingInteraction
+import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
 /**
  *

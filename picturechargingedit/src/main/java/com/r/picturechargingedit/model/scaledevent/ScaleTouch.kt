@@ -2,7 +2,7 @@ package com.r.picturechargingedit.model.scaledevent
 
 import android.view.MotionEvent
 import com.r.picturechargingedit.EditPictureMode
-import com.r.picturechargingedit.scale.ScalingMotionEvent
+import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
 /**
  *

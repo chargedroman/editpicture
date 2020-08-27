@@ -1,4 +1,4 @@
-package com.r.picturechargingedit.scale
+package com.r.picturechargingedit.model.scale
 
 /**
  *

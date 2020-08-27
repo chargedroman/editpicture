@@ -9,11 +9,11 @@ import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.model.scale.Scale
+import com.r.picturechargingedit.model.scale.ScalingInteraction
+import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 import com.r.picturechargingedit.model.scaledevent.ScaleTouch
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
-import com.r.picturechargingedit.scale.ScalingInteraction
-import com.r.picturechargingedit.scale.ScalingMotionEvent
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
