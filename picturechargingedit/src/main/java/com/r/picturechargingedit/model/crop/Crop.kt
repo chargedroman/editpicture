@@ -14,6 +14,7 @@ interface Crop {
 
     fun onTouchEvent(event: ScalingMotionEvent)
     fun setMode(mode: EditPictureMode)
+    fun clear()
     fun canDrawCrop(): Boolean
 
     fun getCroppingRect(): RectF

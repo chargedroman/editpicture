@@ -2,6 +2,7 @@ package com.r.picturechargingedit.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
 import java.io.File
@@ -43,6 +44,11 @@ interface EditPictureIO {
      * saves [bitmap] to [saveLocation] and overwrites [saveLocation]'s exif with [pictureExif]
      */
     fun savePicture(saveLocation: Uri, bitmap: Bitmap, pictureExif: TiffOutputSet)
+
+    /**
+     * saves [bitmap] to [saveLocation] and overwrites [saveLocation]'s exif with [pictureExif]
+     */
+    fun cropBitmap(bitmap: Bitmap, rect: Rect): Bitmap
 
     /**
      * reads [original] into a file, rotated (from exif info) and down sampled with [downSampleSize],

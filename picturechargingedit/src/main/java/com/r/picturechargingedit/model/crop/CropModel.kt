@@ -54,6 +54,14 @@ class CropModel(private val pictureModel: Picture): Crop {
     override fun getCroppingRectRadius(): Float = croppingRectRadius
 
 
+    override fun clear() {
+        originalBoundsRect.set(0f, 0f, 0f, 0f)
+        originalBoundsRect.copyInto(croppingRect)
+        originalBoundsRect.copyInto(deltaRect)
+        originalBoundsRect.copyInto(bufferRect)
+        currentCropArea = CropArea.NONE
+        lastEvent = null
+    }
 
 
     override fun setMode(mode: EditPictureMode) {

@@ -37,6 +37,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
 
     fun editPicture(): Completable
     fun savePicture(): Completable
+    fun cropPicture(): Completable
 
 
     /**

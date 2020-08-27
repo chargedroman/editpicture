@@ -2,6 +2,7 @@ package com.r.picturechargingedit.mvp.impl
 
 import android.net.Uri
 import android.view.MotionEvent
+import androidx.core.graphics.toRect
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
@@ -66,6 +67,7 @@ class EditPicturePresenterImpl(
         cropModel.setMode(mode)
         if(clearChanges) {
             pixelationModel.clear()
+            cropModel.clear()
         }
         getView()?.notifyChanged()
     }
@@ -107,6 +109,21 @@ class EditPicturePresenterImpl(
         updateCanUndo()
     }
 
+
+    override fun cropPicture() = completable {
+        val bitmap = pictureModel.getBitmap()
+        if(!cropModel.canDrawCrop() || bitmap == null) return@completable
+
+        val cropRect = cropModel.getCroppingRect()
+        pictureModel.getMatrixInverted().mapRect(cropRect)
+        val originalExif = editIO.readExif(originalPicture)
+        val edited = editIO.cropBitmap(bitmap, cropRect.toRect())
+        editIO.savePicture(originalPicture, edited, originalExif)
+
+        setMode(EditPictureMode.NONE, true)
+
+        getView()?.notifyChanged()
+    }
 
 
     override fun attach(view: EditPictureView) {

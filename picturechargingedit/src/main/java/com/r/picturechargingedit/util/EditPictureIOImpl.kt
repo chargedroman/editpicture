@@ -2,6 +2,7 @@ package com.r.picturechargingedit.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -116,6 +117,10 @@ class EditPictureIOImpl(
         inputStream.saveWithExifTo(saveLocation, pictureExif)
 
         File(context.filesDir, tmpFileName).delete()
+    }
+
+    override fun cropBitmap(bitmap: Bitmap, rect: Rect): Bitmap {
+        return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
     }
 
 
