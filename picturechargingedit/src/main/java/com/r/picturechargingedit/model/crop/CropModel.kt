@@ -17,6 +17,10 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
 class CropModel(private val pictureModel: Picture): Crop {
 
+    companion object {
+        private const val HITBOX_FACTOR = 4f
+    }
+
 
     private enum class CropArea(val add: (RectF, Float, Float) -> Unit) {
         NONE({ _, _, _ -> }),
@@ -187,7 +191,7 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun ScalingMotionEvent.hitBox(): Float {
-        return mappedMargin*2f
+        return mappedMargin*HITBOX_FACTOR
     }
 
 }
