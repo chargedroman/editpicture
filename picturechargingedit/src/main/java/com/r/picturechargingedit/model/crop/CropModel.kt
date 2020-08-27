@@ -19,6 +19,7 @@ class CropModel(private val pictureModel: Picture): Crop {
 
     companion object {
         private const val HITBOX_FACTOR = 6f
+        private const val MINSIZE_FACTOR = 24f
     }
 
 
@@ -135,6 +136,12 @@ class CropModel(private val pictureModel: Picture): Crop {
         right = right.coerceAtLeast(rectF.left).coerceAtMost(rectF.right)
         top = top.coerceAtLeast(rectF.top).coerceAtMost(rectF.bottom)
         bottom = bottom.coerceAtLeast(rectF.top).coerceAtMost(rectF.bottom)
+
+        val minSize = croppingRectRadius*MINSIZE_FACTOR
+        top = top.coerceAtMost(bottom - minSize).coerceAtLeast(rectF.top)
+        bottom = bottom.coerceAtLeast(top + minSize).coerceAtMost(rectF.bottom)
+        left = left.coerceAtMost(right - minSize).coerceAtLeast(rectF.left)
+        right = right.coerceAtLeast(left + minSize).coerceAtMost(rectF.right)
     }
 
 
