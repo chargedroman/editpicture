@@ -83,6 +83,8 @@ class ScaleTouchModel(
             }
         }
 
+        onEventDetected(event.toScalingMotionEvent(ScalingInteraction.ALL))
+
     }
 
     private fun handleClickEvent(event: MotionEvent, onEventDetected: (ScalingMotionEvent) -> Unit) {

@@ -14,3 +14,17 @@ fun RectF.copyInto(rectF: RectF) {
     rectF.right = right
     rectF.bottom = bottom
 }
+
+fun RectF.setZero() {
+    top = 0f
+    left = 0f
+    right = 0f
+    bottom = 0f
+}
+
+fun RectF.isZero(): Boolean {
+    return top == 0f &&
+    left == 0f &&
+    right == 0f &&
+    bottom == 0f
+}

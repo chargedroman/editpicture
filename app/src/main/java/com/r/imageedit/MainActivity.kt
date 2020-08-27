@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         presenter = EditPicturePresenter.Factory(this).create(getImageCacheUri())
         editView.setPresenter(presenter)
 
-        presenter.setMode(EditPictureMode.PIXELATE_VIA_DRAG)
+        presenter.setMode(EditPictureMode.CROP)
 
         showPicture()
     }

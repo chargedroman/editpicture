@@ -63,6 +63,7 @@ class EditPicturePresenterImpl(
         mMode.postValue(mode)
         scaleModel.setMode(mode)
         scaleTouchModel.setMode(mode)
+        cropModel.setMode(mode)
         if(clearChanges) {
             pixelationModel.clear()
             getView()?.notifyChanged()
@@ -131,6 +132,7 @@ class EditPicturePresenterImpl(
             when(event.interaction) {
                 ScalingInteraction.CLICK -> startRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
                 ScalingInteraction.MOVE -> continueRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
+                else -> Unit
             }
         } else if(mode.isCropping()) {
             cropModel.onTouchEvent(event)

@@ -8,5 +8,6 @@ package com.r.picturechargingedit.model.scale
 
 enum class ScalingInteraction {
     CLICK,
-    MOVE
+    MOVE,
+    ALL
 }

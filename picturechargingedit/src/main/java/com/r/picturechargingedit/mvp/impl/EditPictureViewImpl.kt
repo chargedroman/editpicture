@@ -66,6 +66,7 @@ class EditPictureViewImpl : View, EditPictureView {
             drawerScale.onDraw(canvas)
             drawerPicture.onDraw(canvas)
             drawerPixelation.onDraw(canvas)
+            drawerCrop.onDraw(canvas)
             restore()
         }
     }

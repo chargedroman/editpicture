@@ -55,11 +55,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
             val ioUtil = EditPictureIO.create(context)
             val pictureModel = PictureModel()
             val scaleModel = ScaleModel(pictureModel)
-            val scaleTouchModel =
-                ScaleTouchModel(
-                    pictureModel,
-                    scaleModel
-                )
+            val scaleTouchModel = ScaleTouchModel(pictureModel, scaleModel)
             val pixelationModel = PixelationModel(pictureModel)
             val cropModel = CropModel(pictureModel)
 

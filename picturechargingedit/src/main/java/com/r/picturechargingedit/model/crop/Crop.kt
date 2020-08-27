@@ -1,5 +1,7 @@
 package com.r.picturechargingedit.model.crop
 
+import android.graphics.RectF
+import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
 /**
@@ -11,5 +13,9 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 interface Crop {
 
     fun onTouchEvent(event: ScalingMotionEvent)
+    fun setMode(mode: EditPictureMode)
+
+    fun getCroppingRect(): RectF
+    fun getCroppingRectRadius(): Float
 
 }
