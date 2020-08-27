@@ -12,6 +12,7 @@ import android.view.MotionEvent
 class InteractionHandler {
 
     companion object {
+        private const val SCALE_THRESHOLD = 400L
         private const val CLICK_THRESHOLD = 200L
         private const val DISTANCE_THRESHOLD = 100L
         private const val MOVE_AMOUNT_THRESHOLD = 3
@@ -19,6 +20,7 @@ class InteractionHandler {
 
     private val mPointBuffer = floatArrayOf(0f, 0f)
     private var mLastTouchEventDownTime = 0L
+    private var mLastTouchEventScaleTime = 0L
     private var mLastTouchEventDownX = 0f
     private var mLastTouchEventDownY = 0f
     private var mMoveEventCount = 0
@@ -67,6 +69,10 @@ class InteractionHandler {
             mMoveEventCount++
         }
 
+        if(event.action == MotionEvent.ACTION_MOVE && event.pointerCount > 1) {
+            mLastTouchEventScaleTime = event.eventTime
+        }
+
         if(event.isMove()) {
              if(mStartedMoving && !translatingEnabled) {
                  onEventDetected(Interaction.CLICK, mPointBuffer[0], mPointBuffer[1])
@@ -101,6 +107,7 @@ class InteractionHandler {
         return action == MotionEvent.ACTION_MOVE
                 && pointerCount == 1
                 && mMoveEventCount > MOVE_AMOUNT_THRESHOLD
+                && (eventTime - mLastTouchEventScaleTime) > SCALE_THRESHOLD
     }
 
 
