@@ -192,11 +192,12 @@ class EditPicturePresenterTest {
 
         val x = 0f
         val y = 0f
+        val r = 0f
 
         val presenter = initPresenter()
-        presenter.startRecordingDraw(x, y)
+        presenter.startRecordingDraw(x, y, r)
 
-        verify(changesMock, times(0)).startRecordingDraw(any(), any())
+        verify(changesMock, times(0)).startRecordingDraw(any(), any(), any())
     }
 
     @Test
@@ -206,15 +207,16 @@ class EditPicturePresenterTest {
 
         val x = 0f
         val y = 0f
+        val r = 0f
 
         whenever(changesMock.getSize()).thenReturn(1)
 
         val presenter = initPresenter()
         presenter.setMode(mode)
-        presenter.startRecordingDraw(x, y)
+        presenter.startRecordingDraw(x, y, r)
 
         assertEquals(true, presenter.getCanUndo().value)
-        verify(changesMock, times(1)).startRecordingDraw(x, y)
+        verify(changesMock, times(1)).startRecordingDraw(x, y, r)
         verify(viewMock, times(1)).showChanges(changesMock)
     }
 
@@ -226,17 +228,18 @@ class EditPicturePresenterTest {
 
         val x = 0f
         val y = 0f
+        val r = 0f
 
         val presenter = initPresenter()
 
 
         presenter.setMode(modeNone)
-        presenter.continueRecordingDraw(x, y)
-        verify(changesMock, times(0)).continueRecordingDraw(any(), any())
+        presenter.continueRecordingDraw(x, y, r)
+        verify(changesMock, times(0)).continueRecordingDraw(any(), any(), any())
 
         presenter.setMode(modeClick)
-        presenter.continueRecordingDraw(x, y)
-        verify(changesMock, times(0)).continueRecordingDraw(any(), any())
+        presenter.continueRecordingDraw(x, y, r)
+        verify(changesMock, times(0)).continueRecordingDraw(any(), any(), any())
 
     }
 
@@ -247,12 +250,13 @@ class EditPicturePresenterTest {
 
         val x = 0f
         val y = 0f
+        val r = 0f
 
         val presenter = initPresenter()
 
         presenter.setMode(mode)
-        presenter.continueRecordingDraw(x, y)
-        verify(changesMock, times(1)).continueRecordingDraw(x, y)
+        presenter.continueRecordingDraw(x, y, r)
+        verify(changesMock, times(1)).continueRecordingDraw(x, y, r)
         verify(viewMock, times(1)).showChanges(changesMock)
     }
 
