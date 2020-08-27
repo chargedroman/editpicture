@@ -53,6 +53,7 @@ class EditPictureViewImpl : ScalingView,
     override fun showMode(mode: EditPictureMode) {
         when(mode) {
             EditPictureMode.NONE -> setTranslateScaleEnabled(true, true)
+            EditPictureMode.PIXELATE -> setTranslateScaleEnabled(false, false)
             EditPictureMode.PIXELATE_VIA_CLICK -> setTranslateScaleEnabled(true, true)
             EditPictureMode.PIXELATE_VIA_DRAG -> setTranslateScaleEnabled(false, true)
             else -> Unit

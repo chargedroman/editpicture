@@ -109,7 +109,7 @@ class ScalingHandler : Scaling {
     private fun onMove(event: MotionEvent) {
         if (mode == Mode.TRANSLATE) {
             translate(event)
-        } else if (mode == Mode.SCALE) {
+        } else if (mode == Mode.SCALE && scalingEnabled) {
             scale(event)
         }
     }
