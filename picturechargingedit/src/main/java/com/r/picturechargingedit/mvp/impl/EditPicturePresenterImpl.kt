@@ -135,6 +135,10 @@ class EditPicturePresenterImpl(
     override fun attach(view: EditPictureView) {
         super.attach(view)
         view.showPicture(changesModel.getPictureModel())
+        view.showChanges(changesModel)
+
+        val mode = mMode.value ?: return
+        view.showMode(mode)
     }
 
 
