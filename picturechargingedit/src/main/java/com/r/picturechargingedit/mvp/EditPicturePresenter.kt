@@ -2,6 +2,7 @@ package com.r.picturechargingedit.mvp
 
 import android.content.Context
 import android.net.Uri
+import android.view.MotionEvent
 import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
@@ -9,8 +10,9 @@ import com.r.picturechargingedit.arch.BasePresenter
 import com.r.picturechargingedit.model.crop.CropModel
 import com.r.picturechargingedit.model.picture.PictureModel
 import com.r.picturechargingedit.model.pixelation.PixelationModel
+import com.r.picturechargingedit.model.scale.ScaleModel
+import com.r.picturechargingedit.model.scaledevent.ScaleTouchModel
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
-import com.r.picturechargingedit.scale.ScalingMotionEvent
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
 
@@ -26,7 +28,6 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
      * api for user
      */
 
-    fun getRectRadius(): Float
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
 
     fun getCanUndo(): LiveData<Boolean>
@@ -43,24 +44,32 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
      */
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    fun onTouchEvent(event: ScalingMotionEvent, mappedRadius: Float)
+    fun onTouchEvent(event: MotionEvent)
 
 
 
     class Factory(private val context: Context) {
+
         fun create(originalPicture: Uri): EditPicturePresenter {
+
             val ioUtil = EditPictureIO.create(context)
             val pictureModel = PictureModel()
+            val scaleModel = ScaleModel(pictureModel)
+            val scaleTouchModel = ScaleTouchModel(pictureModel, scaleModel)
             val pixelationModel = PixelationModel(pictureModel)
             val cropModel = CropModel(pictureModel)
+
             return EditPicturePresenterImpl(
                 originalPicture,
                 ioUtil,
                 pictureModel,
+                scaleModel,
+                scaleTouchModel,
                 pixelationModel,
                 cropModel
             )
         }
+
     }
 
 }

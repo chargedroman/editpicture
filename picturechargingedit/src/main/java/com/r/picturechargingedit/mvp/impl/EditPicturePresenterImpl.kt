@@ -1,13 +1,15 @@
 package com.r.picturechargingedit.mvp.impl
 
-import android.graphics.Bitmap
 import android.net.Uri
+import android.view.MotionEvent
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
 import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
+import com.r.picturechargingedit.model.scale.Scale
+import com.r.picturechargingedit.model.scaledevent.ScaleTouch
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.scale.ScalingInteraction
@@ -25,24 +27,16 @@ class EditPicturePresenterImpl(
     private val originalPicture: Uri,
     private val editIO: EditPictureIO,
     private val pictureModel: Picture,
+    private val scaleModel: Scale,
+    private val scaleTouchModel: ScaleTouch,
     private val pixelationModel: Pixelation,
     private val cropModel: Crop
-) : Presenter<EditPictureView>(),
-    EditPicturePresenter {
-
-    companion object {
-        const val INITIAL_RECT_RADIUS_FACTOR = 1f
-        private const val THOUSAND = 1000f
-        private const val RELATIVE_RECT_RADIUS_FACTOR = 1.6f
-    }
+) : Presenter<EditPictureView>(), EditPicturePresenter {
 
 
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
-    private var mRelativeRectRadius = INITIAL_RECT_RADIUS_FACTOR
     private val lock = Object()
-
-    override fun getRectRadius(): Float = mRelativeRectRadius
 
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
@@ -57,7 +51,7 @@ class EditPicturePresenterImpl(
         } else {
             pixelationModel.removeLast()
         }
-        getView()?.showPixelation(pixelationModel)
+        getView()?.notifyChanged()
         updateCanUndo()
     }
 
@@ -67,10 +61,11 @@ class EditPicturePresenterImpl(
      */
     override fun setMode(mode: EditPictureMode, clearChanges: Boolean) {
         mMode.postValue(mode)
-        getView()?.showMode(mode)
+        scaleModel.setMode(mode)
+        scaleTouchModel.setMode(mode)
         if(clearChanges) {
             pixelationModel.clear()
-            getView()?.showPixelation(pixelationModel)
+            getView()?.notifyChanged()
         }
     }
 
@@ -81,8 +76,7 @@ class EditPicturePresenterImpl(
         val bitmap = editIO.readPictureBitmap(originalPicture)
         pixelationModel.clear()
         pictureModel.setBitmap(bitmap)
-        mRelativeRectRadius = getRelativePixelatedRectRadius(bitmap)
-        getView()?.showPicture(pictureModel)
+        getView()?.notifyChanged()
     }
 
     /**
@@ -102,36 +96,44 @@ class EditPicturePresenterImpl(
         pixelationModel.clear()
         pictureModel.setBitmap(edited)
 
-        getView()?.showPicture(pictureModel)
-        getView()?.showPixelation(pixelationModel)
+        getView()?.notifyChanged()
         updateCanUndo()
     }
 
-    override fun onTouchEvent(event: ScalingMotionEvent, mappedRadius: Float) {
-        val mode = mMode.value ?: return
-
-        if(mode.isPixelation()) {
-            when(event.interaction) {
-                ScalingInteraction.CLICK -> startRecordingPixelation(event.mappedX, event.mappedY, mappedRadius)
-                ScalingInteraction.MOVE -> continueRecordingPixelation(event.mappedX, event.mappedY, mappedRadius)
-            }
-        }
-    }
 
 
     override fun attach(view: EditPictureView) {
         super.attach(view)
+        view.showScale(scaleModel)
         view.showPicture(pictureModel)
         view.showPixelation(pixelationModel)
+    }
 
+
+    override fun onTouchEvent(event: MotionEvent) {
+        scaleModel.onTouchEvent(event)
+        scaleTouchModel.onTouchEvent(event, this::onTouchEventScaled)
+        getView()?.notifyChanged()
+    }
+
+
+    private fun onTouchEventScaled(event: ScalingMotionEvent) {
         val mode = mMode.value ?: return
-        view.showMode(mode)
+
+        if(mode.isPixelation()) {
+            when(event.interaction) {
+                ScalingInteraction.CLICK -> startRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
+                ScalingInteraction.MOVE -> continueRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
+            }
+        }
+
+        getView()?.notifyChanged()
     }
 
 
     private fun startRecordingPixelation(x: Float, y: Float, radius: Float) {
         pixelationModel.startRecordingDraw(x, y, radius)
-        getView()?.showPixelation(pixelationModel)
+        getView()?.notifyChanged()
         updateCanUndo()
     }
 
@@ -139,7 +141,7 @@ class EditPicturePresenterImpl(
         if(mMode.value == EditPictureMode.PIXELATE_VIA_CLICK) return
 
         pixelationModel.continueRecordingDraw(x, y, radius)
-        getView()?.showPixelation(pixelationModel)
+        getView()?.notifyChanged()
         updateCanUndo()
     }
 
@@ -156,13 +158,6 @@ class EditPicturePresenterImpl(
         synchronized(lock) {
             block()
         }
-    }
-
-
-    private fun getRelativePixelatedRectRadius(bitmap: Bitmap): Float {
-        val width = bitmap.width/THOUSAND
-        val height = bitmap.height/THOUSAND
-        return width * height * RELATIVE_RECT_RADIUS_FACTOR
     }
 
 

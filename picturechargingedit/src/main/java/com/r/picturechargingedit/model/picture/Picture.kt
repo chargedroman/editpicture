@@ -15,6 +15,7 @@ interface Picture {
     fun setBitmap(bitmap: Bitmap)
     fun getBitmap(): Bitmap?
     fun createBitmapCanvas(): Canvas?
+    fun getBitmapMargin(): Float
 
     fun getMatrixInverted(): Matrix
     fun getMatrix(): Matrix

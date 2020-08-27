@@ -12,5 +12,6 @@ class ScalingMotionEvent(
     val original: MotionEvent,
     val interaction: ScalingInteraction,
     val mappedX: Float,
-    val mappedY: Float
+    val mappedY: Float,
+    val mappedMargin: Float
 )

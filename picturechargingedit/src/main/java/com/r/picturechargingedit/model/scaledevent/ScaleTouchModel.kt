@@ -1,15 +1,23 @@
-package com.r.picturechargingedit.scale
+package com.r.picturechargingedit.model.scaledevent
 
 import android.graphics.Matrix
 import android.view.MotionEvent
+import com.r.picturechargingedit.model.picture.Picture
+import com.r.picturechargingedit.model.scale.ModeSettable
+import com.r.picturechargingedit.model.scale.Scale
+import com.r.picturechargingedit.scale.ScalingInteraction
+import com.r.picturechargingedit.scale.ScalingMotionEvent
 
 /**
  *
  * Author: romanvysotsky
- * Created: 24.08.20
+ * Created: 27.08.20
  */
 
-class ScalingViewInteractionHandler {
+class ScaleTouchModel(
+    private val pictureModel: Picture,
+    private val scalingModel: Scale
+) : ModeSettable(), ScaleTouch {
 
     companion object {
         private const val SCALE_THRESHOLD = 400L
@@ -19,6 +27,7 @@ class ScalingViewInteractionHandler {
     }
 
     private val mPointBuffer = floatArrayOf(0f, 0f)
+    private var mMarginBuffer = 0f
     private var mLastTouchEventDownTime = 0L
     private var mLastTouchEventScaleTime = 0L
     private var mLastTouchEventDownX = 0f
@@ -26,33 +35,25 @@ class ScalingViewInteractionHandler {
     private var mMoveEventCount = 0
     private var mStartedMoving = false
 
-    private var translatingEnabled = true
-    private var scalingEnabled = true
 
-
-    fun setTranslateScaleEnabled(translate: Boolean, scale: Boolean) {
-        translatingEnabled = translate
-        scalingEnabled = scale
-    }
-
-    fun onTouchEvent(
+    override fun onTouchEvent(
         event: MotionEvent,
-        matrix: Matrix,
         onEventDetected: (ScalingMotionEvent) -> Unit
     ) {
 
-        mapPoint(event, matrix)
+        val matrix = scalingModel.getInvertedScalingMatrix()
+        mapEvent(event, matrix)
         handleMoveEvent(event, onEventDetected)
         handleClickEvent(event, onEventDetected)
 
     }
 
-    private fun mapPoint(event: MotionEvent, matrix: Matrix) {
+    private fun mapEvent(event: MotionEvent, matrix: Matrix) {
         mPointBuffer[0] = event.x
         mPointBuffer[1] = event.y
+        mMarginBuffer = matrix.mapRadius(pictureModel.getBitmapMargin())
         matrix.mapPoints(mPointBuffer)
     }
-
 
     private fun handleMoveEvent(event: MotionEvent, onEventDetected: (ScalingMotionEvent) -> Unit) {
 
@@ -74,19 +75,19 @@ class ScalingViewInteractionHandler {
         }
 
         if(event.isMove()) {
-             if(mStartedMoving && !translatingEnabled) {
-                 onEventDetected(event.toScalingMotionEvent(ScalingInteraction.CLICK))
-                 mStartedMoving = false
-             } else {
-                 onEventDetected(event.toScalingMotionEvent(ScalingInteraction.MOVE))
-             }
+            if(mStartedMoving && !translatingEnabled) {
+                onEventDetected(event.toScalingMotionEvent(ScalingInteraction.CLICK))
+                mStartedMoving = false
+            } else {
+                onEventDetected(event.toScalingMotionEvent(ScalingInteraction.MOVE))
+            }
         }
 
     }
 
     private fun handleClickEvent(event: MotionEvent, onEventDetected: (ScalingMotionEvent) -> Unit) {
 
-        if(event.isDown()) {
+        if(event.action == MotionEvent.ACTION_DOWN && event.pointerCount == 1) {
             mLastTouchEventDownTime = event.eventTime
             mLastTouchEventDownX = event.x
             mLastTouchEventDownY = event.y
@@ -98,13 +99,15 @@ class ScalingViewInteractionHandler {
     }
 
     private fun MotionEvent.toScalingMotionEvent(interaction: ScalingInteraction): ScalingMotionEvent {
-        return ScalingMotionEvent(this, interaction, mPointBuffer[0], mPointBuffer[1], 1f)
+        return ScalingMotionEvent(
+            this,
+            interaction,
+            mPointBuffer[0],
+            mPointBuffer[1],
+            mMarginBuffer
+        )
     }
 
-
-    private fun MotionEvent.isDown(): Boolean {
-        return action == MotionEvent.ACTION_DOWN && pointerCount == 1
-    }
 
 
     private fun MotionEvent.isMove(): Boolean {
@@ -123,10 +126,12 @@ class ScalingViewInteractionHandler {
                 && clickDistanceValid
     }
 
+
     private fun MotionEvent.distanceToOld(): Float {
         val x = x - mLastTouchEventDownX
         val y = y - mLastTouchEventDownY
         return kotlin.math.sqrt(x * x + y * y)
     }
+
 
 }

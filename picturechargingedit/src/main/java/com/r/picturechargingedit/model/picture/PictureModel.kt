@@ -13,16 +13,27 @@ import android.graphics.Matrix
 
 class PictureModel: Picture {
 
+    companion object {
+        private const val MARGIN_STANDARD = 20f
+        private const val THOUSAND = 1000f
+        private const val RELATIVE_RECT_MARGIN_FACTOR = 1.6f
+    }
+
+
     private var bitmap: Bitmap? = null
+    private var bitmapMargin: Float = MARGIN_STANDARD
     private val matrix = Matrix()
 
+
+    override fun getBitmapMargin(): Float = bitmapMargin
     override fun getMatrix(): Matrix = matrix
     override fun getBitmap(): Bitmap? = bitmap
 
+
     override fun setBitmap(bitmap: Bitmap) {
+        this.bitmapMargin = calculateBitmapMargin(bitmap)
         this.bitmap = bitmap
     }
-
 
     override fun createBitmapCanvas(): Canvas? {
         val bitmap = bitmap ?: return null
@@ -33,6 +44,13 @@ class PictureModel: Picture {
         val inverted = Matrix()
         matrix.invert(inverted)
         return inverted
+    }
+
+
+    private fun calculateBitmapMargin(bitmap: Bitmap): Float {
+        val width = bitmap.width/ THOUSAND
+        val height = bitmap.height/ THOUSAND
+        return width * height * RELATIVE_RECT_MARGIN_FACTOR
     }
 
 }

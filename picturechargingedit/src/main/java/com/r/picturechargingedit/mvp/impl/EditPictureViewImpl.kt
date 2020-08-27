@@ -5,15 +5,16 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.util.AttributeSet
-import com.r.picturechargingedit.EditPictureMode
+import android.view.MotionEvent
+import android.view.View
 import com.r.picturechargingedit.drawers.DrawerPicture
 import com.r.picturechargingedit.drawers.DrawerPixelation
+import com.r.picturechargingedit.drawers.DrawerScale
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
+import com.r.picturechargingedit.model.scale.Scale
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
-import com.r.picturechargingedit.scale.ScalingMotionEvent
-import com.r.picturechargingedit.scale.ScalingView
 
 /**
  *
@@ -22,8 +23,7 @@ import com.r.picturechargingedit.scale.ScalingView
  */
 
 @SuppressLint("ClickableViewAccessibility")
-class EditPictureViewImpl : ScalingView,
-    EditPictureView {
+class EditPictureViewImpl : View, EditPictureView {
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
@@ -33,6 +33,7 @@ class EditPictureViewImpl : ScalingView,
         defStyleAttr
     )
 
+    private val drawerScale = DrawerScale()
     private val drawerPicture = DrawerPicture()
     private val drawerPixelation = DrawerPixelation()
 
@@ -48,17 +49,6 @@ class EditPictureViewImpl : ScalingView,
         return presenter
     }
 
-    override fun showMode(mode: EditPictureMode) {
-        when(mode) {
-            EditPictureMode.NONE -> setTranslateScaleEnabled(true, true)
-            EditPictureMode.PIXELATE -> setTranslateScaleEnabled(false, false)
-            EditPictureMode.PIXELATE_VIA_CLICK -> setTranslateScaleEnabled(true, true)
-            EditPictureMode.PIXELATE_VIA_DRAG -> setTranslateScaleEnabled(false, true)
-            else -> Unit
-        }
-        invalidate()
-    }
-
 
     override fun onDetachedFromWindow() {
         presenter?.detach()
@@ -66,29 +56,43 @@ class EditPictureViewImpl : ScalingView,
     }
 
 
-    override fun onDrawScaled(canvas: Canvas) {
-        drawerPicture.onDraw(canvas)
-        drawerPixelation.onDraw(canvas)
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+
+        canvas.apply {
+            save()
+            drawerScale.onDraw(canvas)
+            drawerPicture.onDraw(canvas)
+            drawerPixelation.onDraw(canvas)
+            restore()
+        }
     }
 
-    override fun onTouchEventScaled(event: ScalingMotionEvent) {
-        val radius = presenter?.getRectRadius() ?: return
-        val matrix = getInvertedScalingMatrix()
-        val mappedRadius = matrix.mapRadius(radius)
 
-        presenter?.onTouchEvent(event, mappedRadius)
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        presenter?.onTouchEvent(event)
+        return true
     }
 
+
+
+    override fun notifyChanged() {
+        post(this::invalidate)
+    }
+
+    override fun showScale(scaleModel: Scale) {
+        drawerScale.showChanges(scaleModel)
+    }
 
     override fun showPicture(pictureModel: Picture) {
         drawerPicture.showChanges(pictureModel)
-        post(this::invalidate)
     }
 
     override fun showPixelation(pixelationModel: Pixelation) {
         drawerPixelation.showChanges(pixelationModel)
-        post(this::invalidate)
     }
+
+
 
     override fun drawPixelation(pictureModel: Picture, pixelationModel: Pixelation): Bitmap? {
         val canvas = pictureModel.createBitmapCanvas() ?: return null
