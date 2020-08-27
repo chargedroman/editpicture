@@ -11,7 +11,7 @@ import com.r.picturechargingedit.model.crop.CropModel
 import com.r.picturechargingedit.model.picture.PictureModel
 import com.r.picturechargingedit.model.pixelation.PixelationModel
 import com.r.picturechargingedit.model.scale.ScaleModel
-import com.r.picturechargingedit.model.scaledevent.ScaleTouchModel
+import com.r.picturechargingedit.model.scale.touch.ScaleTouchModel
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
@@ -55,7 +55,11 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
             val ioUtil = EditPictureIO.create(context)
             val pictureModel = PictureModel()
             val scaleModel = ScaleModel(pictureModel)
-            val scaleTouchModel = ScaleTouchModel(pictureModel, scaleModel)
+            val scaleTouchModel =
+                ScaleTouchModel(
+                    pictureModel,
+                    scaleModel
+                )
             val pixelationModel = PixelationModel(pictureModel)
             val cropModel = CropModel(pictureModel)
 
