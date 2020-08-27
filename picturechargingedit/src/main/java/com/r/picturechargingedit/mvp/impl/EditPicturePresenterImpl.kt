@@ -78,6 +78,7 @@ class EditPicturePresenterImpl(
     override fun editPicture() = completable {
         val bitmap = editIO.readPictureBitmap(originalPicture)
         pixelationModel.clear()
+        cropModel.clear()
         pictureModel.setBitmap(bitmap)
         getView()?.notifyChanged()
     }
@@ -98,6 +99,7 @@ class EditPicturePresenterImpl(
         pixelationModel.invertAllCoordinates()
         view.drawPixelation(pixelationModel, bitmapCanvas)
         pixelationModel.clear()
+        cropModel.clear()
 
         val edited = pictureModel.getBitmap() ?: throw NullPointerException("Edited Bitmap null")
         pictureModel.setBitmap(edited)
@@ -120,7 +122,7 @@ class EditPicturePresenterImpl(
         val edited = editIO.cropBitmap(bitmap, cropRect.toRect())
         editIO.savePicture(originalPicture, edited, originalExif)
 
-        setMode(EditPictureMode.NONE, true)
+        editPicture().blockingAwait()
 
         getView()?.notifyChanged()
     }

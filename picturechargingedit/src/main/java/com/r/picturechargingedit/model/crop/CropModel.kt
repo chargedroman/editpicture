@@ -80,11 +80,13 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun updateBounds() {
-        pictureModel.getBitmapBoundsMapped().copyInto(originalBoundsRect)
-
         if(croppingRect.isZero()) {
             originalBoundsRect.copyInto(croppingRect)
         }
+
+        pictureModel.getBitmapBounds().copyInto(bufferRect)
+        pictureModel.getMatrix().mapRect(bufferRect)
+        bufferRect.copyInto(originalBoundsRect)
     }
 
     private fun actDependingOnEventAction(event: ScalingMotionEvent) {

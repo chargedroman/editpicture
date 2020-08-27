@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun savePicture() {
-        presenter.savePicture().sub(
+        presenter.cropPicture().sub(
             { println("CHAR: saved") },
             { println("CHAR: ${it.toString()}")}
         )
