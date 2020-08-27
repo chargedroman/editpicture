@@ -66,8 +66,8 @@ class EditPicturePresenterImpl(
         cropModel.setMode(mode)
         if(clearChanges) {
             pixelationModel.clear()
-            getView()?.notifyChanged()
         }
+        getView()?.notifyChanged()
     }
 
     /**
@@ -115,6 +115,7 @@ class EditPicturePresenterImpl(
         view.showScale(scaleModel)
         view.showPixelation(pixelationModel)
         view.showCrop(cropModel)
+        view.notifyChanged()
     }
 
 

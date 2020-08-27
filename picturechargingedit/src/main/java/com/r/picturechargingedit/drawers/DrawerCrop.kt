@@ -32,16 +32,20 @@ class DrawerCrop: Drawer<Crop>() {
         rectPaint.color = Color.parseColor("#66000000")
         rectPaint.style = Paint.Style.FILL
 
-        borderPaint.color = Color.WHITE
+        borderPaint.color = Color.parseColor("#10B6B7")
         borderPaint.style = Paint.Style.STROKE
 
-        pointPaint.color = Color.WHITE
+        pointPaint.color = Color.parseColor("#10B6B7")
         pointPaint.style = Paint.Style.FILL
         pointPaint.strokeCap = Paint.Cap.ROUND
     }
 
 
     override fun drawChangesOnCanvas(changes: Crop, canvas: Canvas) {
+        if(!changes.canDrawCrop()) {
+            return
+        }
+
         pointPaint.strokeWidth = changes.getCroppingRectRadius()
         borderPaint.strokeWidth = changes.getCroppingRectRadius() / 2
 
@@ -50,16 +54,17 @@ class DrawerCrop: Drawer<Crop>() {
         setRects(croppingRect, canvas)
         setPoints(croppingRect)
 
-        canvas.drawRect(above, rectPaint)
-        canvas.drawRect(left, rectPaint)
-        canvas.drawRect(right, rectPaint)
-        canvas.drawRect(bottom, rectPaint)
-
-        canvas.drawRect(croppingRect, borderPaint)
-
+        canvas.drawRectsAround(croppingRect)
         canvas.drawPoints(points, pointPaint)
     }
 
+    private fun Canvas.drawRectsAround(croppingRect: RectF) {
+        drawRect(above, rectPaint)
+        drawRect(left, rectPaint)
+        drawRect(right, rectPaint)
+        drawRect(bottom, rectPaint)
+        drawRect(croppingRect, borderPaint)
+    }
 
     private fun setRects(croppingRect: RectF, canvas: Canvas) {
         above.set(0f, 0f, canvas.width.toFloat(), croppingRect.top)

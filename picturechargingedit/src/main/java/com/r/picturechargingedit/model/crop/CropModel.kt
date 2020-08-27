@@ -5,7 +5,7 @@ import android.view.MotionEvent
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.add
 import com.r.picturechargingedit.arch.copyInto
-import com.r.picturechargingedit.arch.setZero
+import com.r.picturechargingedit.arch.isZero
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
@@ -30,10 +30,10 @@ class CropModel(private val pictureModel: Picture): Crop {
         TOP({ rect, _, dy -> rect.top += dy }),
         BOTTOM({ rect, _, dy -> rect.bottom += dy }),
 
-        TOPLEFT({ rect, dx, dy -> rect.top += dy; rect.left += dx }),
-        TOPRIGHT({ rect, dx, dy -> rect.top += dy; rect.right += dx }),
-        BOTTOMLEFT({ rect, dx, dy -> rect.bottom += dy; rect.left += dx }),
-        BOTTOMRIGHT({ rect, dx, dy -> rect.bottom += dy; rect.right += dx });
+        TOP_LEFT({ rect, dx, dy -> rect.top += dy; rect.left += dx }),
+        TOP_RIGHT({ rect, dx, dy -> rect.top += dy; rect.right += dx }),
+        BOTTOM_LEFT({ rect, dx, dy -> rect.bottom += dy; rect.left += dx }),
+        BOTTOM_RIGHT({ rect, dx, dy -> rect.bottom += dy; rect.right += dx });
     }
 
 
@@ -46,9 +46,10 @@ class CropModel(private val pictureModel: Picture): Crop {
     private var lastEvent: ScalingMotionEvent? = null
     private var croppingRectRadius: Float = 1f
 
-    private var canShowRect: Boolean = false
+    private var canDrawRect: Boolean = false
 
 
+    override fun canDrawCrop(): Boolean = canDrawRect && !croppingRect.isZero()
     override fun getCroppingRect(): RectF = croppingRect
     override fun getCroppingRectRadius(): Float = croppingRectRadius
 
@@ -56,18 +57,29 @@ class CropModel(private val pictureModel: Picture): Crop {
 
 
     override fun setMode(mode: EditPictureMode) {
-        canShowRect = mode.isCropping()
+        canDrawRect = mode.isCropping()
     }
 
 
     override fun onTouchEvent(event: ScalingMotionEvent) {
 
-        if(!canShowRect) {
-            croppingRect.setZero()
+        if(!canDrawRect) {
             return
         }
 
+        updateBounds()
+        actDependingOnEventAction(event)
+    }
+
+    private fun updateBounds() {
         pictureModel.getBitmapBoundsMapped().copyInto(originalBoundsRect)
+
+        if(croppingRect.isZero()) {
+            originalBoundsRect.copyInto(croppingRect)
+        }
+    }
+
+    private fun actDependingOnEventAction(event: ScalingMotionEvent) {
 
         if(event.isDown()) {
             croppingRectRadius = event.mappedMargin
@@ -86,7 +98,6 @@ class CropModel(private val pictureModel: Picture): Crop {
             cropRectWith(event)
             this.lastEvent = event
         }
-
     }
 
 
@@ -138,13 +149,13 @@ class CropModel(private val pictureModel: Picture): Crop {
         val bottom = touchingBottomHitBox(event)
 
         return if(top && left) {
-            CropArea.TOPLEFT
+            CropArea.TOP_LEFT
         } else if(top && right) {
-            CropArea.TOPRIGHT
+            CropArea.TOP_RIGHT
         } else if(bottom && left) {
-            CropArea.BOTTOMLEFT
+            CropArea.BOTTOM_LEFT
         } else if(bottom && right) {
-            CropArea.BOTTOMRIGHT
+            CropArea.BOTTOM_RIGHT
         } else if(top) {
             CropArea.TOP
         } else if(left) {
