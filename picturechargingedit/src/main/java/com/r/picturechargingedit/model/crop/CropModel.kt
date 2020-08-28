@@ -48,8 +48,9 @@ class CropModel(private val pictureModel: Picture): Crop {
 
     private var lastEvent: ScalingMotionEvent? = null
     private var croppingRectRadius: Float = 1f
+    private var aspectRatio: Float = 1f
 
-    private var canDrawRect: Boolean = false
+    private var currentMode: EditPictureMode = EditPictureMode.NONE
 
 
     override fun getCroppingRect(): RectF = croppingRect
@@ -57,7 +58,7 @@ class CropModel(private val pictureModel: Picture): Crop {
 
     override fun canDrawCrop(): Boolean {
         updateBounds()
-        return canDrawRect && !croppingRect.isZero()
+        return currentMode.isCropping() && !croppingRect.isZero()
     }
 
 
@@ -71,15 +72,17 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
 
-    override fun setMode(mode: EditPictureMode) {
-        canDrawRect = mode.isCropping()
+    override fun setMode(mode: EditPictureMode, aspectRatio: Float) {
+        clear()
+        this.currentMode = mode
+        this.aspectRatio = aspectRatio
         updateBounds()
     }
 
 
     override fun onTouchEvent(event: ScalingMotionEvent) {
 
-        if(!canDrawRect) {
+        if(!currentMode.isCropping()) {
             return
         }
 
@@ -97,6 +100,10 @@ class CropModel(private val pictureModel: Picture): Crop {
         pictureModel.getBitmapBounds().copyInto(bufferRect)
         pictureModel.getMatrix().mapRect(bufferRect)
         bufferRect.copyInto(originalBoundsRect)
+
+        if(currentMode == EditPictureMode.THUMBNAIL) {
+            croppingRect.limitBoundsTo(originalBoundsRect)
+        }
     }
 
     private fun actDependingOnEventAction(event: ScalingMotionEvent) {
@@ -140,15 +147,20 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun RectF.limitBoundsTo(rectF: RectF) {
-        val minSize = croppingRectRadius*MINSIZE_FACTOR
+        val minHeight = getMinHeightCroppingRectLimit()
+        val minWidth = getMinWidthCroppingRectLimit()
 
         top = top.coerceAtLeast(rectF.top)
-        bottom = bottom.coerceAtLeast(top + minSize).coerceAtMost(rectF.bottom)
-        top = top.coerceAtMost(bottom - minSize)
+        bottom = bottom.coerceAtLeast(top + minHeight).coerceAtMost(rectF.bottom)
+        top = top.coerceAtMost(bottom - minHeight)
 
         left = left.coerceAtLeast(rectF.left)
-        right = right.coerceAtLeast(left + minSize).coerceAtMost(rectF.right)
-        left = left.coerceAtMost(right - minSize)
+        right = right.coerceAtLeast(left + minWidth).coerceAtMost(rectF.right)
+        left = left.coerceAtMost(right - minWidth)
+
+        if(currentMode == EditPictureMode.THUMBNAIL) {
+            bottom = bottom.coerceAtMost(top + minHeight)
+        }
     }
 
 
@@ -238,6 +250,23 @@ class CropModel(private val pictureModel: Picture): Crop {
 
     private fun hitBox(): Float {
         return croppingRectRadius*HITBOX_FACTOR
+    }
+
+
+    private fun getMinWidthCroppingRectLimit(): Float {
+        return if(currentMode == EditPictureMode.THUMBNAIL) {
+            originalBoundsRect.width()
+        } else {
+            croppingRectRadius*MINSIZE_FACTOR
+        }
+    }
+
+    private fun getMinHeightCroppingRectLimit(): Float {
+        return if(currentMode == EditPictureMode.THUMBNAIL) {
+            originalBoundsRect.width()*aspectRatio
+        } else {
+            croppingRectRadius*MINSIZE_FACTOR
+        }
     }
 
 }

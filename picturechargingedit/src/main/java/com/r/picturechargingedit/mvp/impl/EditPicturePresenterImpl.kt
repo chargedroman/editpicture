@@ -34,6 +34,10 @@ class EditPicturePresenterImpl(
     private val cropModel: Crop
 ) : Presenter<EditPictureView>(), EditPicturePresenter {
 
+    companion object {
+        private const val THUMBNAIL_ASPECT_RATIO = 3/5f
+    }
+
 
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
@@ -64,7 +68,7 @@ class EditPicturePresenterImpl(
         mMode.postValue(mode)
         scaleModel.setMode(mode)
         scaleTouchModel.setMode(mode)
-        cropModel.setMode(mode)
+        cropModel.setMode(mode, mode.aspectRatio())
         if(clearChanges) {
             pixelationModel.clear()
             cropModel.clear()
@@ -190,6 +194,15 @@ class EditPicturePresenterImpl(
     private fun completable(block: () -> Unit) = Completable.fromAction {
         synchronized(lock) {
             block()
+        }
+    }
+
+
+    private fun EditPictureMode.aspectRatio(): Float {
+        return if(this == EditPictureMode.THUMBNAIL) {
+            THUMBNAIL_ASPECT_RATIO
+        } else {
+            1f
         }
     }
 

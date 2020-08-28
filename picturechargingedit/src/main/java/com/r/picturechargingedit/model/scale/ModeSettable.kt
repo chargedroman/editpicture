@@ -22,6 +22,7 @@ abstract class ModeSettable {
             EditPictureMode.PIXELATE_VIA_CLICK -> setTranslateScaleEnabled(true, true)
             EditPictureMode.PIXELATE_VIA_DRAG -> setTranslateScaleEnabled(false, true)
             EditPictureMode.CROP -> setTranslateScaleEnabled(false, false, true)
+            EditPictureMode.THUMBNAIL -> setTranslateScaleEnabled(false, false, true)
             else -> Unit
         }
     }

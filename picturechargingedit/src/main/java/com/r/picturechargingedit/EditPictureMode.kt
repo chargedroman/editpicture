@@ -13,7 +13,8 @@ enum class EditPictureMode {
     PIXELATE_VIA_DRAG,
     PIXELATE_VIA_CLICK,
 
-    CROP;
+    CROP,
+    THUMBNAIL;
 
 
     fun isPixelation(): Boolean {
@@ -21,7 +22,7 @@ enum class EditPictureMode {
     }
 
     fun isCropping(): Boolean {
-        return this == CROP
+        return this == CROP || this == THUMBNAIL
     }
 
 }
