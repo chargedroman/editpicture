@@ -28,12 +28,11 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
      * api for user
      */
 
+    fun undoLastAction(undoAll: Boolean = false)
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
 
     fun getCanUndo(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>
-
-    fun undoLastAction(undoAll: Boolean = false)
 
     fun editPicture(): Completable
     fun savePicture(): Completable
