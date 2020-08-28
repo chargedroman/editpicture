@@ -18,7 +18,7 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 class CropModel(private val pictureModel: Picture): Crop {
 
     companion object {
-        private const val HITBOX_FACTOR = 6f
+        private const val HITBOX_FACTOR = 4f
         private const val MINSIZE_FACTOR = 24f
     }
 
@@ -141,10 +141,14 @@ class CropModel(private val pictureModel: Picture): Crop {
 
     private fun RectF.limitBoundsTo(rectF: RectF) {
         val minSize = croppingRectRadius*MINSIZE_FACTOR
-        top = top.coerceAtMost(bottom - minSize).coerceAtLeast(rectF.top)
+
+        top = top.coerceAtLeast(rectF.top)
         bottom = bottom.coerceAtLeast(top + minSize).coerceAtMost(rectF.bottom)
-        left = left.coerceAtMost(right - minSize).coerceAtLeast(rectF.left)
+        top = top.coerceAtMost(bottom - minSize)
+
+        left = left.coerceAtLeast(rectF.left)
         right = right.coerceAtLeast(left + minSize).coerceAtMost(rectF.right)
+        left = left.coerceAtMost(right - minSize)
     }
 
 
