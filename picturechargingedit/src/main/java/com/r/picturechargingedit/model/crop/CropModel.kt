@@ -179,11 +179,17 @@ class CropModel(private val pictureModel: Picture): Crop {
 
     private fun calculateCurrentCropArea(event: ScalingMotionEvent): CropArea {
 
+        val inside = touchingCurrentCroppingRect(event)
+
+        if(currentMode == EditPictureMode.THUMBNAIL) {
+            return if(inside) CropArea.INSIDE else CropArea.NONE
+        }
+
+
         val left = touchingLeftHitBox(event)
         val right = touchingRightHitBox(event)
         val top = touchingTopHitBox(event)
         val bottom = touchingBottomHitBox(event)
-        val inside = touchingCurrentCroppingRect(event)
 
         return if(top && left) {
             CropArea.TOP_LEFT
