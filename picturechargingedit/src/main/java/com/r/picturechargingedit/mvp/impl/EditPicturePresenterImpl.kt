@@ -118,7 +118,8 @@ class EditPicturePresenterImpl(
 
     override fun cropPicture() = completable {
         val bitmap = pictureModel.getBitmap()
-        if(!cropModel.canDrawCrop() || bitmap == null) return@completable
+        if(!cropModel.canDrawCrop() || bitmap == null)
+            throw IllegalArgumentException("Can't crop image.")
 
         val cropRect = cropModel.getCroppingRect()
         pictureModel.getMatrixInverted().mapRect(cropRect)
@@ -129,6 +130,21 @@ class EditPicturePresenterImpl(
         val edited = editIO.cropBitmap(bitmap, rect)
         editIO.savePicture(originalPicture, edited, originalExif)
         editPicture().blockingAwait()
+
+        getView()?.notifyChanged()
+    }
+
+    override fun createThumbnail(thumbnailUri: Uri) = completable {
+        val bitmap = pictureModel.getBitmap()
+        if(!cropModel.canDrawCrop() || bitmap == null)
+            throw IllegalArgumentException("Can't create thumbnail.")
+
+        val cropRect = cropModel.getCroppingRect()
+        pictureModel.getMatrixInverted().mapRect(cropRect)
+        val rect = cropRect.toRect()
+        val edited = editIO.cropBitmap(bitmap, rect)
+        editIO.savePicture(thumbnailUri, edited)
+        cropModel.clear()
 
         getView()?.notifyChanged()
     }

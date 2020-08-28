@@ -78,27 +78,39 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         cropPicture()
     }
 
+    fun onThumbnailClicked(view: View) {
+        thumbnailPicture()
+    }
+
 
     private fun showPicture() {
         presenter.editPicture().sub(
             { println("CHAR: edit!") },
-            { println("CHAR: ${it.toString()}")}
+            { println("CHAR: $it")}
         )
     }
 
     private fun savePicture() {
         presenter.savePicture().sub(
             { println("CHAR: saved") },
-            { println("CHAR: ${it.toString()}")}
+            { println("CHAR: $it")}
         )
     }
 
     private fun cropPicture() {
         presenter.cropPicture().sub(
             { println("CHAR: cropped") },
-            { println("CHAR: ${it.toString()}")}
+            { println("CHAR: $it")}
         )
     }
+
+    private fun thumbnailPicture() {
+        presenter.createThumbnail(getThumbnailImageCacheUri()).sub(
+            { println("CHAR: thumbnailed") },
+            { println("CHAR: $it")}
+        )
+    }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -139,6 +151,14 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
     }
 
+
+    private fun getThumbnailImageCacheUri(): Uri {
+        val internalDir = application.filesDir
+        val file = File(internalDir, "CapturedImageThumbnail.jpg")
+        val authority = BuildConfig.APPLICATION_ID + ".fileprovider"
+        return FileProvider.getUriForFile(application, authority, file)
+    }
+
     private fun getImageCacheUri(): Uri {
         val internalDir = application.filesDir
         val file = File(internalDir, "CapturedImage.jpg")
@@ -159,13 +179,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         spinner.onItemSelectedListener = this
     }
 
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-
-    }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
         val mode = EditPictureMode.values()[p2]
         presenter.setMode(mode)
     }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) { }
 
 }

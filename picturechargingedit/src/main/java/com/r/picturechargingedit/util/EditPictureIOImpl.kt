@@ -119,6 +119,16 @@ class EditPictureIOImpl(
         File(context.filesDir, tmpFileName).delete()
     }
 
+    /**
+     * saves [bitmap] to [saveLocation]
+     */
+    override fun savePicture(saveLocation: Uri, bitmap: Bitmap) {
+        savePicture(saveLocation, bitmap, emptyExif())
+    }
+
+    /**
+     * @return a bitmap which is the subarea of [bitmap] defined by [rect]
+     */
     override fun cropBitmap(bitmap: Bitmap, rect: Rect): Bitmap {
         return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
     }
