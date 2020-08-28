@@ -50,9 +50,13 @@ class CropModel(private val pictureModel: Picture): Crop {
     private var canDrawRect: Boolean = false
 
 
-    override fun canDrawCrop(): Boolean = canDrawRect && !croppingRect.isZero()
     override fun getCroppingRect(): RectF = croppingRect
     override fun getCroppingRectRadius(): Float = croppingRectRadius
+
+    override fun canDrawCrop(): Boolean {
+        updateBounds()
+        return canDrawRect && !croppingRect.isZero()
+    }
 
 
     override fun clear() {
