@@ -34,7 +34,9 @@ class CropModel(private val pictureModel: Picture): Crop {
         TOP_LEFT({ rect, dx, dy -> rect.top += dy; rect.left += dx }),
         TOP_RIGHT({ rect, dx, dy -> rect.top += dy; rect.right += dx }),
         BOTTOM_LEFT({ rect, dx, dy -> rect.bottom += dy; rect.left += dx }),
-        BOTTOM_RIGHT({ rect, dx, dy -> rect.bottom += dy; rect.right += dx });
+        BOTTOM_RIGHT({ rect, dx, dy -> rect.bottom += dy; rect.right += dx }),
+
+        INSIDE({ rect, dx, dy -> rect.left += dx; rect.right += dx; rect.top += dy; rect.bottom += dy });
     }
 
 
@@ -138,11 +140,6 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
     private fun RectF.limitBoundsTo(rectF: RectF) {
-        left = left.coerceAtLeast(rectF.left).coerceAtMost(rectF.right)
-        right = right.coerceAtLeast(rectF.left).coerceAtMost(rectF.right)
-        top = top.coerceAtLeast(rectF.top).coerceAtMost(rectF.bottom)
-        bottom = bottom.coerceAtLeast(rectF.top).coerceAtMost(rectF.bottom)
-
         val minSize = croppingRectRadius*MINSIZE_FACTOR
         top = top.coerceAtMost(bottom - minSize).coerceAtLeast(rectF.top)
         bottom = bottom.coerceAtLeast(top + minSize).coerceAtMost(rectF.bottom)
@@ -170,6 +167,7 @@ class CropModel(private val pictureModel: Picture): Crop {
         val right = touchingRightHitBox(event)
         val top = touchingTopHitBox(event)
         val bottom = touchingBottomHitBox(event)
+        val inside = touchingCurrentCroppingRect(event)
 
         return if(top && left) {
             CropArea.TOP_LEFT
@@ -187,9 +185,15 @@ class CropModel(private val pictureModel: Picture): Crop {
             CropArea.BOTTOM
         } else if(right) {
             CropArea.RIGHT
+        } else if(inside) {
+            CropArea.INSIDE
         } else {
             CropArea.NONE
         }
+    }
+
+    private fun touchingCurrentCroppingRect(event: ScalingMotionEvent): Boolean {
+        return croppingRect.contains(event.mappedX, event.mappedY)
     }
 
     private fun touchingLeftHitBox(event: ScalingMotionEvent): Boolean {
