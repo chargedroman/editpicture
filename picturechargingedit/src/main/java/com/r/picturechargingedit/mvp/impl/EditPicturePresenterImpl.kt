@@ -99,6 +99,7 @@ class EditPicturePresenterImpl(
         getView()?.notifyChanged()
     }
 
+
     /**
      * applies all changes to the currently loaded bitmap and saves the
      * result to [originalPicture] (while keeping exif data)
@@ -125,8 +126,14 @@ class EditPicturePresenterImpl(
     }
 
 
+    /**
+     * applies the current pixelation to [originalPicture]
+     * then crops the [originalPicture] and saves the result to [originalPicture]
+     */
     override fun cropPicture() = completable {
+
         val bitmap = pictureModel.getBitmap()
+
         if(!cropModel.canDrawCrop() || bitmap == null)
             throw IllegalArgumentException("Can't crop image.")
 
@@ -143,6 +150,11 @@ class EditPicturePresenterImpl(
         getView()?.notifyChanged()
     }
 
+
+    /**
+     * creates a thumbnail from the current selection with [mThumbnailQuality] + [mThumbnailAspectRatio]
+     * applies the current pixelation and saves the result to [thumbnailUri]
+     */
     override fun createThumbnail(thumbnailUri: Uri) = completable {
 
         val view = getView()
