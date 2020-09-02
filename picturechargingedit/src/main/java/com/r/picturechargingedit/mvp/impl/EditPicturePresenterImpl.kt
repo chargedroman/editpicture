@@ -124,7 +124,7 @@ class EditPicturePresenterImpl(
      * applies the current pixelation to [originalPicture]
      * then crops the [originalPicture] and saves the result to [originalPicture]
      */
-    override fun cropPicture(): Completable = callAndClearModels {
+    override fun cropPicture(): Completable = call {
 
         val bitmap = pictureModel.getBitmap()
 
@@ -134,13 +134,14 @@ class EditPicturePresenterImpl(
         val cropRect = cropModel.getCroppingRect()
         pictureModel.getMatrixInverted().mapRect(cropRect)
         val rect = cropRect.toRect()
+        pictureModel.getMatrix().mapRect(cropRect)
 
-        savePicture().blockingAwait()
         val originalExif = editIO.readExif(originalPicture)
         val edited = editIO.cropBitmap(bitmap, rect)
         editIO.savePicture(originalPicture, edited, originalExif)
         pictureModel.setBitmap(edited)
 
+        getView()?.notifyChanged()
     }
 
 
