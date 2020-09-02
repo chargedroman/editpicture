@@ -36,6 +36,7 @@ class EditPicturePresenterImpl(
 
     companion object {
         private const val THUMBNAIL_ASPECT_RATIO = 3/5f
+        private const val THUMBNAIL_QUALITY = 90
     }
 
 
@@ -152,7 +153,7 @@ class EditPicturePresenterImpl(
         pictureModel.getMatrixInverted().mapRect(cropRect)
         val rect = cropRect.toRect()
         val edited = editIO.cropBitmap(bitmap, rect)
-        editIO.savePicture(thumbnailUri, edited)
+        editIO.savePicture(thumbnailUri, edited, THUMBNAIL_QUALITY)
         cropModel.clear()
 
         getView()?.notifyChanged()

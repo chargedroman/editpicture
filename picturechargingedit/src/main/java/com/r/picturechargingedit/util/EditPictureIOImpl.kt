@@ -33,6 +33,7 @@ class EditPictureIOImpl(
 
     companion object {
         const val SIZE_4_K = 4096
+        const val QUALITY_MAX = 100
     }
 
 
@@ -108,22 +109,14 @@ class EditPictureIOImpl(
      * saves [bitmap] to [saveLocation] and overwrites [saveLocation]'s exif with [pictureExif]
      */
     override fun savePicture(saveLocation: Uri, bitmap: Bitmap, pictureExif: TiffOutputSet) {
-
-        val tmpFileName = UUID.randomUUID().toString()
-
-        context.openFileOutput(tmpFileName, Context.MODE_PRIVATE).save(bitmap)
-
-        val inputStream = context.openFileInput(tmpFileName)
-        inputStream.saveWithExifTo(saveLocation, pictureExif)
-
-        File(context.filesDir, tmpFileName).delete()
+        savePicture(saveLocation, bitmap, pictureExif, QUALITY_MAX)
     }
 
     /**
-     * saves [bitmap] to [saveLocation]
+     * saves [bitmap] to [saveLocation] with [quality]
      */
-    override fun savePicture(saveLocation: Uri, bitmap: Bitmap) {
-        savePicture(saveLocation, bitmap, emptyExif())
+    override fun savePicture(saveLocation: Uri, bitmap: Bitmap, quality: Int) {
+        savePicture(saveLocation, bitmap, emptyExif(), quality)
     }
 
     /**
@@ -134,13 +127,25 @@ class EditPictureIOImpl(
     }
 
 
+    private fun savePicture(saveLocation: Uri, bitmap: Bitmap, pictureExif: TiffOutputSet, quality: Int) {
+
+        val tmpFileName = UUID.randomUUID().toString()
+
+        context.openFileOutput(tmpFileName, Context.MODE_PRIVATE).save(bitmap, quality)
+
+        val inputStream = context.openFileInput(tmpFileName)
+        inputStream.saveWithExifTo(saveLocation, pictureExif)
+
+        File(context.filesDir, tmpFileName).delete()
+    }
+
     private fun InputStream.saveWithExifTo(saveLocation: Uri, exif: TiffOutputSet) {
         val outputStream = context.contentResolver.openOutputStream(saveLocation)
         this.use { ExifRewriter().updateExifMetadataLossy(it, outputStream, exif) }
     }
 
-    private fun OutputStream.save(bitmap: Bitmap) {
-        this.use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+    private fun OutputStream.save(bitmap: Bitmap, quality: Int) {
+        this.use { bitmap.compress(Bitmap.CompressFormat.JPEG, quality, it) }
     }
 
 

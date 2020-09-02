@@ -46,9 +46,9 @@ interface EditPictureIO {
     fun savePicture(saveLocation: Uri, bitmap: Bitmap, pictureExif: TiffOutputSet)
 
     /**
-     * saves [bitmap] to [saveLocation]
+     * saves [bitmap] to [saveLocation] with [quality]
      */
-    fun savePicture(saveLocation: Uri, bitmap: Bitmap)
+    fun savePicture(saveLocation: Uri, bitmap: Bitmap, quality: Int)
 
     /**
      * @return a bitmap which is the subarea of [bitmap] defined by [rect]
