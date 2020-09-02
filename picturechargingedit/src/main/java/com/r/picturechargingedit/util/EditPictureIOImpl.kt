@@ -123,6 +123,10 @@ class EditPictureIOImpl(
      * @return a bitmap which is the subarea of [bitmap] defined by [rect]
      */
     override fun cropBitmap(bitmap: Bitmap, rect: Rect): Bitmap {
+        rect.bottom = rect.bottom.coerceAtMost(bitmap.height)
+        rect.right = rect.right.coerceAtMost(bitmap.width)
+        rect.top = rect.top.coerceAtLeast(0)
+        rect.left = rect.left.coerceAtLeast(0)
         return Bitmap.createBitmap(bitmap, rect.left, rect.top, rect.width(), rect.height())
     }
 

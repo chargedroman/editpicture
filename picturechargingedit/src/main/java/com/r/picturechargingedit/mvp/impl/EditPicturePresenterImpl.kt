@@ -91,12 +91,9 @@ class EditPicturePresenterImpl(
     /**
      * loads the [originalPicture] and presents it
      */
-    override fun editPicture() = completable {
+    override fun editPicture(): Completable = callAndClearModels {
         val bitmap = editIO.readPictureBitmap(originalPicture)
-        pixelationModel.clear()
-        cropModel.clear()
         pictureModel.setBitmap(bitmap)
-        getView()?.notifyChanged()
     }
 
 
@@ -104,25 +101,22 @@ class EditPicturePresenterImpl(
      * applies all changes to the currently loaded bitmap and saves the
      * result to [originalPicture] (while keeping exif data)
      */
-    override fun savePicture() = completable {
+    override fun savePicture(): Completable = callAndClearModels {
 
         val view = getView()
         val bitmap = pictureModel.getBitmap()
         val bitmapCanvas = pictureModel.createBitmapCanvas()
 
         if(pixelationModel.getSize() == 0 || view == null || bitmap == null || bitmapCanvas == null) {
-            return@completable
+            return@callAndClearModels
         }
 
         pixelationModel.mapCoordinatesInverted()
         view.drawPixelation(pixelationModel, bitmapCanvas)
-        pixelationModel.clear()
-        cropModel.clear()
 
         val originalExif = editIO.readExif(originalPicture)
         editIO.savePicture(originalPicture, bitmap, originalExif)
-        view.notifyChanged()
-        updateCanUndo()
+
     }
 
 
@@ -130,7 +124,7 @@ class EditPicturePresenterImpl(
      * applies the current pixelation to [originalPicture]
      * then crops the [originalPicture] and saves the result to [originalPicture]
      */
-    override fun cropPicture() = completable {
+    override fun cropPicture(): Completable = callAndClearModels {
 
         val bitmap = pictureModel.getBitmap()
 
@@ -145,9 +139,8 @@ class EditPicturePresenterImpl(
         val originalExif = editIO.readExif(originalPicture)
         val edited = editIO.cropBitmap(bitmap, rect)
         editIO.savePicture(originalPicture, edited, originalExif)
-        editPicture().blockingAwait()
+        pictureModel.setBitmap(edited)
 
-        getView()?.notifyChanged()
     }
 
 
@@ -155,7 +148,7 @@ class EditPicturePresenterImpl(
      * creates a thumbnail from the current selection with [mThumbnailQuality] + [mThumbnailAspectRatio]
      * applies the current pixelation and saves the result to [thumbnailUri]
      */
-    override fun createThumbnail(thumbnailUri: Uri) = completable {
+    override fun createThumbnail(thumbnailUri: Uri): Completable = call {
 
         val view = getView()
         val bitmap = pictureModel.getBitmap()
@@ -238,9 +231,20 @@ class EditPicturePresenterImpl(
     /**
      * utility to synchronize access to io operations on [originalPicture]
      */
-    private fun completable(block: () -> Unit) = Completable.fromAction {
+    private fun call(block: () -> Unit) = Completable.fromAction {
         synchronized(mLock) { block() }
     }
+
+    /**
+     * utility which uses [call] and clears models and updates ui on terminating [block]
+     */
+    private fun callAndClearModels(block: () -> Unit) = call(block).doOnTerminate {
+        pixelationModel.clear()
+        cropModel.clear()
+        updateCanUndo()
+        getView()?.notifyChanged()
+    }
+
 
 
     private fun EditPictureMode.aspectRatio(): Float {
