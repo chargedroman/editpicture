@@ -35,15 +35,16 @@ class EditPicturePresenterImpl(
 ) : Presenter<EditPictureView>(), EditPicturePresenter {
 
     companion object {
-        private const val THUMBNAIL_ASPECT_RATIO = 3/5f
-        private const val THUMBNAIL_QUALITY = 90
+        const val THUMBNAIL_ASPECT_RATIO = 3/5f
+        const val THUMBNAIL_QUALITY = 90
     }
 
 
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
-    private val lock = Object()
-    private var thumbnailAspectRatio = THUMBNAIL_ASPECT_RATIO
+    private val mLock = Object()
+    private var mThumbnailAspectRatio = THUMBNAIL_ASPECT_RATIO
+    private var mThumbnailQuality = THUMBNAIL_QUALITY
 
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
@@ -78,8 +79,9 @@ class EditPicturePresenterImpl(
         getView()?.notifyChanged()
     }
 
-    override fun setThumbnailAspectRatio(aspectRatio: Float) {
-        this.thumbnailAspectRatio = aspectRatio
+    override fun setThumbnailParams(aspectRatio: Float, quality: Int) {
+        this.mThumbnailAspectRatio = aspectRatio
+        this.mThumbnailQuality = quality
         val mode = getMode().value ?: return
         cropModel.setMode(mode, aspectRatio)
         getView()?.notifyChanged()
@@ -153,7 +155,7 @@ class EditPicturePresenterImpl(
         pictureModel.getMatrixInverted().mapRect(cropRect)
         val rect = cropRect.toRect()
         val edited = editIO.cropBitmap(bitmap, rect)
-        editIO.savePicture(thumbnailUri, edited, THUMBNAIL_QUALITY)
+        editIO.savePicture(thumbnailUri, edited, mThumbnailQuality)
         cropModel.clear()
 
         getView()?.notifyChanged()
@@ -218,15 +220,13 @@ class EditPicturePresenterImpl(
      * utility to synchronize access to io operations on [originalPicture]
      */
     private fun completable(block: () -> Unit) = Completable.fromAction {
-        synchronized(lock) {
-            block()
-        }
+        synchronized(mLock) { block() }
     }
 
 
     private fun EditPictureMode.aspectRatio(): Float {
         return if(this == EditPictureMode.THUMBNAIL) {
-            thumbnailAspectRatio
+            mThumbnailAspectRatio
         } else {
             1f
         }
