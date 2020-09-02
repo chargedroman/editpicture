@@ -166,9 +166,10 @@ class EditPicturePresenterImpl(
         val cropRect = cropModel.getCroppingRect()
         pictureModel.getMatrixInverted().mapRect(cropRect)
         val rect = cropRect.toRect()
+        pictureModel.getMatrix().mapRect(cropRect)
+
         val edited = editIO.cropBitmap(bitmap, rect)
         editIO.savePicture(thumbnailUri, edited, mThumbnailQuality)
-        cropModel.clear()
 
         view.notifyChanged()
     }
