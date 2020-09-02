@@ -10,7 +10,8 @@ interface Pixelation {
 
     fun getColorModels(): List<RectColor>
 
-    fun invertAllCoordinates()
+    fun mapCoordinates()
+    fun mapCoordinatesInverted()
 
     fun clear()
     fun getSize(): Int

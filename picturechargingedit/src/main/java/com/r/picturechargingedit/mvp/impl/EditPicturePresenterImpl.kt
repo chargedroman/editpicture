@@ -112,7 +112,7 @@ class EditPicturePresenterImpl(
             return@completable
         }
 
-        pixelationModel.invertAllCoordinates()
+        pixelationModel.mapCoordinatesInverted()
         view.drawPixelation(pixelationModel, bitmapCanvas)
         pixelationModel.clear()
         cropModel.clear()
@@ -147,9 +147,19 @@ class EditPicturePresenterImpl(
     }
 
     override fun createThumbnail(thumbnailUri: Uri) = completable {
+
+        val view = getView()
         val bitmap = pictureModel.getBitmap()
-        if(!cropModel.canDrawCrop() || bitmap == null)
+        val bitmapCanvas = pictureModel.createBitmapCanvas()
+
+        if(!cropModel.canDrawCrop() || bitmap == null || view == null || bitmapCanvas == null)
             throw IllegalArgumentException("Can't create thumbnail.")
+
+        pixelationModel.mapCoordinatesInverted()
+        view.drawPixelation(pixelationModel, bitmapCanvas)
+        pixelationModel.mapCoordinates()
+        val originalBitmap = editIO.readPictureBitmap(originalPicture)
+        pictureModel.setBitmap(originalBitmap)
 
         val cropRect = cropModel.getCroppingRect()
         pictureModel.getMatrixInverted().mapRect(cropRect)
@@ -158,7 +168,7 @@ class EditPicturePresenterImpl(
         editIO.savePicture(thumbnailUri, edited, mThumbnailQuality)
         cropModel.clear()
 
-        getView()?.notifyChanged()
+        view.notifyChanged()
     }
 
 

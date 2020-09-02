@@ -1,5 +1,6 @@
 package com.r.picturechargingedit.model.pixelation
 
+import android.graphics.Matrix
 import com.r.picturechargingedit.model.picture.Picture
 import java.util.*
 
@@ -28,21 +29,15 @@ class PixelationModel(private val pictureModel: Picture): Pixelation {
     /**
      * maps all path and rect coordinates back using the inverted [pictureModel]'s matrix
      */
-    override fun invertAllCoordinates() = synchronized(lock) {
-        val matrix = pictureModel.getMatrixInverted()
+    override fun mapCoordinatesInverted() = synchronized(lock) {
+        mapCoordinates(pictureModel.getMatrixInverted())
+    }
 
-        for(model in paths) {
-            for(point in model.getPoints()) {
-                matrix.mapPoints(point)
-            }
-        }
-
-        for(model in rects) {
-            for(rect in model.getRects()) {
-                matrix.mapRect(rect)
-            }
-        }
-
+    /**
+     * maps all path and rect coordinates back using the [pictureModel]'s matrix
+     */
+    override fun mapCoordinates() = synchronized(lock) {
+        mapCoordinates(pictureModel.getMatrix())
     }
 
 
@@ -98,6 +93,24 @@ class PixelationModel(private val pictureModel: Picture): Pixelation {
         val matrix = pictureModel.getMatrixInverted()
         for(model in colors) {
             model.calculateColors(bitmap, matrix)
+        }
+    }
+
+
+    /**
+     * uses [matrix] to map all coordinates in this
+     */
+    private fun mapCoordinates(matrix: Matrix) {
+        for(model in paths) {
+            for(point in model.getPoints()) {
+                matrix.mapPoints(point)
+            }
+        }
+
+        for(model in rects) {
+            for(rect in model.getRects()) {
+                matrix.mapRect(rect)
+            }
         }
     }
 
