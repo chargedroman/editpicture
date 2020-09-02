@@ -30,6 +30,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
 
     fun undoLastAction(undoAll: Boolean = false)
     fun setMode(mode: EditPictureMode, clearChanges: Boolean = false)
+    fun setThumbnailAspectRatio(aspectRatio: Float)
 
     fun getCanUndo(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>

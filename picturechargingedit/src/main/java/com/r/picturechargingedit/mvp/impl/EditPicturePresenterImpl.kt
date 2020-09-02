@@ -42,6 +42,7 @@ class EditPicturePresenterImpl(
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
     private val lock = Object()
+    private var thumbnailAspectRatio = THUMBNAIL_ASPECT_RATIO
 
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
@@ -75,6 +76,14 @@ class EditPicturePresenterImpl(
         }
         getView()?.notifyChanged()
     }
+
+    override fun setThumbnailAspectRatio(aspectRatio: Float) {
+        this.thumbnailAspectRatio = aspectRatio
+        val mode = getMode().value ?: return
+        cropModel.setMode(mode, aspectRatio)
+        getView()?.notifyChanged()
+    }
+
 
     /**
      * loads the [originalPicture] and presents it
@@ -216,7 +225,7 @@ class EditPicturePresenterImpl(
 
     private fun EditPictureMode.aspectRatio(): Float {
         return if(this == EditPictureMode.THUMBNAIL) {
-            THUMBNAIL_ASPECT_RATIO
+            thumbnailAspectRatio
         } else {
             1f
         }
