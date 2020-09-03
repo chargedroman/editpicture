@@ -73,7 +73,7 @@ class CropModel(private val pictureModel: Picture): Crop {
 
 
     override fun setMode(mode: EditPictureMode, aspectRatio: Float) {
-        clear()
+        if(mode == EditPictureMode.CROP) clear()
         this.currentMode = mode
         this.aspectRatio = aspectRatio
         updateBounds()
