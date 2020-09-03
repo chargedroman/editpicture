@@ -83,9 +83,16 @@ class EditPicturePresenterImpl(
     /**
      * loads the [originalPicture] and presents it
      */
-    override fun editPicture(): Completable = callAndClearModels {
+    override fun editPicture(): Completable = call {
         val bitmap = editIO.readPictureBitmap(originalPicture)
+
         pictureModel.setBitmap(bitmap)
+        pixelationModel.clear()
+        cropModel.clear()
+        thumbnailModel.clear()
+
+        updateCanUndo()
+        getView()?.notifyChanged()
     }
 
 
@@ -93,14 +100,14 @@ class EditPicturePresenterImpl(
      * applies all changes to the currently loaded bitmap and saves the
      * result to [originalPicture] (while keeping exif data)
      */
-    override fun savePicture(): Completable = callAndClearModels {
+    override fun savePicture(): Completable = call {
 
         val view = getView()
         val bitmap = pictureModel.getBitmap()
         val bitmapCanvas = pictureModel.createBitmapCanvas()
 
         if(pixelationModel.getSize() == 0 || view == null || bitmap == null || bitmapCanvas == null) {
-            return@callAndClearModels
+            return@call
         }
 
         pixelationModel.mapCoordinatesInverted()
@@ -108,6 +115,8 @@ class EditPicturePresenterImpl(
 
         val originalExif = editIO.readExif(originalPicture)
         editIO.savePicture(originalPicture, bitmap, originalExif)
+
+        pixelationModel.clear()
 
     }
 
@@ -231,17 +240,6 @@ class EditPicturePresenterImpl(
      */
     private fun call(block: () -> Unit) = Completable.fromAction {
         synchronized(mLock) { block() }
-    }
-
-    /**
-     * utility which uses [call] and clears models and updates ui on terminating [block]
-     */
-    private fun callAndClearModels(block: () -> Unit) = call(block).doOnTerminate {
-        pixelationModel.clear()
-        cropModel.clear()
-        thumbnailModel.clear()
-        updateCanUndo()
-        getView()?.notifyChanged()
     }
 
 
