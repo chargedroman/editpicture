@@ -1,6 +1,8 @@
 package com.r.picturechargingedit.model.pixelation
 
 import android.graphics.Matrix
+import android.graphics.Rect
+import android.graphics.RectF
 import com.r.picturechargingedit.model.picture.Picture
 import java.util.*
 
@@ -17,6 +19,7 @@ class PixelationModel(private val pictureModel: Picture): Pixelation {
     private val rects = LinkedList<RectPathModel>()
     private val colors = LinkedList<RectColorModel>()
     private val lock = Object()
+    private val bufferMatrix = Matrix()
 
     private var currentPath = PathModel()
     private var currentRectPath = RectPathModel()
@@ -40,6 +43,21 @@ class PixelationModel(private val pictureModel: Picture): Pixelation {
         mapCoordinates(pictureModel.getMatrix())
     }
 
+    /**
+     * maps all coordinates from the original bitmap rect to the cropped bitmap rect
+     */
+    override fun mapCoordinatesTo(croppedRect: Rect) = synchronized(lock) {
+
+        val cropRect = RectF(croppedRect)
+        val oldBitmapRect = pictureModel.getBitmapBounds()
+
+        mapCoordinatesInverted()
+        bufferMatrix.setRectToRect(cropRect, oldBitmapRect, Matrix.ScaleToFit.CENTER)
+        mapCoordinates(bufferMatrix)
+        mapCoordinates()
+
+    }
+    
 
     override fun clear() = synchronized(lock) {
         paths.clear()

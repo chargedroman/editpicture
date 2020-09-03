@@ -141,6 +141,9 @@ class EditPicturePresenterImpl(
         editIO.savePicture(originalPicture, edited, originalExif)
         pictureModel.setBitmap(edited)
 
+        pixelationModel.mapCoordinatesTo(rect)
+        cropModel.clear()
+
         getView()?.notifyChanged()
     }
 

@@ -1,5 +1,7 @@
 package com.r.picturechargingedit.model.pixelation
 
+import android.graphics.Rect
+
 /**
  *
  * Author: romanvysotsky
@@ -12,6 +14,7 @@ interface Pixelation {
 
     fun mapCoordinates()
     fun mapCoordinatesInverted()
+    fun mapCoordinatesTo(croppedRect: Rect)
 
     fun clear()
     fun getSize(): Int
