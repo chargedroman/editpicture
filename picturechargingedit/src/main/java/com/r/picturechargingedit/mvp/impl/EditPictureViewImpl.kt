@@ -6,10 +6,7 @@ import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.r.picturechargingedit.drawers.DrawerCrop
-import com.r.picturechargingedit.drawers.DrawerPicture
-import com.r.picturechargingedit.drawers.DrawerPixelation
-import com.r.picturechargingedit.drawers.DrawerScale
+import com.r.picturechargingedit.drawers.*
 import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
@@ -36,7 +33,7 @@ class EditPictureViewImpl : View, EditPictureView {
 
     private val drawerScale = DrawerScale()
     private val drawerCrop = DrawerCrop()
-    private val drawerThumbnail = DrawerCrop()
+    private val drawerThumbnail = DrawerThumbnail()
     private val drawerPicture = DrawerPicture()
     private val drawerPixelation = DrawerPixelation()
 
