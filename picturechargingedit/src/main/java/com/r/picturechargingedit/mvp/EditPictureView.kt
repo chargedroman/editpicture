@@ -26,6 +26,8 @@ interface EditPictureView: BaseView {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showCrop(cropModel: Crop)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
+    fun showThumbnail(cropModel: Crop)
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showScale(scaleModel: Scale)
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun showPicture(pictureModel: Picture)

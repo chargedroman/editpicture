@@ -36,6 +36,7 @@ class EditPictureViewImpl : View, EditPictureView {
 
     private val drawerScale = DrawerScale()
     private val drawerCrop = DrawerCrop()
+    private val drawerThumbnail = DrawerCrop()
     private val drawerPicture = DrawerPicture()
     private val drawerPixelation = DrawerPixelation()
 
@@ -67,6 +68,7 @@ class EditPictureViewImpl : View, EditPictureView {
             drawerPicture.onDraw(canvas)
             drawerPixelation.onDraw(canvas)
             drawerCrop.onDraw(canvas)
+            drawerThumbnail.onDraw(canvas)
             restore()
         }
     }
@@ -83,9 +85,15 @@ class EditPictureViewImpl : View, EditPictureView {
         post(this::invalidate)
     }
 
+
     override fun showCrop(cropModel: Crop) {
         drawerCrop.showChanges(cropModel)
     }
+
+    override fun showThumbnail(cropModel: Crop) {
+        drawerThumbnail.showChanges(cropModel)
+    }
+
 
     override fun showScale(scaleModel: Scale) {
         drawerScale.showChanges(scaleModel)

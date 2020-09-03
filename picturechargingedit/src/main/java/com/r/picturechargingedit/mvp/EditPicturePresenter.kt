@@ -7,7 +7,8 @@ import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
-import com.r.picturechargingedit.model.crop.CropModel
+import com.r.picturechargingedit.model.crop.CropModelCrop
+import com.r.picturechargingedit.model.crop.CropModelThumb
 import com.r.picturechargingedit.model.picture.PictureModel
 import com.r.picturechargingedit.model.pixelation.PixelationModel
 import com.r.picturechargingedit.model.scale.ScaleModel
@@ -59,7 +60,8 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
             val scaleModel = ScaleModel(pictureModel)
             val scaleTouchModel = ScaleTouchModel(pictureModel, scaleModel)
             val pixelationModel = PixelationModel(pictureModel)
-            val cropModel = CropModel(pictureModel)
+            val cropModel = CropModelCrop(pictureModel)
+            val thumbnailModel = CropModelThumb(pictureModel)
 
             return EditPicturePresenterImpl(
                 originalPicture,
@@ -69,7 +71,8 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
                 scaleModel,
                 scaleTouchModel,
                 pixelationModel,
-                cropModel
+                cropModel,
+                thumbnailModel
             )
         }
 

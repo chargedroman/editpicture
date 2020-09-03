@@ -15,50 +15,40 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
  * Created: 27.08.20
  */
 
-class CropModel(private val pictureModel: Picture): Crop {
+abstract class BaseCropModel(private val pictureModel: Picture): Crop {
 
     companion object {
-        private const val HITBOX_FACTOR = 4f
-        private const val MINSIZE_FACTOR = 24f
+        const val HITBOX_FACTOR = 4f
+        const val MINSIZE_FACTOR = 24f
     }
 
 
-    private enum class CropArea(val add: (RectF, Float, Float) -> Unit) {
-        NONE({ _, _, _ -> }),
+    protected val originalBoundsRect: RectF = RectF()
 
-        LEFT({ rect, dx, _ -> rect.left += dx }),
-        RIGHT({ rect, dx, _ -> rect.right += dx }),
-        TOP({ rect, _, dy -> rect.top += dy }),
-        BOTTOM({ rect, _, dy -> rect.bottom += dy }),
-
-        TOP_LEFT({ rect, dx, dy -> rect.top += dy; rect.left += dx }),
-        TOP_RIGHT({ rect, dx, dy -> rect.top += dy; rect.right += dx }),
-        BOTTOM_LEFT({ rect, dx, dy -> rect.bottom += dy; rect.left += dx }),
-        BOTTOM_RIGHT({ rect, dx, dy -> rect.bottom += dy; rect.right += dx }),
-
-        INSIDE({ rect, dx, dy -> rect.left += dx; rect.right += dx; rect.top += dy; rect.bottom += dy });
-    }
-
-
-    private var currentCropArea: CropArea = CropArea.NONE
-    private val originalBoundsRect: RectF = RectF()
     private val deltaRect: RectF = RectF()
     private val croppingRect: RectF = RectF()
     private val bufferRect: RectF = RectF()
 
+    private var currentCropArea: CropArea = CropArea.NONE
     private var lastEvent: ScalingMotionEvent? = null
     private var croppingRectRadius: Float = 1f
-    private var aspectRatio: Float = 1f
-
     private var currentMode: EditPictureMode = EditPictureMode.NONE
 
 
     override fun getCroppingRect(): RectF = croppingRect
     override fun getCroppingRectRadius(): Float = croppingRectRadius
 
-    override fun canDrawCrop(): Boolean {
+
+    abstract fun getDrawMode(): EditPictureMode
+    abstract fun getMinWidthCroppingRectLimit(): Float
+    abstract fun getMinHeightCroppingRectLimit(): Float
+    abstract fun limitCroppingRectToOriginalBounds(): Boolean
+    abstract fun calculateCurrentCropArea(event: ScalingMotionEvent): CropArea
+
+
+    override fun canDraw(): Boolean {
         updateBounds()
-        return currentMode.isCropping() && !croppingRect.isZero()
+        return currentMode == getDrawMode() && !getCroppingRect().isZero()
     }
 
 
@@ -72,17 +62,15 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
 
-    override fun setMode(mode: EditPictureMode, aspectRatio: Float) {
-        if(mode == EditPictureMode.CROP) clear()
+    override fun setMode(mode: EditPictureMode) {
         this.currentMode = mode
-        this.aspectRatio = aspectRatio
         updateBounds()
     }
 
 
     override fun onTouchEvent(event: ScalingMotionEvent) {
 
-        if(!currentMode.isCropping()) {
+        if(currentMode != getDrawMode()) {
             return
         }
 
@@ -101,7 +89,7 @@ class CropModel(private val pictureModel: Picture): Crop {
         pictureModel.getMatrix().mapRect(bufferRect)
         bufferRect.copyInto(originalBoundsRect)
 
-        if(currentMode == EditPictureMode.THUMBNAIL) {
+        if(limitCroppingRectToOriginalBounds()) {
             croppingRect.limitBoundsTo(originalBoundsRect)
         }
     }
@@ -146,6 +134,7 @@ class CropModel(private val pictureModel: Picture): Crop {
         croppingRect.limitBoundsTo(originalBoundsRect)
     }
 
+
     private fun RectF.limitBoundsTo(rectF: RectF) {
         val minHeight = getMinHeightCroppingRectLimit()
         val minWidth = getMinWidthCroppingRectLimit()
@@ -158,7 +147,7 @@ class CropModel(private val pictureModel: Picture): Crop {
         right = right.coerceAtLeast(left + minWidth).coerceAtMost(rectF.right)
         left = left.coerceAtMost(right - minWidth)
 
-        if(currentMode == EditPictureMode.THUMBNAIL) {
+        if(limitCroppingRectToOriginalBounds()) {
             bottom = bottom.coerceAtMost(top + minHeight)
         }
     }
@@ -177,48 +166,12 @@ class CropModel(private val pictureModel: Picture): Crop {
     }
 
 
-    private fun calculateCurrentCropArea(event: ScalingMotionEvent): CropArea {
 
-        val inside = touchingCurrentCroppingRect(event)
-
-        if(currentMode == EditPictureMode.THUMBNAIL) {
-            return if(inside) CropArea.INSIDE else CropArea.NONE
-        }
-
-
-        val left = touchingLeftHitBox(event)
-        val right = touchingRightHitBox(event)
-        val top = touchingTopHitBox(event)
-        val bottom = touchingBottomHitBox(event)
-
-        return if(top && left) {
-            CropArea.TOP_LEFT
-        } else if(top && right) {
-            CropArea.TOP_RIGHT
-        } else if(bottom && left) {
-            CropArea.BOTTOM_LEFT
-        } else if(bottom && right) {
-            CropArea.BOTTOM_RIGHT
-        } else if(top) {
-            CropArea.TOP
-        } else if(left) {
-            CropArea.LEFT
-        } else if(bottom) {
-            CropArea.BOTTOM
-        } else if(right) {
-            CropArea.RIGHT
-        } else if(inside) {
-            CropArea.INSIDE
-        } else {
-            CropArea.NONE
-        }
-    }
-
-    private fun touchingCurrentCroppingRect(event: ScalingMotionEvent): Boolean {
+    protected fun touchingInside(event: ScalingMotionEvent): Boolean {
         return croppingRect.contains(event.mappedX, event.mappedY)
     }
 
-    private fun touchingLeftHitBox(event: ScalingMotionEvent): Boolean {
+    protected fun touchingLeftHitBox(event: ScalingMotionEvent): Boolean {
         val hitBox = hitBox()
         bufferRect.top = croppingRect.top - hitBox
         bufferRect.bottom = croppingRect.bottom + hitBox
@@ -227,7 +180,7 @@ class CropModel(private val pictureModel: Picture): Crop {
         return bufferRect.contains(event.mappedX, event.mappedY)
     }
 
-    private fun touchingRightHitBox(event: ScalingMotionEvent): Boolean {
+    protected fun touchingRightHitBox(event: ScalingMotionEvent): Boolean {
         val hitBox = hitBox()
         bufferRect.top = croppingRect.top - hitBox
         bufferRect.bottom = croppingRect.bottom + hitBox
@@ -236,7 +189,7 @@ class CropModel(private val pictureModel: Picture): Crop {
         return bufferRect.contains(event.mappedX, event.mappedY)
     }
 
-    private fun touchingTopHitBox(event: ScalingMotionEvent): Boolean {
+    protected fun touchingTopHitBox(event: ScalingMotionEvent): Boolean {
         val hitBox = hitBox()
         bufferRect.top = croppingRect.top - hitBox
         bufferRect.bottom = croppingRect.top + hitBox
@@ -245,7 +198,7 @@ class CropModel(private val pictureModel: Picture): Crop {
         return bufferRect.contains(event.mappedX, event.mappedY)
     }
 
-    private fun touchingBottomHitBox(event: ScalingMotionEvent): Boolean {
+    protected fun touchingBottomHitBox(event: ScalingMotionEvent): Boolean {
         val hitBox = hitBox()
         bufferRect.top = croppingRect.bottom - hitBox
         bufferRect.bottom = croppingRect.bottom + hitBox
@@ -258,21 +211,5 @@ class CropModel(private val pictureModel: Picture): Crop {
         return croppingRectRadius*HITBOX_FACTOR
     }
 
-
-    private fun getMinWidthCroppingRectLimit(): Float {
-        return if(currentMode == EditPictureMode.THUMBNAIL) {
-            originalBoundsRect.width()
-        } else {
-            croppingRectRadius*MINSIZE_FACTOR
-        }
-    }
-
-    private fun getMinHeightCroppingRectLimit(): Float {
-        return if(currentMode == EditPictureMode.THUMBNAIL) {
-            originalBoundsRect.width()*aspectRatio
-        } else {
-            croppingRectRadius*MINSIZE_FACTOR
-        }
-    }
 
 }

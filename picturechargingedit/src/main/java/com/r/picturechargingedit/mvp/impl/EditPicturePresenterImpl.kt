@@ -6,7 +6,8 @@ import androidx.core.graphics.toRect
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
-import com.r.picturechargingedit.model.crop.Crop
+import com.r.picturechargingedit.model.crop.CropModelCrop
+import com.r.picturechargingedit.model.crop.CropModelThumb
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.model.scale.Scale
@@ -32,20 +33,14 @@ class EditPicturePresenterImpl(
     private val scaleModel: Scale,
     private val scaleTouchModel: ScaleTouch,
     private val pixelationModel: Pixelation,
-    private val cropModel: Crop
+    private val cropModel: CropModelCrop,
+    private val thumbnailModel: CropModelThumb
 ) : Presenter<EditPictureView>(), EditPicturePresenter {
-
-    companion object {
-        const val THUMBNAIL_ASPECT_RATIO = 3/5f
-        const val THUMBNAIL_QUALITY = 90
-    }
 
 
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
     private val mLock = Object()
-    private var mThumbnailAspectRatio = THUMBNAIL_ASPECT_RATIO
-    private var mThumbnailQuality = THUMBNAIL_QUALITY
 
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
@@ -72,19 +67,23 @@ class EditPicturePresenterImpl(
         mMode.postValue(mode)
         scaleModel.setMode(mode)
         scaleTouchModel.setMode(mode)
-        cropModel.setMode(mode, mode.aspectRatio())
+        cropModel.setMode(mode)
+        thumbnailModel.setMode(mode)
+
         if(clearChanges) {
             pixelationModel.clear()
             cropModel.clear()
+            thumbnailModel.clear()
         }
+
         getView()?.notifyChanged()
     }
 
+
     override fun setThumbnailParams(aspectRatio: Float, quality: Int) {
-        this.mThumbnailAspectRatio = aspectRatio
-        this.mThumbnailQuality = quality
         val mode = getMode().value ?: return
-        cropModel.setMode(mode, aspectRatio)
+        thumbnailModel.setThumbnailParams(aspectRatio, quality)
+        thumbnailModel.setMode(mode)
         getView()?.notifyChanged()
     }
 
@@ -129,7 +128,7 @@ class EditPicturePresenterImpl(
 
         val bitmap = pictureModel.getBitmap()
 
-        if(!cropModel.canDrawCrop() || bitmap == null)
+        if(!cropModel.canDraw() || bitmap == null)
             throw IllegalArgumentException("Can't crop image.")
 
         val cropRect = cropModel.getCroppingRect()
@@ -150,7 +149,7 @@ class EditPicturePresenterImpl(
 
 
     /**
-     * creates a thumbnail from the current selection with [mThumbnailQuality] + [mThumbnailAspectRatio]
+     * creates a thumbnail from the current [thumbnailModel]
      * applies the current pixelation and saves the result to [thumbnailUri]
      */
     override fun createThumbnail(): Completable = call {
@@ -159,7 +158,7 @@ class EditPicturePresenterImpl(
         val bitmap = pictureModel.getBitmap()
         val bitmapCanvas = pictureModel.createBitmapCanvas()
 
-        if(!cropModel.canDrawCrop() || bitmap == null || view == null || bitmapCanvas == null)
+        if(!thumbnailModel.canDraw() || bitmap == null || view == null || bitmapCanvas == null)
             throw IllegalArgumentException("Can't create thumbnail.")
 
         pixelationModel.mapCoordinatesInverted()
@@ -168,13 +167,13 @@ class EditPicturePresenterImpl(
         val originalBitmap = editIO.readPictureBitmap(originalPicture)
         pictureModel.setBitmap(originalBitmap)
 
-        val cropRect = cropModel.getCroppingRect()
+        val cropRect = thumbnailModel.getCroppingRect()
         pictureModel.getMatrixInverted().mapRect(cropRect)
         val rect = cropRect.toRect()
         pictureModel.getMatrix().mapRect(cropRect)
 
         val edited = editIO.cropBitmap(bitmap, rect)
-        editIO.savePicture(thumbnailUri, edited, mThumbnailQuality)
+        editIO.savePicture(thumbnailUri, edited, thumbnailModel.getQuality())
 
     }
 
@@ -185,6 +184,7 @@ class EditPicturePresenterImpl(
         view.showScale(scaleModel)
         view.showPixelation(pixelationModel)
         view.showCrop(cropModel)
+        view.showThumbnail(thumbnailModel)
         view.notifyChanged()
     }
 
@@ -199,14 +199,15 @@ class EditPicturePresenterImpl(
     private fun onTouchEventScaled(event: ScalingMotionEvent) {
         val mode = mMode.value ?: return
 
-        if(mode.isPixelation()) {
-            when(event.interaction) {
-                ScalingInteraction.CLICK -> startRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
-                ScalingInteraction.MOVE -> continueRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
-                else -> Unit
-            }
-        } else if(mode.isCropping()) {
-            cropModel.onTouchEvent(event)
+        when {
+            mode.isPixelation() ->
+                when(event.interaction) {
+                    ScalingInteraction.CLICK -> startRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
+                    ScalingInteraction.MOVE -> continueRecordingPixelation(event.mappedX, event.mappedY, event.mappedMargin)
+                    else -> Unit
+                }
+            mode == EditPictureMode.CROP -> cropModel.onTouchEvent(event)
+            mode == EditPictureMode.THUMBNAIL -> thumbnailModel.onTouchEvent(event)
         }
 
         getView()?.notifyChanged()
@@ -246,18 +247,9 @@ class EditPicturePresenterImpl(
     private fun callAndClearModels(block: () -> Unit) = call(block).doOnTerminate {
         pixelationModel.clear()
         cropModel.clear()
+        thumbnailModel.clear()
         updateCanUndo()
         getView()?.notifyChanged()
-    }
-
-
-
-    private fun EditPictureMode.aspectRatio(): Float {
-        return if(this == EditPictureMode.THUMBNAIL) {
-            mThumbnailAspectRatio
-        } else {
-            1f
-        }
     }
 
 

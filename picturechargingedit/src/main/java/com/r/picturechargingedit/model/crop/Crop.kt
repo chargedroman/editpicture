@@ -13,9 +13,11 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 interface Crop {
 
     fun onTouchEvent(event: ScalingMotionEvent)
-    fun setMode(mode: EditPictureMode, aspectRatio: Float = 1f)
+
+    fun setMode(mode: EditPictureMode)
+
     fun clear()
-    fun canDrawCrop(): Boolean
+    fun canDraw(): Boolean
 
     fun getCroppingRect(): RectF
     fun getCroppingRectRadius(): Float

@@ -42,7 +42,7 @@ class DrawerCrop: Drawer<Crop>() {
 
 
     override fun drawChangesOnCanvas(changes: Crop, canvas: Canvas) {
-        if(!changes.canDrawCrop()) {
+        if(!changes.canDraw()) {
             return
         }
 
