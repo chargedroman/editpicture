@@ -49,12 +49,8 @@ class EditPicturePresenterImpl(
     /**
      * if there was at least one change applied to the picture by the user, deletes the last change
      */
-    override fun undoLastAction(undoAll: Boolean) {
-        if(undoAll) {
-            pixelationModel.clear()
-        } else {
-            pixelationModel.removeLast()
-        }
+    override fun undoLastAction() {
+        pixelationModel.removeLast()
         getView()?.notifyChanged()
         updateCanUndo()
     }
@@ -63,24 +59,20 @@ class EditPicturePresenterImpl(
     /**
      * updates the current operating [EditPictureMode]
      */
-    override fun setMode(mode: EditPictureMode, clearChanges: Boolean) {
+    override fun setMode(mode: EditPictureMode) {
         mMode.postValue(mode)
         scaleModel.setMode(mode)
         scaleTouchModel.setMode(mode)
         cropModel.setMode(mode)
         thumbnailModel.setMode(mode)
-
-        if(clearChanges) {
-            pixelationModel.clear()
-            cropModel.clear()
-            thumbnailModel.clear()
-        }
-
         getView()?.notifyChanged()
     }
 
 
-    override fun setThumbnailParams(aspectRatio: Float, quality: Int) {
+    /**
+     * sets [aspectRatio] and [quality] of [thumbnailModel]
+     */
+    override fun setThumbnail(aspectRatio: Float, quality: Int) {
         val mode = getMode().value ?: return
         thumbnailModel.setThumbnailParams(aspectRatio, quality)
         thumbnailModel.setMode(mode)
