@@ -176,7 +176,6 @@ class EditPicturePresenterImpl(
         val edited = editIO.cropBitmap(bitmap, rect)
         editIO.savePicture(thumbnailUri, edited, mThumbnailQuality)
 
-        view.notifyChanged()
     }
 
 
