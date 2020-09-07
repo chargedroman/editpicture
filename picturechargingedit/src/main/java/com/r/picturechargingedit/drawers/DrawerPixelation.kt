@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import com.r.picturechargingedit.arch.Drawer
 import com.r.picturechargingedit.model.pixelation.Pixelation
+import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
 
 /**
  *
@@ -12,7 +13,7 @@ import com.r.picturechargingedit.model.pixelation.Pixelation
  * Created: 18.08.20
  */
 
-class DrawerPixelation: Drawer<Pixelation>() {
+class DrawerPixelation(viewArgs: EditPictureViewArgs): Drawer<Pixelation>(viewArgs) {
 
     private val pathPaint = Paint()
 

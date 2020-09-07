@@ -15,7 +15,10 @@
         app:layout_constraintTop_toBottomOf="@id/spinner_mode"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_take_photo"/>
+        app:layout_constraintBottom_toTopOf="@id/btn_take_photo"
+        app:accentColor="@color/colorPrimary"
+        app:cropCaption="@string/crop_caption"
+        app:thumbCaption="@string/thumb_caption"/>
 
     <Spinner
         android:id="@+id/spinner_mode"

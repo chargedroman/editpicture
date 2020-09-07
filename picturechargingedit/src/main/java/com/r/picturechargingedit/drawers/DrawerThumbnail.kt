@@ -3,6 +3,7 @@ package com.r.picturechargingedit.drawers
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
 
 /**
  *
@@ -10,11 +11,14 @@ import android.graphics.RectF
  * Created: 03.09.20
  */
 
-class DrawerThumbnail : BaseDrawerCrop() {
+class DrawerThumbnail(viewArgs: EditPictureViewArgs) : BaseDrawerCrop(viewArgs) {
+
 
     private val points =
         floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
 
+
+    override fun getCaptionString(): String = viewArgs.thumbCaption
 
     override fun drawPoints(canvas: Canvas, pointPaint: Paint) {
         canvas.drawPoints(points, pointPaint)

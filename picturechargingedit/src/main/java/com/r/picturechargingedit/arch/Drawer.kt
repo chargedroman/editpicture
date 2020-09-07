@@ -1,6 +1,7 @@
 package com.r.picturechargingedit.arch
 
 import android.graphics.Canvas
+import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
 
 /**
  *
@@ -8,7 +9,7 @@ import android.graphics.Canvas
  * Created: 21.08.20
  */
 
-abstract class Drawer<T> {
+abstract class Drawer<T>(val viewArgs: EditPictureViewArgs) {
 
     private var changes: T? = null
 

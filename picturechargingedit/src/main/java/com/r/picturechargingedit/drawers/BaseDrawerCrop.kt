@@ -1,11 +1,11 @@
 package com.r.picturechargingedit.drawers
 
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import com.r.picturechargingedit.arch.Drawer
 import com.r.picturechargingedit.model.crop.Crop
+import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
 
 /**
  *
@@ -13,11 +13,13 @@ import com.r.picturechargingedit.model.crop.Crop
  * Created: 18.08.20
  */
 
-abstract class BaseDrawerCrop: Drawer<Crop>() {
+abstract class BaseDrawerCrop(viewArgs: EditPictureViewArgs): Drawer<Crop>(viewArgs) {
+
 
     private val rectPaint = Paint()
     private val borderPaint = Paint()
     private val pointPaint = Paint()
+    private val textPaint = Paint()
 
     private val above: RectF = RectF()
     private val left: RectF = RectF()
@@ -26,20 +28,23 @@ abstract class BaseDrawerCrop: Drawer<Crop>() {
 
 
     init {
-        rectPaint.color = Color.parseColor("#66000000")
+        rectPaint.color = viewArgs.backgroundColor
         rectPaint.style = Paint.Style.FILL
 
-        borderPaint.color = Color.parseColor("#10B6B7")
+        borderPaint.color = viewArgs.accentColor
         borderPaint.style = Paint.Style.STROKE
 
-        pointPaint.color = Color.parseColor("#10B6B7")
+        pointPaint.color = viewArgs.accentColor
         pointPaint.style = Paint.Style.FILL
         pointPaint.strokeCap = Paint.Cap.ROUND
+
+        textPaint.color = viewArgs.accentColor
     }
 
 
     abstract fun setPoints(croppingRect: RectF)
     abstract fun drawPoints(canvas: Canvas, pointPaint: Paint)
+    abstract fun getCaptionString(): String
 
 
     override fun drawChangesOnCanvas(changes: Crop, canvas: Canvas) {
@@ -47,8 +52,10 @@ abstract class BaseDrawerCrop: Drawer<Crop>() {
             return
         }
 
+        val textSize = changes.getCroppingRectRadius() * 2
         pointPaint.strokeWidth = changes.getCroppingRectRadius()
         borderPaint.strokeWidth = changes.getCroppingRectRadius() / 2
+        textPaint.textSize = textSize
 
         val croppingRect = changes.getCroppingRect()
 
@@ -57,6 +64,7 @@ abstract class BaseDrawerCrop: Drawer<Crop>() {
 
         canvas.drawRectsAround(croppingRect)
         drawPoints(canvas, pointPaint)
+        canvas.drawText(getCaptionString(), croppingRect.left + textSize, croppingRect.top + textSize * 2, textPaint)
     }
 
 

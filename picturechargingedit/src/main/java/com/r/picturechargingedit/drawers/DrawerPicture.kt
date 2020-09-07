@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Matrix
 import com.r.picturechargingedit.arch.Drawer
 import com.r.picturechargingedit.model.picture.Picture
+import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
 
 /**
  *
@@ -11,7 +12,7 @@ import com.r.picturechargingedit.model.picture.Picture
  * Created: 18.08.20
  */
 
-class DrawerPicture: Drawer<Picture>() {
+class DrawerPicture(viewArgs: EditPictureViewArgs): Drawer<Picture>(viewArgs) {
 
 
     override fun drawChangesOnCanvas(changes: Picture, canvas: Canvas) {

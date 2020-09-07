@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ImageEdit</string>
+    <string name="crop_caption">Crop</string>
+    <string name="thumb_caption">Thumbnail</string>
 </resources>

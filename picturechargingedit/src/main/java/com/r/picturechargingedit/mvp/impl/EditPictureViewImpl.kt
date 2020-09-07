@@ -29,13 +29,23 @@ class EditPictureViewImpl : View, EditPictureView {
         context,
         attrs,
         defStyleAttr
-    )
+    ) {
+        args = EditPictureViewArgs(context, attrs)
+        drawerScale = DrawerScale(args)
+        drawerCrop = DrawerCrop(args)
+        drawerThumbnail = DrawerThumbnail(args)
+        drawerPicture = DrawerPicture(args)
+        drawerPixelation = DrawerPixelation(args)
+    }
 
-    private val drawerScale = DrawerScale()
-    private val drawerCrop = DrawerCrop()
-    private val drawerThumbnail = DrawerThumbnail()
-    private val drawerPicture = DrawerPicture()
-    private val drawerPixelation = DrawerPixelation()
+
+    private val args: EditPictureViewArgs
+    private val drawerScale: DrawerScale
+    private val drawerCrop: DrawerCrop
+    private val drawerThumbnail: DrawerThumbnail
+    private val drawerPicture: DrawerPicture
+    private val drawerPixelation: DrawerPixelation
+
 
     private var presenter: EditPicturePresenter? = null
 
