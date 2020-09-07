@@ -27,7 +27,6 @@ import io.reactivex.Completable
 
 class EditPicturePresenterImpl(
     private val originalPicture: Uri,
-    private val thumbnailUri: Uri,
     private val editIO: EditPictureIO,
     private val pictureModel: Picture,
     private val scaleModel: Scale,
@@ -153,7 +152,7 @@ class EditPicturePresenterImpl(
      * creates a thumbnail from the current [thumbnailModel]
      * applies the current pixelation and saves the result to [thumbnailUri]
      */
-    override fun createThumbnail(): Completable = call {
+    override fun createThumbnail(thumbnailUri: Uri): Completable = call {
 
         val view = getView()
         val bitmap = pictureModel.getBitmap()

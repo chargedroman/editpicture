@@ -40,7 +40,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun editPicture(): Completable
     fun savePicture(): Completable
     fun cropPicture(): Completable
-    fun createThumbnail(): Completable
+    fun createThumbnail(thumbnailUri: Uri): Completable
 
 
     /**
@@ -54,7 +54,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
 
     class Factory(private val context: Context) {
 
-        fun create(originalPicture: Uri, thumbnailUri: Uri): EditPicturePresenter {
+        fun create(originalPicture: Uri): EditPicturePresenter {
 
             val ioUtil = EditPictureIO.create(context)
             val pictureModel = PictureModel()
@@ -66,7 +66,6 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
 
             return EditPicturePresenterImpl(
                 originalPicture,
-                thumbnailUri,
                 ioUtil,
                 pictureModel,
                 scaleModel,

@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         spinner = findViewById(R.id.spinner_mode)
 
         presenter = EditPicturePresenter.Factory(this)
-            .create(getImageCacheUri(), getThumbnailImageCacheUri())
+            .create(getImageCacheUri())
 
         editView.setPresenter(presenter)
 
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     private fun thumbnailPicture() {
-        presenter.createThumbnail().sub(
+        presenter.createThumbnail(getThumbnailImageCacheUri()).sub(
             { println("CHAR: thumbnailed") },
             { println("CHAR: $it")}
         )
