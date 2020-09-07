@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         presenter = EditPicturePresenter.Factory(this)
             .create(getImageCacheUri())
+        presenter.setThumbnailAspectRatio(9/16f)
 
         editView.setPresenter(presenter)
 

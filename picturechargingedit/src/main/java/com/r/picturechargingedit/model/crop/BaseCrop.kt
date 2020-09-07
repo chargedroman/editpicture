@@ -12,13 +12,12 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
  * Created: 07.09.20
  */
 
-abstract class BaseCrop(val pictureModel: Picture) : Crop {
+abstract class BaseCrop(pictureModel: Picture) : BaseBoundsCrop(pictureModel) {
 
     private var aspectRatio: Float = 1f
 
     private val bufferRect: RectF = RectF()
     private val croppingRect: RectF = RectF()
-    private var croppingRectRadius: Float = 1f
     private var currentCropArea: CropArea = CropArea.NONE
 
     private var lastEvent: ScalingMotionEvent? = null
@@ -37,10 +36,10 @@ abstract class BaseCrop(val pictureModel: Picture) : Crop {
 
     override fun getAspectRatio(): Float = aspectRatio
     override fun getCroppingRect(): RectF = croppingRect
-    override fun getCroppingRectRadius(): Float = croppingRectRadius
 
 
     override fun clear() {
+        super.clear()
         croppingRect.setEmpty()
         bufferRect.setEmpty()
         currentCropArea = CropArea.NONE
@@ -49,14 +48,9 @@ abstract class BaseCrop(val pictureModel: Picture) : Crop {
 
 
     override fun onTouchEvent(event: ScalingMotionEvent) {
-        updateBounds()
+        super.onTouchEvent(event)
         actDependingOnEventAction(event)
     }
-
-    open fun updateBounds() {
-        croppingRectRadius = pictureModel.getBitmapMargin()
-    }
-
 
 
     private fun actDependingOnEventAction(event: ScalingMotionEvent) {
@@ -179,7 +173,7 @@ abstract class BaseCrop(val pictureModel: Picture) : Crop {
     }
 
     private fun hitBox(): Float {
-        return croppingRectRadius*CropModelCrop.HITBOX_FACTOR
+        return getCroppingRectRadius()*CropModelCrop.HITBOX_FACTOR
     }
 
 }

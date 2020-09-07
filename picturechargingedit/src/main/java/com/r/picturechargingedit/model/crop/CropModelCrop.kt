@@ -22,44 +22,18 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
     }
 
 
-    private val originalBoundsRect: RectF = RectF()
     private val deltaRect: RectF = RectF()
     private val bufferRect: RectF = RectF()
-    private var currentMode: EditPictureMode = EditPictureMode.NONE
 
 
+    override fun canDrawForMode(mode: EditPictureMode): Boolean = mode == EditPictureMode.CROP
 
-
-    override fun canDraw(): Boolean {
-        updateBounds()
-        return currentMode == EditPictureMode.CROP && !getCroppingRect().isEmpty
-    }
 
 
     override fun clear() {
         super.clear()
-        originalBoundsRect.setEmpty()
         deltaRect.setEmpty()
         bufferRect.setEmpty()
-    }
-
-
-    override fun setMode(mode: EditPictureMode) {
-        this.currentMode = mode
-        updateBounds()
-    }
-
-
-    override fun updateBounds() {
-        super.updateBounds()
-
-        if(getCroppingRect().isEmpty) {
-            originalBoundsRect.copyInto(getCroppingRect())
-        }
-
-        pictureModel.getBitmapBounds().copyInto(bufferRect)
-        pictureModel.getMatrix().mapRect(bufferRect)
-        bufferRect.copyInto(originalBoundsRect)
     }
 
 
