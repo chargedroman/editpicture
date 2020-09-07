@@ -144,6 +144,7 @@ class EditPicturePresenterImpl(
 
         pixelationModel.mapCoordinatesTo(rect)
         cropModel.clear()
+        thumbnailModel.clear()
 
         getView()?.notifyChanged()
     }

@@ -22,6 +22,7 @@ abstract class BaseBoundsCrop(val pictureModel: Picture): Crop {
 
 
     abstract fun canDrawForMode(mode: EditPictureMode): Boolean
+    abstract fun onBoundsUpdated()
 
 
     override fun getCroppingRectRadius(): Float = croppingRectRadius
@@ -56,6 +57,7 @@ abstract class BaseBoundsCrop(val pictureModel: Picture): Crop {
         pictureModel.getBitmapBounds().copyInto(bufferRect)
         pictureModel.getMatrix().mapRect(bufferRect)
         bufferRect.copyInto(originalBoundsRect)
+        onBoundsUpdated()
     }
 
 }

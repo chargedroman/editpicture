@@ -29,6 +29,8 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
     override fun canDrawForMode(mode: EditPictureMode): Boolean = mode == EditPictureMode.CROP
 
 
+    override fun onBoundsUpdated() { }
+
 
     override fun clear() {
         super.clear()
