@@ -13,7 +13,7 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 class CropModelThumb(pictureModel: Picture) : BaseCropModel(pictureModel) {
 
     companion object {
-        const val THUMBNAIL_ASPECT_RATIO = 3/5f
+        const val THUMBNAIL_ASPECT_RATIO = 3/4f
         const val THUMBNAIL_QUALITY = 90
     }
 
