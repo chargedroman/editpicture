@@ -29,7 +29,7 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
 
     override fun onBoundsUpdated() {
-        if(getCroppingRect().isEmpty && !originalBoundsRect.isEmpty) {
+        if (getCroppingRect().isEmpty && !originalBoundsRect.isEmpty) {
             getCroppingRect().putInsideWithAspectRatio(originalBoundsRect)
             getCroppingRect().copyInto(lastCropRect)
         }
@@ -58,73 +58,62 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
 
     private fun RectF.addIfPossible(area: CropArea, dx: Float, dy: Float) {
-
-        if(area == CropArea.LEFT || area == CropArea.BOTTOM_LEFT || area == CropArea.TOP_LEFT) {
-            setLeft(left + dx)
-            val deltaHeight = width() * getAspectRatio() - height()
-            bottom += deltaHeight
+        when(area) {
+            CropArea.NONE -> Unit
+            CropArea.TOP_LEFT -> scaleLeft(dx)
+            CropArea.BOTTOM_LEFT -> scaleLeft(dx)
+            CropArea.TOP_RIGHT -> scaleRight(dx)
+            CropArea.BOTTOM_RIGHT -> scaleRight(dx)
+            else -> move(dx, dy)
         }
+    }
 
-        if(area == CropArea.RIGHT || area == CropArea.BOTTOM_RIGHT || area == CropArea.TOP_RIGHT) {
-            setRight(right + dx)
-            val deltaHeight = width() * getAspectRatio() - height()
-            bottom += deltaHeight
-        }
+    private fun RectF.scaleLeft(dx: Float) {
+        setLeft(left + dx)
+        val deltaHeight = width() * getAspectRatio() - height()
+        bottom += deltaHeight
+    }
 
-        if(area == CropArea.TOP) {
-            setRight(right - dy)
-            val deltaHeight = width() * getAspectRatio() - height()
-            bottom += deltaHeight
-        }
-
-        if(area == CropArea.BOTTOM) {
-            setRight(right + dy)
-            val deltaHeight = width() * getAspectRatio() - height()
-            bottom += deltaHeight
-        }
-
-        addIfInside(area, dx, dy)
-
+    private fun RectF.scaleRight(dx: Float) {
+        setRight(right + dx)
+        val deltaHeight = width() * getAspectRatio() - height()
+        bottom += deltaHeight
     }
 
 
-    private fun RectF.addIfInside(area: CropArea, dx: Float, dy: Float) {
+    private fun RectF.move(dx: Float, dy: Float) {
 
-        if(area == CropArea.INSIDE) {
+        if (right + dx <= originalBoundsRect.right && left + dx >= originalBoundsRect.left) {
 
-            if(right + dx <= originalBoundsRect.right && left + dx >= originalBoundsRect.left) {
+            left += dx
+            right += dx
 
-                left += dx
-                right += dx
+        } else {
 
-            } else {
+            val smallDX = if (dx > 0)
+                right - originalBoundsRect.right
+            else
+                left - originalBoundsRect.left
 
-                val smallDX = if(dx > 0)
-                    right - originalBoundsRect.right
-                else
-                    left - originalBoundsRect.left
+            left -= smallDX
+            right -= smallDX
 
-                left -= smallDX
-                right -= smallDX
+        }
 
-            }
+        if (bottom + dy <= originalBoundsRect.bottom && top + dy >= originalBoundsRect.top) {
 
-            if(bottom + dy <= originalBoundsRect.bottom && top + dy >= originalBoundsRect.top) {
+            top += dy
+            bottom += dy
 
-                top += dy
-                bottom += dy
+        } else {
 
-            } else {
+            val smallDY = if (dy > 0)
+                bottom - originalBoundsRect.bottom
+            else
+                top - originalBoundsRect.top
 
-                val smallDY = if(dy > 0)
-                    bottom - originalBoundsRect.bottom
-                else
-                    top - originalBoundsRect.top
-
-                top -= smallDY
-                bottom -= smallDY
-
-            }
+            top -= smallDY
+            bottom -= smallDY
 
         }
 
@@ -140,7 +129,8 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
     }
 
     private fun RectF.fixBottom(deltaHeight: Float) {
-        bottom = (bottom + deltaHeight).coerceAtLeast(top + minWidth).coerceAtMost(originalBoundsRect.bottom)
+        bottom = (bottom + deltaHeight).coerceAtLeast(top + minWidth)
+            .coerceAtMost(originalBoundsRect.bottom)
         val aspectHeight = height() / getAspectRatio()
         right = aspectHeight
     }
