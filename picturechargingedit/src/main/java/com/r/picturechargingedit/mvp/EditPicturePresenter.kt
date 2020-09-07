@@ -32,6 +32,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
 
     fun undoLastAction()
     fun setMode(mode: EditPictureMode)
+    fun setMinimumWidth(minimumWidth: Float)
 
     fun getCanUndo(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>

@@ -79,6 +79,18 @@ class EditPicturePresenterImpl(
         getView()?.notifyChanged()
     }
 
+    /**
+     * sets [minimumWidth] of [thumbnailModel] and [cropModel]
+     */
+    override fun setMinimumWidth(minimumWidth: Float) {
+        val mode = getMode().value ?: return
+        thumbnailModel.setMinWidth(minimumWidth)
+        thumbnailModel.setMode(mode)
+        cropModel.setMinWidth(minimumWidth)
+        cropModel.setMode(mode)
+        getView()?.notifyChanged()
+    }
+
 
     /**
      * loads the [originalPicture] and presents it
