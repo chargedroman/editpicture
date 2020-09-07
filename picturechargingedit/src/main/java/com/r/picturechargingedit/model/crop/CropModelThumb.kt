@@ -16,6 +16,7 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
 
     private val lastCropRect: RectF = RectF().apply { setEmpty() }
+    private val bufferRect: RectF = RectF().apply { setEmpty() }
     private val minWidth = 400f
 
 
@@ -66,18 +67,31 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
             CropArea.BOTTOM_RIGHT -> scaleRight(dx)
             else -> move(dx, dy)
         }
+        println("CHAR: crop=${getCroppingRect()} orig=$originalBoundsRect")
     }
 
     private fun RectF.scaleLeft(dx: Float) {
+        copyInto(bufferRect)
+
         setLeft(left + dx)
         val deltaHeight = width() * getAspectRatio() - height()
         bottom += deltaHeight
+
+        if(bottom >= originalBoundsRect.bottom) {
+            bufferRect.copyInto(this)
+        }
     }
 
     private fun RectF.scaleRight(dx: Float) {
+        copyInto(bufferRect)
+
         setRight(right + dx)
         val deltaHeight = width() * getAspectRatio() - height()
         bottom += deltaHeight
+
+        if(bottom >= originalBoundsRect.bottom) {
+            bufferRect.copyInto(this)
+        }
     }
 
 
