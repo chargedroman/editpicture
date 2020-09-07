@@ -33,16 +33,16 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun undoLastAction()
     fun setMode(mode: EditPictureMode)
 
-    fun setThumbnail(aspectRatio: Float, quality: Int)
-
     fun getCanUndo(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>
 
     fun editPicture(): Completable
     fun savePicture(): Completable
     fun cropPicture(): Completable
+
     fun createThumbnail(thumbnailUri: Uri): Completable
     fun createThumbnailDimensions(): ThumbnailDimensions?
+    fun setThumbnailAspectRatio(aspectRatio: Float)
 
 
     /**

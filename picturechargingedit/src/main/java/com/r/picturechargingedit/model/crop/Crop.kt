@@ -15,6 +15,8 @@ interface Crop {
     fun onTouchEvent(event: ScalingMotionEvent)
 
     fun setMode(mode: EditPictureMode)
+    fun setAspectRatio(aspectRatio: Float)
+    fun getAspectRatio(): Float
 
     fun clear()
     fun canDraw(): Boolean

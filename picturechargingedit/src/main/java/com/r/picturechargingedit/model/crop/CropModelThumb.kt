@@ -1,6 +1,9 @@
 package com.r.picturechargingedit.model.crop
 
+import android.graphics.RectF
 import com.r.picturechargingedit.EditPictureMode
+import com.r.picturechargingedit.arch.copyInto
+import com.r.picturechargingedit.arch.isZero
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
@@ -10,42 +13,44 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
  * Created: 03.09.20
  */
 
-class CropModelThumb(pictureModel: Picture) : BaseCropModel(pictureModel) {
+class CropModelThumb(private val pictureModel: Picture) : Crop {
 
-    companion object {
-        const val THUMBNAIL_ASPECT_RATIO = 3/4f
-        const val THUMBNAIL_QUALITY = 90
+    private val originalBoundsRect: RectF = RectF()
+    private val croppingRect: RectF = RectF()
+
+    private var croppingRectRadius: Float = 1f
+    private var aspectRatio: Float = 1f
+    private var currentMode: EditPictureMode = EditPictureMode.NONE
+
+
+    override fun onTouchEvent(event: ScalingMotionEvent) {
+        println("foo")
     }
 
+    override fun getCroppingRect(): RectF = croppingRect
 
-    private var aspectRatio: Float = THUMBNAIL_ASPECT_RATIO
-    private var quality: Int = THUMBNAIL_QUALITY
-
-    fun getAspectRatio(): Float = aspectRatio
-    fun getQuality(): Int = quality
+    override fun getCroppingRectRadius(): Float = croppingRectRadius
 
 
-    fun setThumbnailParams(aspectRatio: Float, quality: Int) {
+    override fun setMode(mode: EditPictureMode) {
+        this.currentMode = mode
+    }
+
+    override fun setAspectRatio(aspectRatio: Float) {
         this.aspectRatio = aspectRatio
-        this.quality = quality
     }
 
+    override fun getAspectRatio(): Float {
+        return aspectRatio
+    }
 
-    override fun limitCroppingRectToOriginalBounds(): Boolean = true
+    override fun clear() {
+        originalBoundsRect.set(0f, 0f, 0f, 0f)
+        originalBoundsRect.copyInto(croppingRect)
+    }
 
-    override fun getDrawMode(): EditPictureMode = EditPictureMode.THUMBNAIL
-
-    override fun getMinWidthCroppingRectLimit(): Float = originalBoundsRect.width()
-
-    override fun getMinHeightCroppingRectLimit(): Float = originalBoundsRect.width()*getAspectRatio()
-
-
-    override fun calculateCurrentCropArea(event: ScalingMotionEvent): CropArea {
-        val inside = touchingInside(event)
-        return if(inside)
-            CropArea.INSIDE
-        else
-            CropArea.NONE
+    override fun canDraw(): Boolean {
+        return currentMode == EditPictureMode.THUMBNAIL && !getCroppingRect().isZero()
     }
 
 

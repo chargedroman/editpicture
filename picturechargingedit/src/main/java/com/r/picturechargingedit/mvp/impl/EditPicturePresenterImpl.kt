@@ -7,8 +7,7 @@ import androidx.core.graphics.toRect
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
-import com.r.picturechargingedit.model.crop.CropModelCrop
-import com.r.picturechargingedit.model.crop.CropModelThumb
+import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.crop.ThumbnailDimensions
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
@@ -34,8 +33,8 @@ class EditPicturePresenterImpl(
     private val scaleModel: Scale,
     private val scaleTouchModel: ScaleTouch,
     private val pixelationModel: Pixelation,
-    private val cropModel: CropModelCrop,
-    private val thumbnailModel: CropModelThumb
+    private val cropModel: Crop,
+    private val thumbnailModel: Crop
 ) : Presenter<EditPictureView>(), EditPicturePresenter {
 
 
@@ -71,11 +70,11 @@ class EditPicturePresenterImpl(
 
 
     /**
-     * sets [aspectRatio] and [quality] of [thumbnailModel]
+     * sets [aspectRatio] of [thumbnailModel]
      */
-    override fun setThumbnail(aspectRatio: Float, quality: Int) {
+    override fun setThumbnailAspectRatio(aspectRatio: Float) {
         val mode = getMode().value ?: return
-        thumbnailModel.setThumbnailParams(aspectRatio, quality)
+        thumbnailModel.setAspectRatio(aspectRatio)
         thumbnailModel.setMode(mode)
         getView()?.notifyChanged()
     }
@@ -175,7 +174,7 @@ class EditPicturePresenterImpl(
         pictureModel.getMatrix().mapRect(cropRect)
 
         val edited = editIO.cropBitmap(bitmap, rect)
-        editIO.savePicture(thumbnailUri, edited, thumbnailModel.getQuality())
+        editIO.savePicture(thumbnailUri, edited, 100)
 
     }
 
