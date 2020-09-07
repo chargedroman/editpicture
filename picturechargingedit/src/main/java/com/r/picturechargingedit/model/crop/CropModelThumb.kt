@@ -53,7 +53,7 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
     private fun RectF.putInsideWithAspectRatio(originalBounds: RectF) {
         originalBounds.copyInto(this)
         val deltaHeight = width() * getAspectRatio() - height()
-        bottom += deltaHeight
+        fixBottom(deltaHeight)
     }
 
 
@@ -83,13 +83,53 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
             bottom += deltaHeight
         }
 
+        addIfInside(area, dx, dy)
+
+    }
+
+
+    private fun RectF.addIfInside(area: CropArea, dx: Float, dy: Float) {
+
         if(area == CropArea.INSIDE) {
+
+            if(right + dx <= originalBoundsRect.right && left + dx >= originalBoundsRect.left) {
+
+                left += dx
+                right += dx
+
+            } else {
+
+                val smallDX = if(dx > 0)
+                    right - originalBoundsRect.right
+                else
+                    left - originalBoundsRect.left
+
+                left -= smallDX
+                right -= smallDX
+
+            }
+
+            if(bottom + dy <= originalBoundsRect.bottom && top + dy >= originalBoundsRect.top) {
+
+                top += dy
+                bottom += dy
+
+            } else {
+
+                val smallDY = if(dy > 0)
+                    bottom - originalBoundsRect.bottom
+                else
+                    top - originalBoundsRect.top
+
+                top -= smallDY
+                bottom -= smallDY
+
+            }
 
         }
 
-        println("CHAR: cr=${getCroppingRect()}")
-
     }
+
 
     private fun RectF.setLeft(value: Float) {
         left = value.coerceAtLeast(originalBoundsRect.left).coerceAtMost(right - minWidth)
@@ -99,12 +139,10 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
         right = value.coerceAtLeast(left + minWidth).coerceAtMost(originalBoundsRect.right)
     }
 
-    private fun RectF.setTop(value: Float) {
-        top = value.coerceAtLeast(0f).coerceAtMost(bottom - minWidth)
-    }
-
-    private fun RectF.setBottom(value: Float) {
-        bottom = value.coerceAtLeast(top + minWidth).coerceAtMost(originalBoundsRect.bottom)
+    private fun RectF.fixBottom(deltaHeight: Float) {
+        bottom = (bottom + deltaHeight).coerceAtLeast(top + minWidth).coerceAtMost(originalBoundsRect.bottom)
+        val aspectHeight = height() / getAspectRatio()
+        right = aspectHeight
     }
 
 
