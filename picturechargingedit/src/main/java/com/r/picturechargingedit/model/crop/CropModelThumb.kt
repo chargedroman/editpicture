@@ -17,7 +17,6 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
     private val lastCropRect: RectF = RectF().apply { setEmpty() }
     private val bufferRect: RectF = RectF().apply { setEmpty() }
-    private val minWidth = 400f
 
 
     override fun canDrawForMode(mode: EditPictureMode): Boolean = mode == EditPictureMode.THUMBNAIL
@@ -67,7 +66,6 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
             CropArea.BOTTOM_RIGHT -> scaleRight(dx)
             else -> move(dx, dy)
         }
-        println("CHAR: crop=${getCroppingRect()} orig=$originalBoundsRect")
     }
 
     private fun RectF.scaleLeft(dx: Float) {
@@ -135,15 +133,15 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
 
     private fun RectF.setLeft(value: Float) {
-        left = value.coerceAtLeast(originalBoundsRect.left).coerceAtMost(right - minWidth)
+        left = value.coerceAtLeast(originalBoundsRect.left).coerceAtMost(right - mappedMinWidth)
     }
 
     private fun RectF.setRight(value: Float) {
-        right = value.coerceAtLeast(left + minWidth).coerceAtMost(originalBoundsRect.right)
+        right = value.coerceAtLeast(left + mappedMinWidth).coerceAtMost(originalBoundsRect.right)
     }
 
     private fun RectF.fixBottom(deltaHeight: Float) {
-        bottom = (bottom + deltaHeight).coerceAtLeast(top + minWidth)
+        bottom = (bottom + deltaHeight).coerceAtLeast(top + mappedMinWidth * getAspectRatio())
             .coerceAtMost(originalBoundsRect.bottom)
         val aspectHeight = height() / getAspectRatio()
         right = aspectHeight

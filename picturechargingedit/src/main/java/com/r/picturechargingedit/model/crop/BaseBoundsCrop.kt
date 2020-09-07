@@ -15,7 +15,14 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
 abstract class BaseBoundsCrop(val pictureModel: Picture): Crop {
 
+    companion object {
+        const val MIN_WIDTH = 672f
+    }
+
+
+    var mappedMinWidth = 672f
     val originalBoundsRect: RectF = RectF()
+    private var originalMinWidth = MIN_WIDTH
     private var croppingRectRadius: Float = 1f
     private var currentMode: EditPictureMode = EditPictureMode.NONE
     private val bufferRect: RectF = RectF()
@@ -27,6 +34,10 @@ abstract class BaseBoundsCrop(val pictureModel: Picture): Crop {
 
     override fun getCroppingRectRadius(): Float = croppingRectRadius
 
+
+    override fun setMinWidth(minWidth: Float) {
+        this.originalMinWidth = minWidth
+    }
 
     override fun clear() {
         originalBoundsRect.setEmpty()
@@ -57,6 +68,7 @@ abstract class BaseBoundsCrop(val pictureModel: Picture): Crop {
         pictureModel.getBitmapBounds().copyInto(bufferRect)
         pictureModel.getMatrix().mapRect(bufferRect)
         bufferRect.copyInto(originalBoundsRect)
+        mappedMinWidth = pictureModel.getMatrix().mapRadius(originalMinWidth)
         onBoundsUpdated()
     }
 

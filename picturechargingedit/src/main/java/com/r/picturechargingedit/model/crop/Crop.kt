@@ -16,6 +16,7 @@ interface Crop {
 
     fun setMode(mode: EditPictureMode)
     fun setAspectRatio(aspectRatio: Float)
+    fun setMinWidth(minWidth: Float)
     fun getAspectRatio(): Float
 
     fun clear()

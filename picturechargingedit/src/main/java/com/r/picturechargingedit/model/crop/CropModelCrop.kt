@@ -18,7 +18,6 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
 
     companion object {
         const val HITBOX_FACTOR = 4f
-        const val MINSIZE_FACTOR = 24f
     }
 
 
@@ -58,16 +57,13 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
 
 
     private fun RectF.limitBoundsTo(rectF: RectF) {
-        val minWidth = getCroppingRectRadius()*MINSIZE_FACTOR
-        val minHeight = minWidth * getAspectRatio()
-
         top = top.coerceAtLeast(rectF.top)
-        bottom = bottom.coerceAtLeast(top + minHeight).coerceAtMost(rectF.bottom)
-        top = top.coerceAtMost(bottom - minHeight)
+        bottom = bottom.coerceAtLeast(top + mappedMinWidth).coerceAtMost(rectF.bottom)
+        top = top.coerceAtMost(bottom - mappedMinWidth)
 
         left = left.coerceAtLeast(rectF.left)
-        right = right.coerceAtLeast(left + minWidth).coerceAtMost(rectF.right)
-        left = left.coerceAtMost(right - minWidth)
+        right = right.coerceAtLeast(left + mappedMinWidth).coerceAtMost(rectF.right)
+        left = left.coerceAtMost(right - mappedMinWidth)
     }
 
 
