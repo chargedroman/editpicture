@@ -1,5 +1,6 @@
 package com.r.picturechargingedit.mvp.impl
 
+import android.graphics.Rect
 import android.net.Uri
 import android.view.MotionEvent
 import androidx.core.graphics.toRect
@@ -8,6 +9,7 @@ import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
 import com.r.picturechargingedit.model.crop.CropModelCrop
 import com.r.picturechargingedit.model.crop.CropModelThumb
+import com.r.picturechargingedit.model.crop.ThumbnailDimensions
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.pixelation.Pixelation
 import com.r.picturechargingedit.model.scale.Scale
@@ -175,6 +177,24 @@ class EditPicturePresenterImpl(
         val edited = editIO.cropBitmap(bitmap, rect)
         editIO.savePicture(thumbnailUri, edited, thumbnailModel.getQuality())
 
+    }
+
+    override fun createThumbnailDimensions(): ThumbnailDimensions? = synchronized(mLock) {
+
+        val bitmap = pictureModel.getBitmap() ?: return null
+        val originalRect = Rect(0,0, bitmap.width, bitmap.height)
+
+        val cropRect = thumbnailModel.getCroppingRect()
+        pictureModel.getMatrixInverted().mapRect(cropRect)
+        val thumbnailRect = cropRect.toRect()
+        pictureModel.getMatrix().mapRect(cropRect)
+
+        thumbnailRect.right = thumbnailRect.right.coerceAtMost(bitmap.width)
+        thumbnailRect.bottom = thumbnailRect.bottom.coerceAtMost(bitmap.height)
+        thumbnailRect.top = thumbnailRect.top.coerceAtLeast(0)
+        thumbnailRect.left = thumbnailRect.left.coerceAtLeast(0)
+
+        return ThumbnailDimensions(originalRect, thumbnailRect)
     }
 
 

@@ -107,6 +107,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     private fun thumbnailPicture() {
+
+        val dimen = presenter.createThumbnailDimensions()
+        println("CHAR: dimen=$dimen")
+
         presenter.createThumbnail(getThumbnailImageCacheUri()).sub(
             { println("CHAR: thumbnailed") },
             { println("CHAR: $it")}

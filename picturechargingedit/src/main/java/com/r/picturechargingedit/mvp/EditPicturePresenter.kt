@@ -9,6 +9,7 @@ import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
 import com.r.picturechargingedit.model.crop.CropModelCrop
 import com.r.picturechargingedit.model.crop.CropModelThumb
+import com.r.picturechargingedit.model.crop.ThumbnailDimensions
 import com.r.picturechargingedit.model.picture.PictureModel
 import com.r.picturechargingedit.model.pixelation.PixelationModel
 import com.r.picturechargingedit.model.scale.ScaleModel
@@ -41,6 +42,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun savePicture(): Completable
     fun cropPicture(): Completable
     fun createThumbnail(thumbnailUri: Uri): Completable
+    fun createThumbnailDimensions(): ThumbnailDimensions?
 
 
     /**
