@@ -54,6 +54,10 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
         originalBounds.copyInto(this)
         val deltaHeight = width() * getAspectRatio() - height()
         fixBottom(deltaHeight)
+
+        val centerHeight = originalBounds.centerY() - height()
+        top += centerHeight
+        bottom += centerHeight
     }
 
 
@@ -144,7 +148,7 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
         bottom = (bottom + deltaHeight).coerceAtLeast(top + mappedMinWidth * getAspectRatio())
             .coerceAtMost(originalBoundsRect.bottom)
         val aspectHeight = height() / getAspectRatio()
-        right = aspectHeight
+        right = left + aspectHeight
     }
 
 
