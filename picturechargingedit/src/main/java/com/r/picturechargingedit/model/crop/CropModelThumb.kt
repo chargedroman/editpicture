@@ -56,8 +56,10 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
         fixBottom(deltaHeight)
 
         val centerHeight = originalBounds.centerY() - height()
-        top += centerHeight
-        bottom += centerHeight
+        if(bottom + centerHeight <= originalBounds.bottom) {
+            top += centerHeight
+            bottom += centerHeight
+        }
     }
 
 
