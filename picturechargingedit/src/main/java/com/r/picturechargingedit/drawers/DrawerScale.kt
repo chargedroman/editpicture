@@ -14,7 +14,7 @@ import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
 class DrawerScale(viewArgs: EditPictureViewArgs) : Drawer<Scale>(viewArgs) {
 
     override fun drawChangesOnCanvas(changes: Scale, canvas: Canvas) {
-        canvas.setMatrix(changes.getScalingMatrix())
+        canvas.concat(changes.getScalingMatrix())
     }
 
 }
