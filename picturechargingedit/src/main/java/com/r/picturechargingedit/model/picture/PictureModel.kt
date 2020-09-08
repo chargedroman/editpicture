@@ -26,6 +26,7 @@ class PictureModel: Picture {
     private val matrix = Matrix()
     private val bitmapBounds = RectF()
     private val bitmapBoundsMapped = RectF()
+    private var isNewBoundsAvailable = false
 
 
     override fun getBitmapBoundsMapped(): RectF = bitmapBoundsMapped
@@ -38,12 +39,23 @@ class PictureModel: Picture {
     override fun setBitmap(bitmap: Bitmap) {
         this.bitmapMargin = calculateBitmapMargin(bitmap).coerceAtLeast(MARGIN_STANDARD)
         this.bitmap = bitmap
+        isNewBoundsAvailable = false
     }
 
     override fun createBitmapCanvas(): Canvas? {
         val bitmap = bitmap ?: return null
         return Canvas(bitmap)
     }
+
+
+    override fun isNewBoundsAvailable(): Boolean {
+        return isNewBoundsAvailable
+    }
+
+    override fun notifyNewBoundsAvailable() {
+        isNewBoundsAvailable = true
+    }
+
 
     override fun getMatrixInverted(): Matrix {
         val inverted = Matrix()

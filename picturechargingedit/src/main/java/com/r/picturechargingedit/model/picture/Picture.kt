@@ -26,4 +26,7 @@ interface Picture {
 
     fun createBitmapCanvas(): Canvas?
 
+    fun isNewBoundsAvailable(): Boolean
+    fun notifyNewBoundsAvailable()
+
 }

@@ -32,6 +32,7 @@ class DrawerPicture(viewArgs: EditPictureViewArgs): Drawer<Picture>(viewArgs) {
 
         matrix.setRectToRect(src, dest, Matrix.ScaleToFit.CENTER)
         canvas.drawBitmap(bitmap, matrix, null)
+        changes.notifyNewBoundsAvailable()
     }
 
 }

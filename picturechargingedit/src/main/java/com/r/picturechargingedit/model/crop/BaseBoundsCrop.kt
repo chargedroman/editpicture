@@ -20,12 +20,13 @@ abstract class BaseBoundsCrop(val pictureModel: Picture): Crop {
     }
 
 
-    var mappedMinWidth = 672f
+    var mappedMinWidth = MIN_WIDTH
     val originalBoundsRect: RectF = RectF()
     private var originalMinWidth = MIN_WIDTH
     private var croppingRectRadius: Float = 1f
     private var currentMode: EditPictureMode = EditPictureMode.NONE
     private val bufferRect: RectF = RectF()
+    private var boundsUpdatedAfterClear = false
 
 
     abstract fun canDrawForMode(mode: EditPictureMode): Boolean
@@ -42,6 +43,7 @@ abstract class BaseBoundsCrop(val pictureModel: Picture): Crop {
     override fun clear() {
         originalBoundsRect.setEmpty()
         bufferRect.setEmpty()
+        boundsUpdatedAfterClear = false
     }
 
     override fun canDraw(): Boolean {
@@ -60,9 +62,12 @@ abstract class BaseBoundsCrop(val pictureModel: Picture): Crop {
 
 
     private fun updateBounds() {
-        if(getCroppingRect().isEmpty) {
-            originalBoundsRect.copyInto(getCroppingRect())
+
+        if(!pictureModel.isNewBoundsAvailable() || boundsUpdatedAfterClear) {
+            return
         }
+
+        boundsUpdatedAfterClear = true
 
         croppingRectRadius = pictureModel.getBitmapMargin()
         pictureModel.getBitmapBounds().copyInto(bufferRect)
