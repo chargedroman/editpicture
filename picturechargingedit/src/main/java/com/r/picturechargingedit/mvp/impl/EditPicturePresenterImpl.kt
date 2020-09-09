@@ -119,7 +119,7 @@ class EditPicturePresenterImpl(
         val bitmapCanvas = pictureModel.createBitmapCanvas()
 
         if(view == null || bitmap == null || bitmapCanvas == null) {
-            return@call
+            throw IllegalArgumentException("Can't save image.")
         }
 
         pixelationModel.mapCoordinatesInverted()
