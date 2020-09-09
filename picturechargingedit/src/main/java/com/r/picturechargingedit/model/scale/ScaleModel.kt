@@ -127,12 +127,17 @@ class ScaleModel(private val pictureModel: Picture): ModeSettable(), Scale {
             val nextScale = scale*currentScale
             val inAllowedScaleRange = nextScale in minScale..maxScale
 
+            val dx = event.x - start.x
+            val dy = event.y - start.y
+
             if(inAllowedScaleRange) {
                 mMatrix.postScale(scale, scale, mid.x, mid.y)
+                mMatrix.postTranslate(dx, dy)
             } else {
                 val minMax = nextScale.coerceAtLeast(minScale).coerceAtMost(maxScale)
                 val reverseScaleToMinMax = minMax/currentScale
                 mMatrix.postScale(reverseScaleToMinMax, reverseScaleToMinMax, mid.x, mid.y)
+                mMatrix.postTranslate(dx, dy)
             }
 
         }
