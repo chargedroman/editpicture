@@ -118,7 +118,7 @@ class EditPicturePresenterImpl(
         val bitmap = pictureModel.getBitmap()
         val bitmapCanvas = pictureModel.createBitmapCanvas()
 
-        if(pixelationModel.getSize() == 0 || view == null || bitmap == null || bitmapCanvas == null) {
+        if(view == null || bitmap == null || bitmapCanvas == null) {
             return@call
         }
 
