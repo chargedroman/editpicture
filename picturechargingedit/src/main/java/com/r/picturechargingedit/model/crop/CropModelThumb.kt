@@ -52,6 +52,14 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
     private fun RectF.putInsideWithAspectRatio(originalBounds: RectF) {
         originalBounds.copyInto(this)
+
+        val radius = getCroppingRectRadius()
+        val newWidth = (right - radius) - (left + radius)
+        if(newWidth >= mappedMinWidth) {
+            left += radius
+            right -= radius
+        }
+
         val deltaHeight = width() * getAspectRatio() - height()
         fixBottom(deltaHeight)
 
