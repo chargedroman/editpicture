@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     fun onUndoLastActionClicked(view: View) {
-        presenter.undoLastAction()
+        presenter.undoLastBlur()
     }
 
     fun onResetClicked(view: View) {
@@ -199,12 +199,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private fun enableDisableButtons() {
         val undoButton: Button = findViewById(R.id.btn_undo)
-        presenter.getCanUndo().observe(this, Observer {
+        presenter.getCanUndoBlur().observe(this, Observer {
             undoButton.isEnabled = it
         })
 
         val resetButton: Button = findViewById(R.id.btn_reset)
-        presenter.getCanUndoCrop().observe(this, Observer {
+        presenter.getCanResetChanges().observe(this, Observer {
             resetButton.isEnabled = it
         })
     }
