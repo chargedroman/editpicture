@@ -30,13 +30,15 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
      * api for user
      */
 
-    fun undoLastAction()
+    fun undoLastBlur()
+    fun undoLastCropPosition()
     fun setMode(mode: EditPictureMode)
     fun setMinimumWidth(minimumWidth: Float)
 
-    fun getCanUndo(): LiveData<Boolean>
-    fun getCanUndoCrop(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>
+    fun getCanUndoBlur(): LiveData<Boolean>
+    fun getCanUndoCropPosition(): LiveData<Boolean>
+    fun getCanResetChanges(): LiveData<Boolean>
 
     fun resetChanges(): Completable
     fun editPicture(): Completable

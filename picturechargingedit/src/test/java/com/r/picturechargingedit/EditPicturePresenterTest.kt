@@ -58,7 +58,7 @@ class EditPicturePresenterTest {
 
         val presenter = initPresenter()
 
-        presenter.undoLastAction(undoAll = true)
+        presenter.undoLastBlur(undoAll = true)
 
         verify(changesMock, times(1)).clear()
         verify(changesMock, times(0)).removeLast()
@@ -70,7 +70,7 @@ class EditPicturePresenterTest {
 
         val presenter = initPresenter()
 
-        presenter.undoLastAction(undoAll = false)
+        presenter.undoLastBlur(undoAll = false)
 
         verify(changesMock, times(0)).clear()
         verify(changesMock, times(1)).removeLast()
@@ -215,7 +215,7 @@ class EditPicturePresenterTest {
         presenter.setMode(mode)
         presenter.startRecordingDraw(x, y, r)
 
-        assertEquals(true, presenter.getCanUndo().value)
+        assertEquals(true, presenter.getCanUndoBlur().value)
         verify(changesMock, times(1)).startRecordingDraw(x, y, r)
         verify(viewMock, times(2)).showPixelation(changesMock)
     }

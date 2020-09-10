@@ -1,6 +1,8 @@
 package com.r.picturechargingedit.model.crop
 
 import android.graphics.RectF
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.copyInto
 import com.r.picturechargingedit.model.picture.Picture
@@ -17,10 +19,10 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
     private val lastCropRect: RectF = RectF().apply { setEmpty() }
     private val bufferRect: RectF = RectF().apply { setEmpty() }
-    private var hasChanges = false
+    private var hasChanges = MutableLiveData(false)
 
 
-    override fun hasChanges(): Boolean = hasChanges
+    override fun hasChanges(): LiveData<Boolean> = hasChanges
 
     override fun canDrawForMode(mode: EditPictureMode): Boolean = mode == EditPictureMode.THUMBNAIL
 
@@ -35,7 +37,7 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
         if (getCroppingRect().isEmpty && !originalBoundsRect.isEmpty) {
             getCroppingRect().putInsideWithAspectRatio(originalBoundsRect)
             getCroppingRect().copyInto(lastCropRect)
-            hasChanges = false
+            hasChanges.postValue(false)
         }
     }
 
@@ -52,7 +54,7 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
         lastCropRect.addIfPossible(area, dx, dy)
         lastCropRect.copyInto(getCroppingRect())
 
-        hasChanges = true
+        hasChanges.postValue(true)
     }
 
 

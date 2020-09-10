@@ -1,6 +1,8 @@
 package com.r.picturechargingedit.model.crop
 
 import android.graphics.RectF
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.add
 import com.r.picturechargingedit.arch.copyInto
@@ -23,10 +25,10 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
 
     private val deltaRect: RectF = RectF()
     private val bufferRect: RectF = RectF()
-    private var hasChanges = false
+    private var hasChanges = MutableLiveData(false)
 
 
-    override fun hasChanges(): Boolean = hasChanges
+    override fun hasChanges(): LiveData<Boolean> = hasChanges
 
     override fun canDrawForMode(mode: EditPictureMode): Boolean = mode == EditPictureMode.CROP
 
@@ -34,7 +36,7 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
     override fun onBoundsUpdated() {
         if(getCroppingRect().isEmpty) {
             originalBoundsRect.copyInto(getCroppingRect())
-            hasChanges = false
+            hasChanges.postValue(false)
         }
     }
 
@@ -62,7 +64,7 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
         bufferRect.copyInto(getCroppingRect())
         getCroppingRect().limitBoundsTo(originalBoundsRect)
 
-        hasChanges = true
+        hasChanges.postValue(true)
     }
 
 

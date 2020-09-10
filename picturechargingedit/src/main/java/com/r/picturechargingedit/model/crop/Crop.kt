@@ -1,6 +1,7 @@
 package com.r.picturechargingedit.model.crop
 
 import android.graphics.RectF
+import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
@@ -13,7 +14,7 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 interface Crop {
 
     fun onTouchEvent(event: ScalingMotionEvent)
-    fun hasChanges(): Boolean
+    fun hasChanges(): LiveData<Boolean>
 
     fun setMode(mode: EditPictureMode)
     fun setAspectRatio(aspectRatio: Float)

@@ -38,23 +38,29 @@ class EditPicturePresenterImpl(
 ) : Presenter<EditPictureView>(), EditPicturePresenter {
 
 
-    private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val mCanUndoBlur: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mCanUndoCrop: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
     private val mLock = Object()
 
-    override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
-    override fun getCanUndoCrop() = mCanUndoCrop
+    override fun getCanUndoBlur() = mCanUndoBlur
+    override fun getCanResetChanges() = mCanUndoCrop
+    override fun getCanUndoCropPosition() = cropModel.hasChanges()
 
 
     /**
      * if there was at least one change applied to the picture by the user, deletes the last change
      */
-    override fun undoLastAction() {
+    override fun undoLastBlur() {
         pixelationModel.removeLast()
         getView()?.notifyChanged()
-        updateCanUndo()
+        updateCanUndoBlur()
+    }
+
+    override fun undoLastCropPosition() {
+        cropModel.clear()
+        getView()?.notifyChanged()
     }
 
 
@@ -107,7 +113,7 @@ class EditPicturePresenterImpl(
         thumbnailModel.clear()
         mCanUndoCrop.postValue(false)
 
-        updateCanUndo()
+        updateCanUndoBlur()
         getView()?.notifyChanged()
     }
 
@@ -163,7 +169,7 @@ class EditPicturePresenterImpl(
      */
     override fun cropPicture(): Completable = call {
 
-        if(!cropModel.hasChanges()) return@call
+        if(cropModel.hasChanges().value == false) return@call
 
         val bitmap = pictureModel.getBitmap()
 
@@ -276,7 +282,7 @@ class EditPicturePresenterImpl(
     private fun startRecordingPixelation(x: Float, y: Float, radius: Float) {
         pixelationModel.startRecordingDraw(x, y, radius)
         getView()?.notifyChanged()
-        updateCanUndo()
+        updateCanUndoBlur()
     }
 
     private fun continueRecordingPixelation(x: Float, y: Float, radius: Float) {
@@ -284,12 +290,12 @@ class EditPicturePresenterImpl(
 
         pixelationModel.continueRecordingDraw(x, y, radius)
         getView()?.notifyChanged()
-        updateCanUndo()
+        updateCanUndoBlur()
     }
 
 
-    private fun updateCanUndo() {
-        mCanUndo.postValue(pixelationModel.getSize() > 0)
+    private fun updateCanUndoBlur() {
+        mCanUndoBlur.postValue(pixelationModel.getSize() > 0)
     }
 
 
