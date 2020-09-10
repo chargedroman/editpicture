@@ -97,6 +97,7 @@ class EditPicturePresenterImpl(
      */
     override fun editPicture(): Completable = call {
         val bitmap = editIO.readPictureBitmap(originalPicture)
+        editIO.downSample(originalPicture, editIO.getBackupLocation())
 
         pictureModel.setBitmap(bitmap)
         pixelationModel.clear()
@@ -105,6 +106,24 @@ class EditPicturePresenterImpl(
 
         updateCanUndo()
         getView()?.notifyChanged()
+    }
+
+
+    /**
+     * resets the to the picture which is saved in the backup location uri of [editIO]
+     */
+    override fun resetChanges(): Completable = call {
+
+        editIO.downSample(editIO.getBackupLocation(), originalPicture)
+        val bitmap = editIO.readPictureBitmap(editIO.getBackupLocation())
+
+        pixelationModel.clear()
+        cropModel.clear()
+        thumbnailModel.clear()
+        pictureModel.setBitmap(bitmap)
+
+        getView()?.notifyChanged()
+
     }
 
 

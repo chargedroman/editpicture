@@ -73,6 +73,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         presenter.undoLastAction()
     }
 
+    fun onResetClicked(view: View) {
+        presenter.resetChanges().sub(
+            { println("CHAR: reset!") },
+            { println("CHAR: $it") }
+        )
+    }
+
     fun onSaveResultClicked(view: View) {
         savePicture()
     }
@@ -89,7 +96,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private fun showPicture() {
         presenter.editPicture().sub(
             { println("CHAR: edit!") },
-            { println("CHAR: $it")}
+            { println("CHAR: $it") }
         )
     }
 

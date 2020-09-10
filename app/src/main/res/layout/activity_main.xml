@@ -30,6 +30,19 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <Button
+        android:id="@+id/btn_reset"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="RESET"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:onClick="onResetClicked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_undo"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
         android:id="@+id/btn_undo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -38,7 +51,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:onClick="onUndoLastActionClicked"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_reset"
         app:layout_constraintEnd_toStartOf="@id/btn_take_photo"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

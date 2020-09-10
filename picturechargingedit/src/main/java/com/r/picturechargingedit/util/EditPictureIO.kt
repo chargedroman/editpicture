@@ -56,7 +56,7 @@ interface EditPictureIO {
     fun cropBitmap(bitmap: Bitmap, rect: Rect): Bitmap
 
     /**
-     * reads [original] into a file, rotated (from exif info) and down sampled with [downSampleSize],
+     * reads [original] into a file, rotated (from exif info) and down sampled,
      * then copies it to [saveLocation] including it's original exif
      */
     fun downSample(original: Uri, saveLocation: Uri)
@@ -66,5 +66,11 @@ interface EditPictureIO {
      * @return exif of [picture] or an empty set
      */
     fun readExif(picture: Uri, removeOrientationTag: Boolean = true): TiffOutputSet
+
+    /**
+     *
+     * @return the uri of one temp location where it is save to do i/o with
+     */
+    fun getBackupLocation(): Uri
 
 }

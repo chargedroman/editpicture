@@ -37,6 +37,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun getCanUndo(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>
 
+    fun resetChanges(): Completable
     fun editPicture(): Completable
     fun savePicture(): Completable
     fun cropPicture(): Completable

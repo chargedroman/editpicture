@@ -131,6 +131,16 @@ class EditPictureIOImpl(
     }
 
 
+    /**
+     *
+     * @return the uri of one temp location where it is save to do i/o with
+     */
+    override fun getBackupLocation(): Uri {
+        return Uri.fromFile(File(context.filesDir, "EditPictureIOBackupLocation"))
+    }
+
+
+
     private fun savePicture(saveLocation: Uri, bitmap: Bitmap, pictureExif: TiffOutputSet, quality: Int) {
 
         val tmpFileName = UUID.randomUUID().toString()
