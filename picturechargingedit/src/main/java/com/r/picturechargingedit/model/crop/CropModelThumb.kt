@@ -17,7 +17,10 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
     private val lastCropRect: RectF = RectF().apply { setEmpty() }
     private val bufferRect: RectF = RectF().apply { setEmpty() }
+    private var hasChanges = false
 
+
+    override fun hasChanges(): Boolean = hasChanges
 
     override fun canDrawForMode(mode: EditPictureMode): Boolean = mode == EditPictureMode.THUMBNAIL
 
@@ -32,6 +35,7 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
         if (getCroppingRect().isEmpty && !originalBoundsRect.isEmpty) {
             getCroppingRect().putInsideWithAspectRatio(originalBoundsRect)
             getCroppingRect().copyInto(lastCropRect)
+            hasChanges = false
         }
     }
 
@@ -47,6 +51,8 @@ class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
         lastCropRect.addIfPossible(area, dx, dy)
         lastCropRect.copyInto(getCroppingRect())
+
+        hasChanges = true
     }
 
 

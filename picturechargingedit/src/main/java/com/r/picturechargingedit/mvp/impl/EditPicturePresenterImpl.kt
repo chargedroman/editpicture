@@ -158,6 +158,8 @@ class EditPicturePresenterImpl(
      */
     override fun cropPicture(): Completable = call {
 
+        if(!cropModel.hasChanges()) return@call
+
         val bitmap = pictureModel.getBitmap()
 
         if(!cropModel.canDraw() || bitmap == null)

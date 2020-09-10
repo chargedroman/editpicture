@@ -23,7 +23,10 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
 
     private val deltaRect: RectF = RectF()
     private val bufferRect: RectF = RectF()
+    private var hasChanges = false
 
+
+    override fun hasChanges(): Boolean = hasChanges
 
     override fun canDrawForMode(mode: EditPictureMode): Boolean = mode == EditPictureMode.CROP
 
@@ -31,6 +34,7 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
     override fun onBoundsUpdated() {
         if(getCroppingRect().isEmpty) {
             originalBoundsRect.copyInto(getCroppingRect())
+            hasChanges = false
         }
     }
 
@@ -57,6 +61,8 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
         bufferRect.add(deltaRect)
         bufferRect.copyInto(getCroppingRect())
         getCroppingRect().limitBoundsTo(originalBoundsRect)
+
+        hasChanges = true
     }
 
 
