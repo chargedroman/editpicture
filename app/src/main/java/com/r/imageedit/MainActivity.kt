@@ -10,11 +10,13 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.MemoryCategory
 import com.r.picturechargingedit.EditPictureMode
@@ -48,6 +50,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
         setupSpinner()
         showPicture()
+        enableDisableButtons()
     }
 
     override fun onResume() {
@@ -191,6 +194,19 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val options = EditPictureMode.values().map { it.name }
         spinner.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, options)
         spinner.onItemSelectedListener = this
+    }
+
+
+    private fun enableDisableButtons() {
+        val undoButton: Button = findViewById(R.id.btn_undo)
+        presenter.getCanUndo().observe(this, Observer {
+            undoButton.isEnabled = it
+        })
+
+        val resetButton: Button = findViewById(R.id.btn_reset)
+        presenter.getCanUndoCrop().observe(this, Observer {
+            resetButton.isEnabled = it
+        })
     }
 
 

@@ -39,11 +39,13 @@ class EditPicturePresenterImpl(
 
 
     private val mCanUndo: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val mCanUndoCrop: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
     private val mLock = Object()
 
     override fun getCanUndo() = mCanUndo
     override fun getMode() = mMode
+    override fun getCanUndoCrop() = mCanUndoCrop
 
 
     /**
@@ -103,6 +105,7 @@ class EditPicturePresenterImpl(
         pixelationModel.clear()
         cropModel.clear()
         thumbnailModel.clear()
+        mCanUndoCrop.postValue(false)
 
         updateCanUndo()
         getView()?.notifyChanged()
@@ -121,6 +124,7 @@ class EditPicturePresenterImpl(
         cropModel.clear()
         thumbnailModel.clear()
         pictureModel.setBitmap(bitmap)
+        mCanUndoCrop.postValue(false)
 
         getView()?.notifyChanged()
 
@@ -147,6 +151,7 @@ class EditPicturePresenterImpl(
         val originalExif = editIO.readExif(originalPicture)
         editIO.savePicture(originalPicture, bitmap, originalExif)
 
+        mCanUndoCrop.postValue(false)
         pixelationModel.clear()
 
     }
@@ -179,6 +184,7 @@ class EditPicturePresenterImpl(
         cropModel.clear()
         thumbnailModel.clear()
 
+        mCanUndoCrop.postValue(true)
         getView()?.notifyChanged()
     }
 

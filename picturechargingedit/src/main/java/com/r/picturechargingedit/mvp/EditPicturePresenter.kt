@@ -35,6 +35,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun setMinimumWidth(minimumWidth: Float)
 
     fun getCanUndo(): LiveData<Boolean>
+    fun getCanUndoCrop(): LiveData<Boolean>
     fun getMode(): LiveData<EditPictureMode>
 
     fun resetChanges(): Completable
