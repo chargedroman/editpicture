@@ -131,6 +131,7 @@ class EditPicturePresenterImpl(
         thumbnailModel.clear()
         pictureModel.setBitmap(bitmap)
         mCanUndoCrop.postValue(false)
+        updateCanUndoBlur()
 
         getView()?.notifyChanged()
 
