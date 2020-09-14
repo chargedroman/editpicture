@@ -160,6 +160,9 @@ class EditPicturePresenterImpl(
 
         mCanUndoCrop.postValue(false)
         pixelationModel.clear()
+        updateCanUndoBlur()
+
+        getView()?.notifyChanged()
 
     }
 
