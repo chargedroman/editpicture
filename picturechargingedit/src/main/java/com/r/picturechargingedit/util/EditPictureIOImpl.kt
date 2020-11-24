@@ -7,6 +7,7 @@ import android.net.Uri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
+import org.apache.sanselan.ImageReadException
 import org.apache.sanselan.Sanselan
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata
 import org.apache.sanselan.formats.jpeg.exifRewrite.ExifRewriter
@@ -94,7 +95,7 @@ class EditPictureIOImpl(
      */
     override fun readExif(picture: Uri, removeOrientationTag: Boolean): TiffOutputSet {
         val exif = context.contentResolver.openInputStream(picture).use {
-            val metadata = Sanselan.getMetadata(it, "") as? JpegImageMetadata
+            val metadata = readMetaDataOrNull(it)
             metadata?.exif?.outputSet ?: emptyExif()
         }
 
@@ -175,6 +176,15 @@ class EditPictureIOImpl(
         for (d in directories) {
             val dir = d as? TiffOutputDirectory
             dir?.removeField(TIFF_TAG_ORIENTATION)
+        }
+    }
+
+
+    private fun readMetaDataOrNull(inputStream: InputStream?): JpegImageMetadata? {
+        return try {
+            Sanselan.getMetadata(inputStream, "") as? JpegImageMetadata
+        } catch (e: ImageReadException) {
+            null
         }
     }
 
