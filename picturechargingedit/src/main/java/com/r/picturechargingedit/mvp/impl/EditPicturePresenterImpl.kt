@@ -224,7 +224,7 @@ class EditPicturePresenterImpl(
         pictureModel.getMatrix().mapRect(cropRect)
 
         val edited = editIO.cropBitmap(bitmap, rect)
-        editIO.savePicture(thumbnailUri, edited, 100)
+        editIO.savePicture(thumbnailUri, edited)
 
     }
 

@@ -27,22 +27,13 @@ import java.util.*
  * Created: 18.08.20
  */
 
-class EditPictureIOImpl(
-    private val context: Context,
-    private val downSampleSize: Int = SIZE_4_K
-): EditPictureIO {
-
-    companion object {
-        const val SIZE_4_K = 4096
-        const val QUALITY_MAX = 100
-    }
-
+class EditPictureIOImpl(private val context: Context): EditPictureIO {
 
     /**
      * rotates, downsamples, returns as bitmap
      * @return result bitmap
      */
-    override fun readPictureBitmap(picture: Uri): Bitmap {
+    override fun readPictureBitmap(picture: Uri, downSampleSize: Int): Bitmap {
         return Glide.with(context)
             .asBitmap()
             .load(picture)
@@ -53,39 +44,27 @@ class EditPictureIOImpl(
             .get()
     }
 
-    /**
-     * rotates, downsamples [picture] and saves it to a cached file
-     * @return result file location
-     */
-    override fun readPictureFile(picture: Uri): File {
-        return Glide.with(context)
-            .downloadOnly()
-            .load(picture)
-            .skipMemoryCache(true)
-            .downsample(DownsampleStrategy.CENTER_INSIDE)
-            .submit(downSampleSize, downSampleSize)
-            .get()
-    }
-
 
     /**
-     * reads [original] into a file, rotated (from exif info) and down sampled with [downSampleSize],
-     * then copies it to [saveLocation] including it's original exif
+     * reads [original] into a bitmap, rotated (from exif info) and down sampled with [downSampleSize],
+     * then copies it to [saveLocation] including it's original exif without the orientation tag
      */
-    override fun downSample(original: Uri, saveLocation: Uri) {
-        val downSampled = readPictureFile(original)
-        val downSampledUri = Uri.fromFile(downSampled)
-
-        val inputStream = context.contentResolver.openInputStream(downSampledUri)!!
-        val outputStream = context.contentResolver.openOutputStream(saveLocation)!!
-
-        inputStream.use {
-            outputStream.use {
-                inputStream.copyTo(outputStream)
-            }
-        }
-
-        downSampled.delete()
+    override fun downSample(
+        original: Uri,
+        saveLocation: Uri,
+        downSampleSize: Int,
+        quality: Int
+    ) {
+        val pictureExif = readExif(original, true)
+        val bitmap = readPictureBitmap(original)
+        savePicture(
+            saveLocation = saveLocation,
+            bitmap = bitmap,
+            pictureExif = pictureExif,
+            downSampleSize = downSampleSize,
+            quality = quality
+        )
+        bitmap.recycle()
     }
 
 
@@ -106,19 +85,21 @@ class EditPictureIOImpl(
         return exif
     }
 
-    /**
-     * saves [bitmap] to [saveLocation] and overwrites [saveLocation]'s exif with [pictureExif]
-     */
-    override fun savePicture(saveLocation: Uri, bitmap: Bitmap, pictureExif: TiffOutputSet) {
-        savePicture(saveLocation, bitmap, pictureExif, QUALITY_MAX)
-    }
 
     /**
-     * saves [bitmap] to [saveLocation] with [quality]
+     * saves [bitmap] to [saveLocation] with [quality] and overwrites [saveLocation]'s exif
+     * with [pictureExif]
      */
-    override fun savePicture(saveLocation: Uri, bitmap: Bitmap, quality: Int) {
-        savePicture(saveLocation, bitmap, emptyExif(), quality)
+    override fun savePicture(
+        saveLocation: Uri,
+        bitmap: Bitmap,
+        pictureExif: TiffOutputSet,
+        downSampleSize: Int,
+        quality: Int
+    ) {
+        savePicture(saveLocation, bitmap, pictureExif, quality)
     }
+
 
     /**
      * @return a bitmap which is the subarea of [bitmap] defined by [rect]
@@ -138,6 +119,17 @@ class EditPictureIOImpl(
      */
     override fun getBackupLocation(): Uri {
         return Uri.fromFile(File(context.filesDir, "EditPictureIOBackupLocation"))
+    }
+
+
+    /**
+     * @return an empty exif set
+     */
+    override fun emptyExif(): TiffOutputSet {
+        val set = TiffOutputSet()
+        val dir = TiffOutputDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
+        set.addDirectory(dir)
+        return set
     }
 
 
@@ -163,13 +155,6 @@ class EditPictureIOImpl(
         this.use { bitmap.compress(Bitmap.CompressFormat.JPEG, quality, it) }
     }
 
-
-    private fun emptyExif(): TiffOutputSet {
-        val set = TiffOutputSet()
-        val dir = TiffOutputDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
-        set.addDirectory(dir)
-        return set
-    }
 
     private fun removeOrientationTag(exif: TiffOutputSet?) {
         val directories = exif?.directories ?: return
