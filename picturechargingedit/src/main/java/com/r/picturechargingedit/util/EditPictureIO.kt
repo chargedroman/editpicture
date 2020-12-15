@@ -33,14 +33,13 @@ interface EditPictureIO {
     fun readPictureBitmap(picture: Uri, downSampleSize: Int = SIZE_4_K): Bitmap
 
     /**
-     * saves [bitmap] to [saveLocation] with [quality] and [downSampleSize] and
+     * saves [bitmap] to [saveLocation] with [quality] and
      * overwrites [saveLocation]'s exif with [pictureExif]
      */
     fun savePicture(
         saveLocation: Uri,
         bitmap: Bitmap,
         pictureExif: TiffOutputSet = emptyExif(),
-        downSampleSize: Int = SIZE_4_K,
         quality: Int = QUALITY_MAX
     )
 

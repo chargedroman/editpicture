@@ -56,12 +56,11 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
         quality: Int
     ) {
         val pictureExif = readExif(original, true)
-        val bitmap = readPictureBitmap(original)
+        val bitmap = readPictureBitmap(original, downSampleSize)
         savePicture(
             saveLocation = saveLocation,
             bitmap = bitmap,
             pictureExif = pictureExif,
-            downSampleSize = downSampleSize,
             quality = quality
         )
         bitmap.recycle()
@@ -87,17 +86,24 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
 
 
     /**
-     * saves [bitmap] to [saveLocation] with [quality] and overwrites [saveLocation]'s exif
-     * with [pictureExif]
+     * saves [bitmap] to [saveLocation] with [quality] and
+     * overwrites [saveLocation]'s exif with [pictureExif]
      */
     override fun savePicture(
         saveLocation: Uri,
         bitmap: Bitmap,
         pictureExif: TiffOutputSet,
-        downSampleSize: Int,
         quality: Int
     ) {
-        savePicture(saveLocation, bitmap, pictureExif, quality)
+
+        val tmpFileName = UUID.randomUUID().toString()
+
+        context.openFileOutput(tmpFileName, Context.MODE_PRIVATE).save(bitmap, quality)
+
+        val inputStream = context.openFileInput(tmpFileName)
+        inputStream.saveWithExifTo(saveLocation, pictureExif)
+
+        File(context.filesDir, tmpFileName).delete()
     }
 
 
@@ -132,19 +138,6 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
         return set
     }
 
-
-
-    private fun savePicture(saveLocation: Uri, bitmap: Bitmap, pictureExif: TiffOutputSet, quality: Int) {
-
-        val tmpFileName = UUID.randomUUID().toString()
-
-        context.openFileOutput(tmpFileName, Context.MODE_PRIVATE).save(bitmap, quality)
-
-        val inputStream = context.openFileInput(tmpFileName)
-        inputStream.saveWithExifTo(saveLocation, pictureExif)
-
-        File(context.filesDir, tmpFileName).delete()
-    }
 
     private fun InputStream.saveWithExifTo(saveLocation: Uri, exif: TiffOutputSet) {
         val outputStream = context.contentResolver.openOutputStream(saveLocation)
