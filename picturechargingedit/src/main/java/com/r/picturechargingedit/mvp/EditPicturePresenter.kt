@@ -41,9 +41,9 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun getCanResetChanges(): LiveData<Boolean>
 
     fun resetChanges(): Completable
-    fun editPicture(): Completable
-    fun savePicture(): Completable
     fun cropPicture(): Completable
+    fun editPicture(sizeMax: Int = EditPictureIO.SIZE_4_K): Completable
+    fun savePicture(quality: Int = EditPictureIO.QUALITY_MAX): Completable
 
     fun createThumbnail(thumbnailUri: Uri): Completable
     fun createThumbnailDimensions(): ThumbnailDimensions?

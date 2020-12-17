@@ -103,8 +103,8 @@ class EditPicturePresenterImpl(
     /**
      * loads the [originalPicture] and presents it
      */
-    override fun editPicture(): Completable = call {
-        val bitmap = editIO.readPictureBitmap(originalPicture)
+    override fun editPicture(sizeMax: Int): Completable = call {
+        val bitmap = editIO.readPictureBitmap(originalPicture, sizeMax)
         editIO.downSample(originalPicture, editIO.getBackupLocation())
 
         pictureModel.setBitmap(bitmap)
@@ -142,7 +142,7 @@ class EditPicturePresenterImpl(
      * applies all changes to the currently loaded bitmap and saves the
      * result to [originalPicture] (while keeping exif data)
      */
-    override fun savePicture(): Completable = call {
+    override fun savePicture(quality: Int): Completable = call {
 
         val view = getView()
         val bitmap = pictureModel.getBitmap()
@@ -156,7 +156,7 @@ class EditPicturePresenterImpl(
         view.drawPixelation(pixelationModel, bitmapCanvas)
 
         val originalExif = editIO.readExif(originalPicture)
-        editIO.savePicture(originalPicture, bitmap, originalExif)
+        editIO.savePicture(originalPicture, bitmap, originalExif, quality)
 
         mCanUndoCrop.postValue(false)
         pixelationModel.clear()
