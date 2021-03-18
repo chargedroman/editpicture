@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
 import com.r.picturechargingedit.model.crop.CropModelCrop
+import com.r.picturechargingedit.model.crop.CropModelCropCircle
 import com.r.picturechargingedit.model.crop.CropModelThumb
 import com.r.picturechargingedit.model.crop.ThumbnailDimensions
 import com.r.picturechargingedit.model.picture.PictureModel
@@ -38,6 +39,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun getMode(): LiveData<EditPictureMode>
     fun getCanUndoBlur(): LiveData<Boolean>
     fun getCanUndoCropPosition(): LiveData<Boolean>
+    fun getCanUndoCircleCropPosition(): LiveData<Boolean>
     fun getCanResetChanges(): LiveData<Boolean>
 
     fun resetChanges(): Completable
@@ -69,6 +71,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
             val scaleTouchModel = ScaleTouchModel(pictureModel, scaleModel)
             val pixelationModel = PixelationModel(pictureModel)
             val cropModel = CropModelCrop(pictureModel)
+            val cropModelCircle = CropModelCropCircle(pictureModel)
             val thumbnailModel = CropModelThumb(pictureModel)
 
             return EditPicturePresenterImpl(
@@ -79,6 +82,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
                 scaleTouchModel,
                 pixelationModel,
                 cropModel,
+                cropModelCircle,
                 thumbnailModel
             )
         }

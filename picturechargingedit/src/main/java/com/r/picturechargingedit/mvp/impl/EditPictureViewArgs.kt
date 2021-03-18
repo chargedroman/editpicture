@@ -16,6 +16,8 @@ class EditPictureViewArgs(context: Context, attrs: AttributeSet?) {
 
     val accentColor: Int
     val backgroundColor: Int
+    val standardBackgroundColor: Int
+    val standardForegroundColor: Int
     val cropCaption: String
     val thumbCaption: String
 
@@ -26,6 +28,8 @@ class EditPictureViewArgs(context: Context, attrs: AttributeSet?) {
         backgroundColor = background(context, attributes)
         cropCaption = cropCaption(attributes)
         thumbCaption = thumbCaption(attributes)
+        standardBackgroundColor = context.getColor(R.color.colorStandardBackgroundDraw)
+        standardForegroundColor = context.getColor(R.color.colorStandardForegroundDraw)
         attributes?.recycle()
     }
 

@@ -14,6 +14,9 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
 
 abstract class BaseCrop(pictureModel: Picture) : BaseBoundsCrop(pictureModel) {
 
+    abstract val hitBoxFactor: Float
+
+
     private var aspectRatio: Float = 1f
 
     private val bufferRect: RectF = RectF()
@@ -173,7 +176,7 @@ abstract class BaseCrop(pictureModel: Picture) : BaseBoundsCrop(pictureModel) {
     }
 
     private fun hitBox(): Float {
-        return getCroppingRectRadius()*CropModelCrop.HITBOX_FACTOR
+        return getCroppingRectRadius()*hitBoxFactor
     }
 
 }

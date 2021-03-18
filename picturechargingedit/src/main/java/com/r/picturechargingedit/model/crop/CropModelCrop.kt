@@ -22,6 +22,8 @@ class CropModelCrop(pictureModel: Picture) : BaseCrop(pictureModel) {
         const val HITBOX_FACTOR = 4f
     }
 
+    override val hitBoxFactor: Float get() = HITBOX_FACTOR
+
 
     private val deltaRect: RectF = RectF()
     private val bufferRect: RectF = RectF()

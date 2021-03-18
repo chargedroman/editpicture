@@ -14,7 +14,14 @@ import com.r.picturechargingedit.model.scale.ScalingMotionEvent
  * Created: 03.09.20
  */
 
-class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
+open class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
+
+
+    companion object {
+        const val HITBOX_FACTOR = 4f
+    }
+
+    override val hitBoxFactor: Float get() = HITBOX_FACTOR
 
 
     private val lastCropRect: RectF = RectF().apply { setEmpty() }

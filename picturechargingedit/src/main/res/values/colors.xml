@@ -2,4 +2,6 @@
 <resources>
     <color name="colorAccentDraw">#FFFFFF</color>
     <color name="colorBackgroundDraw">#66000000</color>
+    <color name="colorStandardBackgroundDraw">#33000000</color>
+    <color name="colorStandardForegroundDraw">#33FFFFFF</color>
 </resources>

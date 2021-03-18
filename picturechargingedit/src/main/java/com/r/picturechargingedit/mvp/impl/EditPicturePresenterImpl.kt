@@ -34,6 +34,7 @@ class EditPicturePresenterImpl(
     private val scaleTouchModel: ScaleTouch,
     private val pixelationModel: Pixelation,
     private val cropModel: Crop,
+    private val cropModelCircle: Crop,
     private val thumbnailModel: Crop
 ) : Presenter<EditPictureView>(), EditPicturePresenter {
 
@@ -47,6 +48,7 @@ class EditPicturePresenterImpl(
     override fun getCanUndoBlur() = mCanUndoBlur
     override fun getCanResetChanges() = mCanUndoCrop
     override fun getCanUndoCropPosition() = cropModel.hasChanges()
+    override fun getCanUndoCircleCropPosition() = cropModelCircle.hasChanges()
 
 
     /**
@@ -60,6 +62,7 @@ class EditPicturePresenterImpl(
 
     override fun undoLastCropPosition() {
         cropModel.clear()
+        cropModelCircle.clear()
         getView()?.notifyChanged()
     }
 
@@ -72,6 +75,7 @@ class EditPicturePresenterImpl(
         scaleModel.setMode(mode)
         scaleTouchModel.setMode(mode)
         cropModel.setMode(mode)
+        cropModelCircle.setMode(mode)
         thumbnailModel.setMode(mode)
         getView()?.notifyChanged()
     }
@@ -96,6 +100,8 @@ class EditPicturePresenterImpl(
         thumbnailModel.setMode(mode)
         cropModel.setMinWidth(minimumWidth)
         cropModel.setMode(mode)
+        cropModelCircle.setMinWidth(minimumWidth)
+        cropModelCircle.setMode(mode)
         getView()?.notifyChanged()
     }
 
@@ -110,6 +116,7 @@ class EditPicturePresenterImpl(
         pictureModel.setBitmap(bitmap)
         pixelationModel.clear()
         cropModel.clear()
+        cropModelCircle.clear()
         thumbnailModel.clear()
         mCanUndoCrop.postValue(false)
 
@@ -128,6 +135,7 @@ class EditPicturePresenterImpl(
 
         pixelationModel.clear()
         cropModel.clear()
+        cropModelCircle.clear()
         thumbnailModel.clear()
         pictureModel.setBitmap(bitmap)
         mCanUndoCrop.postValue(false)
@@ -192,6 +200,7 @@ class EditPicturePresenterImpl(
 
         pixelationModel.mapCoordinatesTo(rect)
         cropModel.clear()
+        cropModelCircle.clear()
         thumbnailModel.clear()
 
         mCanUndoCrop.postValue(true)
@@ -253,6 +262,7 @@ class EditPicturePresenterImpl(
         view.showScale(scaleModel)
         view.showPixelation(pixelationModel)
         view.showCrop(cropModel)
+        view.showCropCircle(cropModelCircle)
         view.showThumbnail(thumbnailModel)
         view.notifyChanged()
     }
@@ -276,6 +286,7 @@ class EditPicturePresenterImpl(
                     else -> Unit
                 }
             mode == EditPictureMode.CROP -> cropModel.onTouchEvent(event)
+            mode == EditPictureMode.CROP_CIRCLE -> cropModelCircle.onTouchEvent(event)
             mode == EditPictureMode.THUMBNAIL -> thumbnailModel.onTouchEvent(event)
         }
 

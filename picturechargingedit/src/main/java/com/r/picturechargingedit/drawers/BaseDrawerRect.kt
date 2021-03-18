@@ -13,7 +13,7 @@ import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
  * Created: 18.08.20
  */
 
-abstract class BaseDrawerCrop(viewArgs: EditPictureViewArgs): Drawer<Crop>(viewArgs) {
+abstract class BaseDrawerRect(viewArgs: EditPictureViewArgs): Drawer<Crop>(viewArgs) {
 
 
     private val rectPaint = Paint()

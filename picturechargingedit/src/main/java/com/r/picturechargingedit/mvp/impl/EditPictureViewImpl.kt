@@ -33,6 +33,7 @@ class EditPictureViewImpl : View, EditPictureView {
         args = EditPictureViewArgs(context, attrs)
         drawerScale = DrawerScale(args)
         drawerCrop = DrawerCrop(args)
+        drawerCropCircle = DrawerCropCircle(args)
         drawerThumbnail = DrawerThumbnail(args)
         drawerPicture = DrawerPicture(args)
         drawerPixelation = DrawerPixelation(args)
@@ -42,6 +43,7 @@ class EditPictureViewImpl : View, EditPictureView {
     private val args: EditPictureViewArgs
     private val drawerScale: DrawerScale
     private val drawerCrop: DrawerCrop
+    private val drawerCropCircle: DrawerCropCircle
     private val drawerThumbnail: DrawerThumbnail
     private val drawerPicture: DrawerPicture
     private val drawerPixelation: DrawerPixelation
@@ -75,6 +77,7 @@ class EditPictureViewImpl : View, EditPictureView {
             drawerPicture.onDraw(canvas)
             drawerPixelation.onDraw(canvas)
             drawerCrop.onDraw(canvas)
+            drawerCropCircle.onDraw(canvas)
             drawerThumbnail.onDraw(canvas)
             restore()
         }
@@ -95,6 +98,10 @@ class EditPictureViewImpl : View, EditPictureView {
 
     override fun showCrop(cropModel: Crop) {
         drawerCrop.showChanges(cropModel)
+    }
+
+    override fun showCropCircle(cropModel: Crop) {
+        drawerCropCircle.showChanges(cropModel)
     }
 
     override fun showThumbnail(cropModel: Crop) {

@@ -14,6 +14,7 @@ enum class EditPictureMode {
     PIXELATE_VIA_CLICK,
 
     CROP,
+    CROP_CIRCLE,
     THUMBNAIL;
 
 

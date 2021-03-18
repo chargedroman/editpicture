@@ -11,7 +11,7 @@ import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
  * Created: 03.09.20
  */
 
-class DrawerThumbnail(viewArgs: EditPictureViewArgs) : BaseDrawerCrop(viewArgs) {
+class DrawerThumbnail(viewArgs: EditPictureViewArgs) : BaseDrawerRect(viewArgs) {
 
 
     private val points =
