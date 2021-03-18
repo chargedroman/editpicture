@@ -199,6 +199,7 @@ class EditPicturePresenterImpl(
     }
 
     override fun cropPicture(): Completable = call {
+        if(cropModel.hasChanges().value == false) return@call
         cropPicture(cropModel)
         this.cropModel.clear()
         this.cropModelCircle.clear()
