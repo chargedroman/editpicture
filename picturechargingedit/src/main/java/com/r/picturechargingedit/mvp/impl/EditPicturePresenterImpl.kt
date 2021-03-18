@@ -179,10 +179,7 @@ class EditPicturePresenterImpl(
      * applies the current pixelation to [originalPicture]
      * then crops the [originalPicture] and saves the result to [originalPicture]
      */
-    override fun cropPicture(): Completable = call {
-
-        if(cropModel.hasChanges().value == false) return@call
-
+    private fun cropPicture(cropModel: Crop) {
         val bitmap = pictureModel.getBitmap()
 
         if(!cropModel.canDraw() || bitmap == null)
@@ -199,13 +196,29 @@ class EditPicturePresenterImpl(
         pictureModel.setBitmap(edited)
 
         pixelationModel.mapCoordinatesTo(rect)
-        cropModel.clear()
-        cropModelCircle.clear()
-        thumbnailModel.clear()
+    }
 
+    override fun cropPicture(): Completable = call {
+        cropPicture(cropModel)
+        this.cropModel.clear()
+        this.cropModelCircle.clear()
+        this.thumbnailModel.clear()
         mCanUndoCrop.postValue(true)
         getView()?.notifyChanged()
     }
+
+    /**
+     * same as [cropPicture] but using [cropModelCircle]
+     */
+    override fun cropCirclePicture(): Completable = call {
+        cropPicture(cropModelCircle)
+        this.cropModel.clear()
+        this.cropModelCircle.clear()
+        this.thumbnailModel.clear()
+        mCanUndoCrop.postValue(true)
+        getView()?.notifyChanged()
+    }
+
 
 
     /**

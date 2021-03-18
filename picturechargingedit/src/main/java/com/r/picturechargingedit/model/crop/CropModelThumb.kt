@@ -71,7 +71,7 @@ open class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
         val deltaHeight = width() * getAspectRatio() - height()
         fixBottom(deltaHeight)
 
-        val centerHeight = originalBounds.centerY() - height()
+        val centerHeight = (originalBounds.centerY() - height()).coerceAtLeast(0f)
         if(bottom + centerHeight <= originalBounds.bottom) {
             top += centerHeight
             bottom += centerHeight

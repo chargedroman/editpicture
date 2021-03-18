@@ -91,6 +91,10 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         cropPicture()
     }
 
+    fun onCropCircleClicked(view: View) {
+        cropCirclePicture()
+    }
+
     fun onThumbnailClicked(view: View) {
         thumbnailPicture()
     }
@@ -113,6 +117,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private fun cropPicture() {
         presenter.cropPicture().sub(
             { println("CHAR: cropped") },
+            { println("CHAR: $it")}
+        )
+    }
+
+    private fun cropCirclePicture() {
+        presenter.cropCirclePicture().sub(
+            { println("CHAR: cropped circle") },
             { println("CHAR: $it")}
         )
     }

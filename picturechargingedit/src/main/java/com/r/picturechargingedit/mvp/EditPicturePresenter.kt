@@ -44,6 +44,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
 
     fun resetChanges(): Completable
     fun cropPicture(): Completable
+    fun cropCirclePicture(): Completable
     fun editPicture(sizeMax: Int = EditPictureIO.SIZE_4_K): Completable
     fun savePicture(quality: Int = EditPictureIO.QUALITY_MAX): Completable
 

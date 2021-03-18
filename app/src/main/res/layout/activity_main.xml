@@ -91,6 +91,19 @@
         android:layout_marginEnd="4dp"
         android:onClick="onCropClicked"
         app:layout_constraintStart_toEndOf="@id/btn_save"
+        app:layout_constraintEnd_toStartOf="@id/btn_crop_circle"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <Button
+        android:id="@+id/btn_crop_circle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="CROPC"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:onClick="onCropCircleClicked"
+        app:layout_constraintStart_toEndOf="@id/btn_crop"
         app:layout_constraintEnd_toStartOf="@id/btn_thumbnail"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -103,7 +116,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:onClick="onThumbnailClicked"
-        app:layout_constraintStart_toEndOf="@id/btn_crop"
+        app:layout_constraintStart_toEndOf="@id/btn_crop_circle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
