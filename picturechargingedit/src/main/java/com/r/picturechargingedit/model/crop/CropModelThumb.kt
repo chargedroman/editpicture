@@ -7,6 +7,7 @@ import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.copyInto
 import com.r.picturechargingedit.model.picture.Picture
 import com.r.picturechargingedit.model.scale.ScalingMotionEvent
+import kotlin.math.abs
 
 /**
  *
@@ -42,9 +43,28 @@ open class CropModelThumb(pictureModel: Picture) : BaseCrop(pictureModel) {
 
     override fun onBoundsUpdated() {
         if (getCroppingRect().isEmpty && !originalBoundsRect.isEmpty) {
-            getCroppingRect().putInsideWithAspectRatio(originalBoundsRect)
+            updateInitialBoundsToBufferRect()
+            getCroppingRect().putInsideWithAspectRatio(bufferRect)
             getCroppingRect().copyInto(lastCropRect)
             hasChanges.postValue(false)
+        }
+    }
+
+    /**
+     * updates [bufferRect] in such a way, that its a square and in the center of [originalBoundsRect]
+     */
+    private fun updateInitialBoundsToBufferRect() {
+        val maxWidth = originalBoundsRect.width()
+        val maxHeight = originalBoundsRect.height()
+        val diff = abs(maxWidth - maxHeight)/2
+        originalBoundsRect.copyInto(bufferRect)
+
+        if(maxWidth < maxHeight) {
+            bufferRect.bottom = (bufferRect.bottom - diff).coerceAtLeast(0f)
+            bufferRect.top = (bufferRect.top + diff).coerceAtMost(bufferRect.bottom)
+        } else {
+            bufferRect.right = (bufferRect.right - diff).coerceAtLeast(0f)
+            bufferRect.left = (bufferRect.left + diff).coerceAtMost(bufferRect.right)
         }
     }
 

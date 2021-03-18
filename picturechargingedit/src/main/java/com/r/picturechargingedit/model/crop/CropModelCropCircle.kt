@@ -13,13 +13,13 @@ class CropModelCropCircle(pictureModel: Picture) : CropModelThumb(pictureModel) 
 
 
     companion object {
-        const val HITBOX_FACTOR = 6f
+        const val HITBOX_FACTOR = 5f
     }
 
     override val hitBoxFactor: Float get() = HITBOX_FACTOR
 
-
-    override fun canDrawForMode(mode: EditPictureMode): Boolean = mode == EditPictureMode.CROP_CIRCLE
+    override fun canDrawForMode(mode: EditPictureMode): Boolean =
+        mode == EditPictureMode.CROP_CIRCLE
 
 
     override fun getAspectRatio(): Float {
