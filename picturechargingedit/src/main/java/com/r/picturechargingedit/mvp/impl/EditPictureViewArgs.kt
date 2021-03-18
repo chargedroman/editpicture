@@ -2,7 +2,10 @@ package com.r.picturechargingedit.mvp.impl
 
 import android.content.Context
 import android.content.res.TypedArray
+import android.graphics.Bitmap
 import android.util.AttributeSet
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.r.picturechargingedit.R
 
 /**
@@ -20,6 +23,7 @@ class EditPictureViewArgs(context: Context, attrs: AttributeSet?) {
     val standardForegroundColor: Int
     val cropCaption: String
     val thumbCaption: String
+    val iconExpand: Bitmap?
 
 
     init {
@@ -31,6 +35,8 @@ class EditPictureViewArgs(context: Context, attrs: AttributeSet?) {
         standardBackgroundColor = context.getColor(R.color.colorStandardBackgroundDraw)
         standardForegroundColor = context.getColor(R.color.colorStandardForegroundDraw)
         attributes?.recycle()
+
+        iconExpand = ContextCompat.getDrawable(context, R.drawable.ic_expand)?.toBitmap()
     }
 
 

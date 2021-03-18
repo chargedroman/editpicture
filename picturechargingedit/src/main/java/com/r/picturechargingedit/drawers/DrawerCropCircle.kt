@@ -1,11 +1,10 @@
 package com.r.picturechargingedit.drawers
 
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import com.r.picturechargingedit.arch.Drawer
 import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.mvp.impl.EditPictureViewArgs
+import kotlin.math.min
 
 /**
  *
@@ -20,6 +19,7 @@ class DrawerCropCircle(viewArgs: EditPictureViewArgs): Drawer<Crop>(viewArgs) {
     private val backgroundPaint = Paint()
     private val borderPaint = Paint()
     private val textPaint = Paint()
+    private val iconPaint = Paint()
 
 
 
@@ -34,6 +34,8 @@ class DrawerCropCircle(viewArgs: EditPictureViewArgs): Drawer<Crop>(viewArgs) {
         borderPaint.style = Paint.Style.STROKE
 
         textPaint.color = viewArgs.accentColor
+
+        iconPaint.colorFilter = PorterDuffColorFilter(viewArgs.accentColor, PorterDuff.Mode.SRC_IN)
     }
 
 
@@ -49,6 +51,7 @@ class DrawerCropCircle(viewArgs: EditPictureViewArgs): Drawer<Crop>(viewArgs) {
         val croppingRect = changes.getCroppingRect()
 
         drawCroppingRectAsCircle(canvas, croppingRect)
+        drawExpandIcon(canvas, croppingRect)
         canvas.drawText(viewArgs.cropCaption, croppingRect.left + textSize, croppingRect.top + textSize * 2, textPaint)
     }
 
@@ -60,6 +63,16 @@ class DrawerCropCircle(viewArgs: EditPictureViewArgs): Drawer<Crop>(viewArgs) {
         canvas.drawRect(canvas.clipBounds, backgroundPaint)
         canvas.drawCircle(cx, cy, radius, foregroundPaint)
         canvas.drawCircle(cx, cy, radius, borderPaint)
+    }
+
+    private fun drawExpandIcon(canvas: Canvas, croppingRect: RectF) {
+        val bitmap = viewArgs.iconExpand ?: return
+        val minRect = min(croppingRect.height(), croppingRect.width())
+        val minCanvas = min(canvas.height, canvas.width).coerceAtLeast(1)
+        val factor = 1.5f * minRect/minCanvas
+        val left = croppingRect.right - bitmap.width*factor
+        val top = croppingRect.bottom - bitmap.height*factor
+        canvas.drawBitmap(bitmap, left, top, iconPaint)
     }
 
 }
