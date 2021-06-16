@@ -33,7 +33,16 @@ class PictureModel: Picture {
     override fun getBitmapBounds(): RectF = bitmapBounds
     override fun getBitmapMargin(): Float = bitmapMargin
     override fun getMatrix(): Matrix = matrix
-    override fun getBitmap(): Bitmap? = bitmap
+
+    override fun getBitmap(): Bitmap? {
+        val bitmap = bitmap
+
+        return if(bitmap != null && !bitmap.isRecycled) {
+            bitmap
+        } else {
+            null
+        }
+    }
 
 
     override fun setBitmap(bitmap: Bitmap) {

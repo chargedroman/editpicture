@@ -1,5 +1,6 @@
 package com.r.picturechargingedit.mvp.impl
 
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
 import android.view.MotionEvent
@@ -7,6 +8,7 @@ import androidx.core.graphics.toRect
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
+import com.r.picturechargingedit.model.Rotation
 import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.crop.ThumbnailDimensions
 import com.r.picturechargingedit.model.picture.Picture
@@ -40,13 +42,14 @@ class EditPicturePresenterImpl(
 
 
     private val mCanUndoBlur: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val mCanUndoCrop: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val mCanResetChanges: MutableLiveData<Boolean> = MutableLiveData(false)
     private val mMode: MutableLiveData<EditPictureMode> = MutableLiveData(EditPictureMode.NONE)
     private val mLock = Object()
+    private var mRotation = Rotation.None
 
     override fun getMode() = mMode
     override fun getCanUndoBlur() = mCanUndoBlur
-    override fun getCanResetChanges() = mCanUndoCrop
+    override fun getCanResetChanges() = mCanResetChanges
     override fun getCanUndoCropPosition() = cropModel.hasChanges()
     override fun getCanUndoCircleCropPosition() = cropModelCircle.hasChanges()
 
@@ -112,13 +115,27 @@ class EditPicturePresenterImpl(
     override fun editPicture(sizeMax: Int): Completable = call {
         val bitmap = editIO.readPictureBitmap(originalPicture, sizeMax)
         editIO.downSample(originalPicture, editIO.getBackupLocation())
+        mRotation = Rotation.None
+        editPicture(bitmap)
+    }
 
+    /**
+     * loads the [originalPicture] with again but with [mRotation] and presents it
+     */
+    override fun rotatePictureBy90(sizeMax: Int): Completable = call {
+        this.mRotation = mRotation.next()
+        pictureModel.getBitmap()?.recycle()
+        val bitmap = editIO.readPictureBitmap(originalPicture, sizeMax, mRotation)
+        editPicture(bitmap)
+    }
+
+    private fun editPicture(bitmap: Bitmap) {
         pictureModel.setBitmap(bitmap)
         pixelationModel.clear()
         cropModel.clear()
         cropModelCircle.clear()
         thumbnailModel.clear()
-        mCanUndoCrop.postValue(false)
+        mCanResetChanges.postValue(mRotation != Rotation.None)
 
         updateCanUndoBlur()
         getView()?.notifyChanged()
@@ -132,13 +149,14 @@ class EditPicturePresenterImpl(
 
         editIO.downSample(editIO.getBackupLocation(), originalPicture)
         val bitmap = editIO.readPictureBitmap(editIO.getBackupLocation())
+        mRotation = Rotation.None
 
         pixelationModel.clear()
         cropModel.clear()
         cropModelCircle.clear()
         thumbnailModel.clear()
         pictureModel.setBitmap(bitmap)
-        mCanUndoCrop.postValue(false)
+        mCanResetChanges.postValue(false)
         updateCanUndoBlur()
 
         getView()?.notifyChanged()
@@ -166,7 +184,7 @@ class EditPicturePresenterImpl(
         val originalExif = editIO.readExif(originalPicture)
         editIO.savePicture(originalPicture, bitmap, originalExif, quality)
 
-        mCanUndoCrop.postValue(false)
+        mCanResetChanges.postValue(false)
         pixelationModel.clear()
         updateCanUndoBlur()
 
@@ -204,7 +222,7 @@ class EditPicturePresenterImpl(
         this.cropModel.clear()
         this.cropModelCircle.clear()
         this.thumbnailModel.clear()
-        mCanUndoCrop.postValue(true)
+        mCanResetChanges.postValue(true)
         getView()?.notifyChanged()
     }
 
@@ -216,7 +234,7 @@ class EditPicturePresenterImpl(
         this.cropModel.clear()
         this.cropModelCircle.clear()
         this.thumbnailModel.clear()
-        mCanUndoCrop.postValue(true)
+        mCanResetChanges.postValue(true)
         getView()?.notifyChanged()
     }
 

@@ -99,10 +99,21 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         thumbnailPicture()
     }
 
+    fun onRotate90Clicked(view: View) {
+        rotatePicture()
+    }
+
 
     private fun showPicture() {
         presenter.editPicture().sub(
             { println("CHAR: edit!") },
+            { println("CHAR: $it") }
+        )
+    }
+
+    private fun rotatePicture() {
+        presenter.rotatePictureBy90().sub(
+            { println("CHAR: rotate!") },
             { println("CHAR: $it") }
         )
     }

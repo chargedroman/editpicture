@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
+import com.r.picturechargingedit.model.Rotation
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
 
 /**
@@ -30,7 +31,12 @@ interface EditPictureIO {
      * rotates, downsamples, [picture] returns as bitmap
      * @return result bitmap
      */
-    fun readPictureBitmap(picture: Uri, downSampleSize: Int = SIZE_4_K): Bitmap
+    fun readPictureBitmap(
+        picture: Uri,
+        downSampleSize: Int = SIZE_4_K,
+        rotation: Rotation = Rotation.None
+    ): Bitmap
+
 
     /**
      * saves [bitmap] to [saveLocation] with [quality] and

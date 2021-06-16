@@ -20,6 +20,18 @@
         app:cropCaption="@string/crop_caption"
         app:thumbCaption="@string/thumb_caption"/>
 
+
+    <Button
+        android:id="@+id/btn_rotate_90"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="ROTATE 90"
+        android:layout_margin="16dp"
+        android:onClick="onRotate90Clicked"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/view_edit"/>
+
+
     <Spinner
         android:id="@+id/spinner_mode"
         android:layout_width="0dp"

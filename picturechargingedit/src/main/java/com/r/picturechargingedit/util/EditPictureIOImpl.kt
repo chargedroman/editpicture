@@ -7,6 +7,8 @@ import android.net.Uri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
+import com.bumptech.glide.load.resource.bitmap.Rotate
+import com.r.picturechargingedit.model.Rotation
 import org.apache.sanselan.ImageReadException
 import org.apache.sanselan.Sanselan
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata
@@ -33,10 +35,11 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
      * rotates, downsamples, returns as bitmap
      * @return result bitmap
      */
-    override fun readPictureBitmap(picture: Uri, downSampleSize: Int): Bitmap {
+    override fun readPictureBitmap(picture: Uri, downSampleSize: Int, rotation: Rotation): Bitmap {
         return Glide.with(context)
             .asBitmap()
             .load(picture)
+            .transform(Rotate(rotation.angle))
             .skipMemoryCache(true)
             .diskCacheStrategy(DiskCacheStrategy.NONE)
             .downsample(DownsampleStrategy.CENTER_INSIDE)
