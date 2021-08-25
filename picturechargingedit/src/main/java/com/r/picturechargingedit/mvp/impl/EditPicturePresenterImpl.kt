@@ -8,6 +8,7 @@ import androidx.core.graphics.toRect
 import androidx.lifecycle.MutableLiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.Presenter
+import com.r.picturechargingedit.model.PixelAverage
 import com.r.picturechargingedit.model.Rotation
 import com.r.picturechargingedit.model.crop.Crop
 import com.r.picturechargingedit.model.crop.ThumbnailDimensions
@@ -55,18 +56,13 @@ class EditPicturePresenterImpl(
     override fun getCanUndoCircleCropPosition() = cropModelCircle.hasChanges()
 
 
-
     /**
-     * [brightnessThreshold] must be an integer between 0 and 255.
-     * [originalPicture] must be an uri to a picture.
-     *
-     * @return tldr: whether the [originalPicture] is bright.
-     * Whether the average pixel of [originalPicture] is bigger than or equal to [brightnessThreshold].
+     * @return the [PixelAverage] for the [originalPicture].
      */
-    override fun isPictureBright(brightnessThreshold: Int): Single<Boolean> {
+    override fun getPixelAverage(): Single<PixelAverage> {
         return Single.create {
-            val isBright = editIO.isBright(originalPicture, brightnessThreshold)
-            it.onSuccess(isBright)
+            val average = editIO.getPixelAverage(originalPicture)
+            it.onSuccess(average)
         }
     }
 

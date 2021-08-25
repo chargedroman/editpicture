@@ -7,6 +7,7 @@ import androidx.annotation.RestrictTo
 import androidx.lifecycle.LiveData
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.arch.BasePresenter
+import com.r.picturechargingedit.model.PixelAverage
 import com.r.picturechargingedit.model.crop.CropModelCrop
 import com.r.picturechargingedit.model.crop.CropModelCropCircle
 import com.r.picturechargingedit.model.crop.CropModelThumb
@@ -43,13 +44,13 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun getCanUndoCircleCropPosition(): LiveData<Boolean>
     fun getCanResetChanges(): LiveData<Boolean>
 
-    fun isPictureBright(brightnessThreshold: Int = 85): Single<Boolean>
     fun resetChanges(): Completable
     fun cropPicture(): Completable
     fun cropCirclePicture(): Completable
     fun editPicture(sizeMax: Int = EditPictureIO.SIZE_4_K): Completable
     fun rotatePictureBy90(sizeMax: Int = EditPictureIO.SIZE_4_K): Completable
     fun savePicture(quality: Int = EditPictureIO.QUALITY_MAX): Completable
+    fun getPixelAverage(): Single<PixelAverage>
 
     fun createThumbnail(thumbnailUri: Uri): Completable
     fun createThumbnailDimensions(): ThumbnailDimensions?

@@ -119,8 +119,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
     private fun checkIsBright() {
-        presenter.isPictureBright().sub(
-            { show("CHAR: done! is bright? $it") },
+        presenter.getPixelAverage().sub(
+            { show("CHAR: done! $it") },
             { show("CHAR: $it") }
         )
     }

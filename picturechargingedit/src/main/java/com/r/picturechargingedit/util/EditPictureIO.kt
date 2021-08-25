@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
+import com.r.picturechargingedit.model.PixelAverage
 import com.r.picturechargingedit.model.Rotation
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
 
@@ -28,13 +29,9 @@ interface EditPictureIO {
 
 
     /**
-     * [brightnessThreshold] must be an integer between 0 and 255.
-     * [picture] must be an uri to a picture.
-     *
-     * @return tldr: whether the [picture] is bright.
-     * Whether the average pixel of [picture] is bigger than or equal to [brightnessThreshold].
+     * @return the [PixelAverage] for the given [picture].
      */
-    fun isBright(picture: Uri, brightnessThreshold: Int = 85): Boolean
+    fun getPixelAverage(picture: Uri): PixelAverage
 
 
     /**

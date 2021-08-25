@@ -8,8 +8,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.load.resource.bitmap.Rotate
+import com.r.picturechargingedit.model.PixelAverage
 import com.r.picturechargingedit.model.Rotation
-import com.r.picturechargingedit.model.pixelation.calculateAveragePixel
 import org.apache.sanselan.ImageReadException
 import org.apache.sanselan.Sanselan
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata
@@ -34,28 +34,16 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
 
 
     /**
-     * [brightnessThreshold] must be an integer between 0 and 255.
-     * [picture] must be an uri to a picture.
-     *
-     * @return tldr: whether the [picture] is bright.
-     * Whether the average pixel of [picture] is bigger than or equal to [brightnessThreshold].
+     * @return the [PixelAverage] for the given [picture].
      */
-    override fun isBright(picture: Uri, brightnessThreshold: Int): Boolean {
-        if(brightnessThreshold < 0 || brightnessThreshold > 255) {
-            throw IllegalArgumentException("'threshold' must be in between of 0 and 255.")
-        }
-
+    override fun getPixelAverage(picture: Uri): PixelAverage {
         val smallBitmap = readPictureBitmap(picture, 64)
-
         val width = smallBitmap.width
         val height = smallBitmap.height
         val pixels = IntArray(width * height)
         smallBitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-
-        val averagePixel = pixels.calculateAveragePixel()
-        val isBright = averagePixel >= brightnessThreshold
         smallBitmap.recycle()
-        return isBright
+        return PixelAverage(pixels)
     }
 
 

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.RectF
+import com.r.picturechargingedit.model.PixelAverage
 import com.r.picturechargingedit.util.IntArrayBuffer
 
 /**
@@ -57,7 +58,7 @@ class RectColorModel(private val rectPathModel: RectPathModel):
             return Color.TRANSPARENT
         }
 
-        return pixelBuffer.calculateAverageColor()
+        return PixelAverage(pixelBuffer).averageColor
     }
 
     private fun RectF.getCenter(matrix: Matrix): FloatArray {
