@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     lateinit var editView: EditPictureViewImpl
     lateinit var presenter: EditPicturePresenter
     lateinit var spinner: Spinner
+    lateinit var progress: ProgressBar
 
     private val disposables = CompositeDisposable()
 
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         setContentView(R.layout.activity_main)
         editView = findViewById(R.id.view_edit)
         spinner = findViewById(R.id.spinner_mode)
+        progress = findViewById(R.id.progress)
 
         presenter = EditPicturePresenter.Factory(applicationContext).create(getImageCacheUri())
         presenter.setThumbnailAspectRatio(9/16f)
@@ -253,12 +255,22 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
     private fun Completable.sub(success: () -> Unit, error: (Throwable) -> Unit) {
-        val disposable = this.subscribeOn(Schedulers.io()).observeOn(Schedulers.computation()).subscribe(success, error)
+        val disposable = this
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .doOnSubscribe { show(loading = true) }
+            .doFinally { show(loading = false) }
+            .subscribe(success, error)
         disposables.add(disposable)
     }
 
     private fun <T> Single<T>.sub(success: (T) -> Unit, error: (Throwable) -> Unit) {
-        val disposable = this.subscribeOn(Schedulers.io()).observeOn(Schedulers.computation()).subscribe(success, error)
+        val disposable = this
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.computation())
+            .doOnSubscribe { show(loading = true) }
+            .doFinally { show(loading = false) }
+            .subscribe(success, error)
         disposables.add(disposable)
     }
 
@@ -291,14 +303,21 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onNothingSelected(p0: AdapterView<*>?) { }
     
     
-    private fun show(message: String) {
-        val handler = Handler(mainLooper)
+    private fun show(message: String) = executeOnMainThread {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+    }
 
-        val runnable = Runnable {
-            Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+    private fun show(loading: Boolean) = executeOnMainThread {
+        if(loading) {
+            progress.visibility = View.VISIBLE
+        } else {
+            progress.visibility = View.GONE
         }
+    }
 
-        handler.post(runnable)
+    private inline fun executeOnMainThread(crossinline block: () -> Unit) {
+        val handler = Handler(mainLooper)
+        handler.post { block() }
     }
 
 }
