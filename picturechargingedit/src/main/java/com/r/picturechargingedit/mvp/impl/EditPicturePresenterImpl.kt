@@ -21,6 +21,7 @@ import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.EditPictureView
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
+import io.reactivex.Single
 
 /**
  *
@@ -52,6 +53,22 @@ class EditPicturePresenterImpl(
     override fun getCanResetChanges() = mCanResetChanges
     override fun getCanUndoCropPosition() = cropModel.hasChanges()
     override fun getCanUndoCircleCropPosition() = cropModelCircle.hasChanges()
+
+
+
+    /**
+     * [brightnessThreshold] must be an integer between 0 and 255.
+     * [originalPicture] must be an uri to a picture.
+     *
+     * @return tldr: whether the [originalPicture] is bright.
+     * Whether the average pixel of [originalPicture] is bigger than or equal to [brightnessThreshold].
+     */
+    override fun isPictureBright(brightnessThreshold: Int): Single<Boolean> {
+        return Single.create {
+            val isBright = editIO.isBright(originalPicture, brightnessThreshold)
+            it.onSuccess(isBright)
+        }
+    }
 
 
     /**

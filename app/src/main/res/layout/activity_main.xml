@@ -15,10 +15,41 @@
         app:layout_constraintTop_toBottomOf="@id/spinner_mode"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_take_photo"
+        app:layout_constraintBottom_toTopOf="@id/btn_save"
         app:accentColor="@color/colorPrimary"
         app:cropCaption="@string/crop_caption"
         app:thumbCaption="@string/thumb_caption"/>
+
+
+    <Button
+        android:id="@+id/btn_get_photo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="GET"
+        android:layout_margin="16dp"
+        android:onClick="onGetPhotoClicked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_take_photo"/>
+
+    <Button
+        android:id="@+id/btn_take_photo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="TAKE"
+        android:layout_margin="16dp"
+        android:onClick="onTakePhotoClicked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_is_bright"/>
+
+    <Button
+        android:id="@+id/btn_is_bright"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="IS BRIGHT?"
+        android:layout_margin="16dp"
+        android:onClick="onIsBrightClicked"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/view_edit"/>
 
 
     <Button
@@ -64,19 +95,6 @@
         android:layout_marginEnd="4dp"
         android:onClick="onUndoLastActionClicked"
         app:layout_constraintStart_toEndOf="@id/btn_reset"
-        app:layout_constraintEnd_toStartOf="@id/btn_take_photo"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <Button
-        android:id="@+id/btn_take_photo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="TAKE"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:onClick="onTakePhotoClicked"
-        app:layout_constraintStart_toEndOf="@id/btn_undo"
         app:layout_constraintEnd_toStartOf="@id/btn_save"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -89,7 +107,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
         android:onClick="onSaveResultClicked"
-        app:layout_constraintStart_toEndOf="@id/btn_take_photo"
+        app:layout_constraintStart_toEndOf="@id/btn_undo"
         app:layout_constraintEnd_toStartOf="@id/btn_crop"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

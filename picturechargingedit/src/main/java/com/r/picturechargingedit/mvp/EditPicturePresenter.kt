@@ -18,6 +18,7 @@ import com.r.picturechargingedit.model.scale.touch.ScaleTouchModel
 import com.r.picturechargingedit.mvp.impl.EditPicturePresenterImpl
 import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
+import io.reactivex.Single
 
 /**
  *
@@ -42,6 +43,7 @@ interface EditPicturePresenter : BasePresenter<EditPictureView> {
     fun getCanUndoCircleCropPosition(): LiveData<Boolean>
     fun getCanResetChanges(): LiveData<Boolean>
 
+    fun isPictureBright(brightnessThreshold: Int = 85): Single<Boolean>
     fun resetChanges(): Completable
     fun cropPicture(): Completable
     fun cropCirclePicture(): Completable

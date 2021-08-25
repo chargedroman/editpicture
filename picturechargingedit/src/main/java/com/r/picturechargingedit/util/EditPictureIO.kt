@@ -28,6 +28,16 @@ interface EditPictureIO {
 
 
     /**
+     * [brightnessThreshold] must be an integer between 0 and 255.
+     * [picture] must be an uri to a picture.
+     *
+     * @return tldr: whether the [picture] is bright.
+     * Whether the average pixel of [picture] is bigger than or equal to [brightnessThreshold].
+     */
+    fun isBright(picture: Uri, brightnessThreshold: Int = 85): Boolean
+
+
+    /**
      * rotates, downsamples, [picture] returns as bitmap
      * @return result bitmap
      */

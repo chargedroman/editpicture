@@ -6,12 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,12 +20,21 @@ import com.bumptech.glide.MemoryCategory
 import com.r.picturechargingedit.EditPictureMode
 import com.r.picturechargingedit.mvp.EditPicturePresenter
 import com.r.picturechargingedit.mvp.impl.EditPictureViewImpl
+import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+
+    companion object {
+        val REQUEST_CODE_GET = 123
+        val REQUEST_CODE_TAKE = 1234
+        val REQUEST_CODE_CAMERA_PERMISSION = 12345
+    }
+
 
     lateinit var editView: EditPictureViewImpl
     lateinit var presenter: EditPicturePresenter
@@ -42,8 +49,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         editView = findViewById(R.id.view_edit)
         spinner = findViewById(R.id.spinner_mode)
 
-        presenter = EditPicturePresenter.Factory(this)
-            .create(getImageCacheUri())
+        presenter = EditPicturePresenter.Factory(applicationContext).create(getImageCacheUri())
         presenter.setThumbnailAspectRatio(9/16f)
 
         editView.setPresenter(presenter)
@@ -72,14 +78,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         takePictureAndOpenItInEditView()
     }
 
+    fun onGetPhotoClicked(view: View) {
+        getPictureAndOpenItInEditView()
+    }
+
     fun onUndoLastActionClicked(view: View) {
         presenter.undoLastBlur()
     }
 
     fun onResetClicked(view: View) {
         presenter.resetChanges().sub(
-            { println("CHAR: reset!") },
-            { println("CHAR: $it") }
+            { show("CHAR: reset!") },
+            { show("CHAR: $it") }
         )
     }
 
@@ -103,50 +113,74 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         rotatePicture()
     }
 
+    fun onIsBrightClicked(view: View) {
+        checkIsBright()
+    }
 
-    private fun showPicture() {
-        presenter.editPicture().sub(
-            { println("CHAR: edit!") },
-            { println("CHAR: $it") }
+
+    private fun checkIsBright() {
+        presenter.isPictureBright().sub(
+            { show("CHAR: done! is bright? $it") },
+            { show("CHAR: $it") }
         )
     }
 
+
+    private fun showPicture() {
+        presenter.editPicture().sub(
+            { show("CHAR: edit!") },
+            { show("CHAR: $it") }
+        )
+    }
+
+    private fun showPicture(externalPicture: Uri) {
+        val io = EditPictureIO.create(applicationContext)
+
+        Completable.fromAction {
+            io.downSample(externalPicture, getImageCacheUri())
+        }.andThen(presenter.editPicture()).sub(
+            { show("CHAR: edit external!") },
+            { show("CHAR: $it") }
+        )
+    }
+
+
     private fun rotatePicture() {
         presenter.rotatePictureBy90().sub(
-            { println("CHAR: rotate!") },
-            { println("CHAR: $it") }
+            { show("CHAR: rotate!") },
+            { show("CHAR: $it") }
         )
     }
 
     private fun savePicture() {
         presenter.savePicture().sub(
-            { println("CHAR: saved") },
-            { println("CHAR: $it")}
+            { show("CHAR: saved") },
+            { show("CHAR: $it")}
         )
     }
 
     private fun cropPicture() {
         presenter.cropPicture().sub(
-            { println("CHAR: cropped") },
-            { println("CHAR: $it")}
+            { show("CHAR: cropped") },
+            { show("CHAR: $it")}
         )
     }
 
     private fun cropCirclePicture() {
         presenter.cropCirclePicture().sub(
-            { println("CHAR: cropped circle") },
-            { println("CHAR: $it")}
+            { show("CHAR: cropped circle") },
+            { show("CHAR: $it")}
         )
     }
 
     private fun thumbnailPicture() {
 
         val dimen = presenter.createThumbnailDimensions()
-        println("CHAR: dimen=$dimen")
+        show("CHAR: dimen=$dimen")
 
         presenter.createThumbnail(getThumbnailImageCacheUri()).sub(
-            { println("CHAR: thumbnailed") },
-            { println("CHAR: $it")}
+            { show("CHAR: thumbnailed") },
+            { show("CHAR: $it")}
         )
     }
 
@@ -154,8 +188,13 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(resultCode == Activity.RESULT_OK) {
+        if(requestCode == REQUEST_CODE_TAKE && resultCode == Activity.RESULT_OK) {
             showPicture()
+        }
+
+        if(requestCode == REQUEST_CODE_GET && resultCode == Activity.RESULT_OK) {
+            val image = data?.data ?: return
+            showPicture(image)
         }
     }
 
@@ -179,11 +218,18 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, getImageCacheUri())
         intent.flags = Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        startActivityForResult(intent, 1234)
+        startActivityForResult(intent, REQUEST_CODE_TAKE)
     }
 
+    private fun getPictureAndOpenItInEditView() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_CODE_GET)
+    }
+
+
     private fun requestCameraPermission() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 12345)
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), REQUEST_CODE_CAMERA_PERMISSION)
     }
 
     private fun hasCameraPermission(): Boolean {
@@ -207,6 +253,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
 
     private fun Completable.sub(success: () -> Unit, error: (Throwable) -> Unit) {
+        val disposable = this.subscribeOn(Schedulers.io()).observeOn(Schedulers.computation()).subscribe(success, error)
+        disposables.add(disposable)
+    }
+
+    private fun <T> Single<T>.sub(success: (T) -> Unit, error: (Throwable) -> Unit) {
         val disposable = this.subscribeOn(Schedulers.io()).observeOn(Schedulers.computation()).subscribe(success, error)
         disposables.add(disposable)
     }
@@ -238,5 +289,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) { }
+    
+    
+    private fun show(message: String) {
+        val handler = Handler(mainLooper)
+
+        val runnable = Runnable {
+            Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        }
+
+        handler.post(runnable)
+    }
 
 }
