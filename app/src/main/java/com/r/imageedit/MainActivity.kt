@@ -40,11 +40,15 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     lateinit var presenter: EditPicturePresenter
     lateinit var spinner: Spinner
     lateinit var progress: ProgressBar
+    lateinit var handler: Handler
 
     private val disposables = CompositeDisposable()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        handler = Handler(mainLooper)
 
         setContentView(R.layout.activity_main)
         editView = findViewById(R.id.view_edit)
@@ -316,7 +320,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     private inline fun executeOnMainThread(crossinline block: () -> Unit) {
-        val handler = Handler(mainLooper)
         handler.post { block() }
     }
 
