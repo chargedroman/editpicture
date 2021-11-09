@@ -19,6 +19,7 @@ import org.apache.sanselan.formats.tiff.constants.TiffTagConstants.TIFF_TAG_ORIE
 import org.apache.sanselan.formats.tiff.write.TiffOutputDirectory
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
@@ -181,6 +182,8 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
         return try {
             Sanselan.getMetadata(inputStream, "") as? JpegImageMetadata
         } catch (e: ImageReadException) {
+            null
+        } catch (e: IOException) {
             null
         }
     }
