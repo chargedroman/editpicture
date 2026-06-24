@@ -18,11 +18,11 @@ import org.apache.sanselan.formats.tiff.constants.TiffDirectoryConstants
 import org.apache.sanselan.formats.tiff.constants.TiffTagConstants.TIFF_TAG_ORIENTATION
 import org.apache.sanselan.formats.tiff.write.TiffOutputDirectory
 import org.apache.sanselan.formats.tiff.write.TiffOutputSet
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import java.io.OutputStream
-import java.util.*
 
 
 /**
@@ -115,15 +115,22 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
         pictureExif: TiffOutputSet,
         quality: Int
     ) {
+        // Compress straight into memory.
+        val jpegBytes = ByteArrayOutputStream().use { out ->
+            val compressed = bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out)
+            if (!compressed) throw IOException("Bitmap.compress failed for $saveLocation")
+            out.toByteArray()
+        }
 
-        val tmpFileName = UUID.randomUUID().toString()
+        // Feed the in-memory JPEG through the EXIF rewriter to the final location.
+        val output = context.contentResolver.openOutputStream(saveLocation)
+            ?: throw IOException("Could not open output stream for $saveLocation")
 
-        context.openFileOutput(tmpFileName, Context.MODE_PRIVATE).save(bitmap, quality)
-
-        val inputStream = context.openFileInput(tmpFileName)
-        inputStream.saveWithExifTo(saveLocation, pictureExif)
-
-        File(context.filesDir, tmpFileName).delete()
+        ByteArrayInputStream(jpegBytes).use { input ->
+            output.use {
+                ExifRewriter().updateExifMetadataLossy(input, it, pictureExif)
+            }
+        }
     }
 
 
@@ -156,16 +163,6 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
         val dir = TiffOutputDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
         set.addDirectory(dir)
         return set
-    }
-
-
-    private fun InputStream.saveWithExifTo(saveLocation: Uri, exif: TiffOutputSet) {
-        val outputStream = context.contentResolver.openOutputStream(saveLocation)
-        this.use { ExifRewriter().updateExifMetadataLossy(it, outputStream, exif) }
-    }
-
-    private fun OutputStream.save(bitmap: Bitmap, quality: Int) {
-        this.use { bitmap.compress(Bitmap.CompressFormat.JPEG, quality, it) }
     }
 
 
