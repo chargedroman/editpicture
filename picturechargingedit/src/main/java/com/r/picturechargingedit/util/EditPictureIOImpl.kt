@@ -10,19 +10,9 @@ import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.load.resource.bitmap.Rotate
 import com.r.picturechargingedit.model.PixelAverage
 import com.r.picturechargingedit.model.Rotation
-import org.apache.sanselan.ImageReadException
-import org.apache.sanselan.Sanselan
-import org.apache.sanselan.formats.jpeg.JpegImageMetadata
-import org.apache.sanselan.formats.jpeg.exifRewrite.ExifRewriter
-import org.apache.sanselan.formats.tiff.constants.TiffDirectoryConstants
-import org.apache.sanselan.formats.tiff.constants.TiffTagConstants.TIFF_TAG_ORIENTATION
-import org.apache.sanselan.formats.tiff.write.TiffOutputDirectory
-import org.apache.sanselan.formats.tiff.write.TiffOutputSet
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
 
 
 /**
@@ -67,7 +57,7 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
 
     /**
      * reads [original] into a bitmap, rotated (from exif info) and down sampled with [downSampleSize],
-     * then copies it to [saveLocation] including it's original exif without the orientation tag
+     * then saves it to [saveLocation] without any EXIF data
      */
     override fun downSample(
         original: Uri,
@@ -75,12 +65,10 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
         downSampleSize: Int,
         quality: Int
     ) {
-        val pictureExif = readExif(original, true)
         val bitmap = readPictureBitmap(original, downSampleSize)
         savePicture(
             saveLocation = saveLocation,
             bitmap = bitmap,
-            pictureExif = pictureExif,
             quality = quality
         )
         bitmap.recycle()
@@ -88,49 +76,24 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
 
 
     /**
-     *
-     * @return exif of [picture] or an empty set
-     */
-    override fun readExif(picture: Uri, removeOrientationTag: Boolean): TiffOutputSet {
-        val exif = context.contentResolver.openInputStream(picture).use {
-            val metadata = readMetaDataOrNull(it)
-            metadata?.exif?.outputSet ?: emptyExif()
-        }
-
-        if(removeOrientationTag) {
-            removeOrientationTag(exif)
-        }
-
-        return exif
-    }
-
-
-    /**
-     * saves [bitmap] to [saveLocation] with [quality] and
-     * overwrites [saveLocation]'s exif with [pictureExif]
+     * saves [bitmap] to [saveLocation] as a JPEG with [quality], without any EXIF data.
+     * The JPEG is built in memory first, so a failed compression leaves [saveLocation] untouched.
      */
     override fun savePicture(
         saveLocation: Uri,
         bitmap: Bitmap,
-        pictureExif: TiffOutputSet,
         quality: Int
     ) {
-        // Compress straight into memory.
         val jpegBytes = ByteArrayOutputStream().use { out ->
             val compressed = bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out)
             if (!compressed) throw IOException("Bitmap.compress failed for $saveLocation")
             out.toByteArray()
         }
 
-        // Feed the in-memory JPEG through the EXIF rewriter to the final location.
         val output = context.contentResolver.openOutputStream(saveLocation)
             ?: throw IOException("Could not open output stream for $saveLocation")
 
-        ByteArrayInputStream(jpegBytes).use { input ->
-            output.use {
-                ExifRewriter().updateExifMetadataLossy(input, it, pictureExif)
-            }
-        }
+        output.use { it.write(jpegBytes) }
     }
 
 
@@ -154,35 +117,5 @@ class EditPictureIOImpl(private val context: Context): EditPictureIO {
         return Uri.fromFile(File(context.filesDir, "EditPictureIOBackupLocation"))
     }
 
-
-    /**
-     * @return an empty exif set
-     */
-    override fun emptyExif(): TiffOutputSet {
-        val set = TiffOutputSet()
-        val dir = TiffOutputDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT)
-        set.addDirectory(dir)
-        return set
-    }
-
-
-    private fun removeOrientationTag(exif: TiffOutputSet?) {
-        val directories = exif?.directories ?: return
-        for (d in directories) {
-            val dir = d as? TiffOutputDirectory
-            dir?.removeField(TIFF_TAG_ORIENTATION)
-        }
-    }
-
-
-    private fun readMetaDataOrNull(inputStream: InputStream?): JpegImageMetadata? {
-        return try {
-            Sanselan.getMetadata(inputStream, "") as? JpegImageMetadata
-        } catch (e: ImageReadException) {
-            null
-        } catch (e: IOException) {
-            null
-        }
-    }
 
 }

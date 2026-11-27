@@ -179,7 +179,7 @@ class EditPicturePresenterImpl(
 
     /**
      * applies all changes to the currently loaded bitmap and saves the
-     * result to [originalPicture] (while keeping exif data)
+     * result to [originalPicture]
      */
     override fun savePicture(quality: Int): Completable = call {
 
@@ -194,8 +194,7 @@ class EditPicturePresenterImpl(
         pixelationModel.mapCoordinatesInverted()
         view.drawPixelation(pixelationModel, bitmapCanvas)
 
-        val originalExif = editIO.readExif(originalPicture)
-        editIO.savePicture(originalPicture, bitmap, originalExif, quality)
+        editIO.savePicture(originalPicture, bitmap, quality)
 
         mCanResetChanges.postValue(false)
         pixelationModel.clear()
@@ -221,9 +220,8 @@ class EditPicturePresenterImpl(
         val rect = cropRect.toRect()
         pictureModel.getMatrix().mapRect(cropRect)
 
-        val originalExif = editIO.readExif(originalPicture)
         val edited = editIO.cropBitmap(bitmap, rect)
-        editIO.savePicture(originalPicture, edited, originalExif)
+        editIO.savePicture(originalPicture, edited)
         pictureModel.setBitmap(edited)
 
         pixelationModel.mapCoordinatesTo(rect)

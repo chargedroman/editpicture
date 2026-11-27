@@ -12,7 +12,6 @@ import com.r.picturechargingedit.util.EditPictureIO
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
 import junit.framework.Assert.assertEquals
-import org.apache.sanselan.formats.tiff.write.TiffOutputSet
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -149,20 +148,18 @@ class EditPicturePresenterTest {
     }
 
     @Test
-    fun savePicture_SaveEditedBitmap_WithExifOfOriginal() {
+    fun savePicture_SaveEditedBitmap() {
 
         val editedBitmap: Bitmap = mock()
-        val exif = TiffOutputSet()
 
         val presenter = initPresenter()
         whenever(changesMock.getSize()).thenReturn(1)
         whenever(viewMock.drawPixelation(changesMock)).thenReturn(editedBitmap)
-        whenever(editPictureMock.readExif(pictureUriMock, true)).thenReturn(exif)
 
         presenter.savePicture().blockingAwait()
 
         verify(viewMock, times(1)).drawPixelation(changesMock)
-        verify(editPictureMock, times(1)).savePicture(pictureUriMock, editedBitmap, exif)
+        verify(editPictureMock, times(1)).savePicture(pictureUriMock, editedBitmap)
         verify(viewMock, times(2)).showPixelation(changesMock)
         verify(viewMock, times(2)).showPicture(pictueModelMock)
     }

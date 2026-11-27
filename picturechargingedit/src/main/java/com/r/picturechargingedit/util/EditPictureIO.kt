@@ -6,7 +6,6 @@ import android.graphics.Rect
 import android.net.Uri
 import com.r.picturechargingedit.model.PixelAverage
 import com.r.picturechargingedit.model.Rotation
-import org.apache.sanselan.formats.tiff.write.TiffOutputSet
 
 /**
  *
@@ -46,19 +45,17 @@ interface EditPictureIO {
 
 
     /**
-     * saves [bitmap] to [saveLocation] with [quality] and
-     * overwrites [saveLocation]'s exif with [pictureExif]
+     * saves [bitmap] to [saveLocation] as a JPEG with [quality], without any EXIF data
      */
     fun savePicture(
         saveLocation: Uri,
         bitmap: Bitmap,
-        pictureExif: TiffOutputSet = emptyExif(),
         quality: Int = QUALITY_MAX
     )
 
     /**
      * reads [original] into a file, rotated (from exif info) and down sampled,
-     * then copies it to [saveLocation] including it's original exif
+     * then saves it to [saveLocation] without any EXIF data
      */
     fun downSample(
         original: Uri,
@@ -74,19 +71,8 @@ interface EditPictureIO {
 
     /**
      *
-     * @return exif of [picture] or an empty set
-     */
-    fun readExif(picture: Uri, removeOrientationTag: Boolean = true): TiffOutputSet
-
-    /**
-     *
      * @return the uri of one temp location where it is save to do i/o with
      */
     fun getBackupLocation(): Uri
-
-    /**
-     * @return an empty exif set
-     */
-    fun emptyExif(): TiffOutputSet
 
 }
